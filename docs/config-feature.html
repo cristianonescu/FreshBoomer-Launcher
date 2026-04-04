@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreshBoomer - Configuration System Documentation</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #7ee787;
+    --accent3: #d2a8ff;
+    --accent4: #ffa657;
+    --red: #f85149;
+    --code-bg: #0d1117;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 0;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1a1e2e 0%, #0d1117 50%, #141d2b 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 40px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 2.8em;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.2em;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+  nav.toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 32px;
+    margin-bottom: 48px;
+  }
+  nav.toc h2 {
+    font-size: 1.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  nav.toc ol {
+    columns: 2;
+    column-gap: 40px;
+    padding-left: 20px;
+  }
+  nav.toc li {
+    margin-bottom: 6px;
+    break-inside: avoid;
+  }
+  nav.toc a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.95em;
+  }
+  nav.toc a:hover { text-decoration: underline; }
+
+  section { margin-bottom: 56px; }
+  h2 {
+    font-size: 1.8em;
+    color: #fff;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  h3 {
+    font-size: 1.25em;
+    color: var(--accent2);
+    margin: 24px 0 12px;
+  }
+  h4 {
+    font-size: 1.05em;
+    color: var(--accent4);
+    margin: 16px 0 8px;
+  }
+  p { margin-bottom: 14px; }
+  a { color: var(--accent); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.05em;
+    margin-bottom: 6px;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    font-size: 0.88em;
+    line-height: 1.6;
+  }
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+  }
+  pre code { font-size: 1em; }
+  :not(pre) > code {
+    background: rgba(110,118,129,0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent3);
+  }
+
+  .file-path {
+    display: inline-block;
+    background: rgba(88,166,255,0.1);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.85em;
+    margin: 4px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 0.92em;
+  }
+  th {
+    background: var(--surface);
+    color: var(--accent);
+    text-align: left;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    font-weight: 600;
+  }
+  td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: rgba(22,27,34,0.5); }
+
+  .keyword { color: var(--red); }
+  .type { color: var(--accent3); }
+  .string { color: var(--accent2); }
+  .comment { color: var(--text-muted); font-style: italic; }
+  .func { color: var(--accent4); }
+
+  .flow-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    margin: 20px 0;
+    text-align: center;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.9em;
+    line-height: 2.2;
+    overflow-x: auto;
+  }
+  .flow-box {
+    display: inline-block;
+    background: rgba(88,166,255,0.12);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 6px 16px;
+    border-radius: 6px;
+    margin: 4px;
+  }
+  .flow-box.green {
+    background: rgba(126,231,135,0.12);
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+  .flow-box.orange {
+    background: rgba(255,166,87,0.12);
+    border-color: var(--accent4);
+    color: var(--accent4);
+  }
+  .flow-box.purple {
+    background: rgba(210,168,255,0.12);
+    border-color: var(--accent3);
+    color: var(--accent3);
+  }
+  .flow-arrow {
+    color: var(--text-muted);
+    margin: 0 8px;
+    font-size: 1.2em;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .badge-bool { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-string { background: rgba(126,231,135,0.15); color: var(--accent2); }
+  .badge-number { background: rgba(210,168,255,0.15); color: var(--accent3); }
+  .badge-list { background: rgba(255,166,87,0.15); color: var(--accent4); }
+  .badge-enum { background: rgba(88,166,255,0.15); color: var(--accent); }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(88,166,255,0.06);
+    padding: 14px 20px;
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0;
+  }
+  .callout.warning {
+    border-left-color: var(--accent4);
+    background: rgba(255,166,87,0.06);
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 768px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    nav.toc ol { columns: 1; }
+    .hero { padding: 40px 20px; }
+    .hero h1 { font-size: 2em; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>FreshBoomer <span>Configuration System</span></h1>
+  <p>Complete technical documentation of the centralized configuration architecture: how settings are loaded, stored, edited, synced, and consumed across the app.</p>
+</div>
+
+<div class="container">
+
+<!-- TABLE OF CONTENTS -->
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#overview">Architecture Overview</a></li>
+    <li><a href="#configdata">ConfigData Model</a></li>
+    <li><a href="#appconfig">AppConfig Singleton</a></li>
+    <li><a href="#lifecycle">Lifecycle &amp; Initialization</a></li>
+    <li><a href="#storage">Storage Layers</a></li>
+    <li><a href="#editing">Configuration Editing (UI)</a></li>
+    <li><a href="#remote-import">Remote Import &amp; Auto-Sync (URL)</a></li>
+    <li><a href="#consumers">Configuration Consumers</a></li>
+    <li><a href="#preferences">Preference Helper Objects</a></li>
+    <li><a href="#json-schema">JSON File Schema</a></li>
+    <li><a href="#flow-diagrams">Data Flow Diagrams</a></li>
+    <li><a href="#files">File Reference</a></li>
+  </ol>
+</nav>
+
+<!-- 1. OVERVIEW -->
+<section id="overview">
+  <h2>1. Architecture Overview</h2>
+  <p>
+    FreshBoomer uses a <strong>centralized, file-based configuration system</strong> built around two core components:
+  </p>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">ConfigData</div>
+      <p style="color:var(--text-muted);margin:0">An immutable Kotlin data class holding every configurable value in the app &mdash; from the user's nickname to feature toggles to TTS speech rate.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">AppConfig</div>
+      <p style="color:var(--text-muted);margin:0">A Kotlin <code>object</code> (singleton) that owns the configuration state, persists it to a JSON file, and exposes it reactively via <code>StateFlow</code>.</p>
+    </div>
+  </div>
+  <p>
+    The system also supports <strong>legacy SharedPreferences sync</strong> (for backward compatibility), <strong>remote JSON import &amp; auto-sync</strong> (fetch config from a URL, with automatic re-fetch on every main screen resume), a <strong>setup wizard</strong> (first-run experience), and a <strong>JSON config editor</strong> for advanced users. The remote config URL is stored independently in SharedPreferences (via <code>ConfigUrlPreference</code>) so that remote JSON payloads can never overwrite or clear it.
+  </p>
+  <div class="callout">
+    <strong>Key principle:</strong> All configuration changes flow through <code>AppConfig.save()</code>, which updates the in-memory StateFlow, writes to disk, syncs to SharedPreferences, and merges quick contacts into the QuickContactRepository. This ensures a single source of truth.
+  </div>
+</section>
+
+<!-- 2. CONFIGDATA -->
+<section id="configdata">
+  <h2>2. ConfigData Model</h2>
+  <p class="file-path">app/src/main/java/ro/softwarechef/freshboomer/data/ConfigData.kt</p>
+  <p>
+    <code>ConfigData</code> is an immutable <code>data class</code> with sensible defaults for every field.
+    It groups 20+ fields into logical categories:
+  </p>
+
+  <h3>General Settings</h3>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr>
+      <td><code>userNickname</code></td>
+      <td><span class="badge badge-string">String</span></td>
+      <td><code>"Mamaie"</code></td>
+      <td>Name used in TTS voice announcements (replaces "Mamaie" everywhere)</td>
+    </tr>
+    <tr>
+      <td><code>themeMode</code></td>
+      <td><span class="badge badge-enum">Enum</span></td>
+      <td><code>"SYSTEM"</code></td>
+      <td>App theme. Options: <code>SYSTEM</code>, <code>LIGHT</code>, <code>DARK</code></td>
+    </tr>
+    <tr>
+      <td><code>appLanguage</code></td>
+      <td><span class="badge badge-enum">Enum</span></td>
+      <td><code>"ro"</code></td>
+      <td>App language (currently only Romanian)</td>
+    </tr>
+  </table>
+
+  <h3>Text-to-Speech</h3>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr>
+      <td><code>ttsEnabled</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>true</code></td>
+      <td>Enable/disable all voice announcements</td>
+    </tr>
+    <tr>
+      <td><code>ttsEngine</code></td>
+      <td><span class="badge badge-enum">Enum</span></td>
+      <td><code>"PIPER_LILI"</code></td>
+      <td>Voice engine. Options: <code>PIPER_LILI</code>, <code>DEVICE_DEFAULT</code></td>
+    </tr>
+    <tr>
+      <td><code>ttsSpeechRate</code></td>
+      <td><span class="badge badge-number">Float</span></td>
+      <td><code>0.85</code></td>
+      <td>Speech rate: 0.5 (slow) to 2.0 (fast)</td>
+    </tr>
+  </table>
+
+  <h3>Feature Toggles</h3>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr>
+      <td><code>featureQuickContacts</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>true</code></td>
+      <td>Show quick-dial buttons on home screen</td>
+    </tr>
+    <tr>
+      <td><code>featureDialPad</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>true</code></td>
+      <td>Show dial pad button</td>
+    </tr>
+    <tr>
+      <td><code>featureContacts</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>true</code></td>
+      <td>Show contacts button</td>
+    </tr>
+    <tr>
+      <td><code>featureMessages</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>true</code></td>
+      <td>Show SMS messages button</td>
+    </tr>
+    <tr>
+      <td><code>featureGallery</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>true</code></td>
+      <td>Show photo gallery button</td>
+    </tr>
+    <tr>
+      <td><code>featureWhatsapp</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>false</code></td>
+      <td>Show WhatsApp button on home screen</td>
+    </tr>
+  </table>
+
+  <h3>Behavior Settings</h3>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr>
+      <td><code>autoMaxVolume</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>true</code></td>
+      <td>Auto-set all audio streams to max volume</td>
+    </tr>
+    <tr>
+      <td><code>inactivityTimeoutMs</code></td>
+      <td><span class="badge badge-number">Long</span></td>
+      <td><code>20000</code></td>
+      <td>Milliseconds before auto-return to home screen</td>
+    </tr>
+    <tr>
+      <td><code>maxMissedCallAnnouncements</code></td>
+      <td><span class="badge badge-number">Int</span></td>
+      <td><code>3</code></td>
+      <td>Max times a missed call is announced via TTS</td>
+    </tr>
+    <tr>
+      <td><code>callSpeakerDelayMs</code></td>
+      <td><span class="badge badge-number">Long</span></td>
+      <td><code>3000</code></td>
+      <td>Delay before auto-enabling speakerphone</td>
+    </tr>
+    <tr>
+      <td><code>inactivityMonitorEnabled</code></td>
+      <td><span class="badge badge-bool">Boolean</span></td>
+      <td><code>false</code></td>
+      <td>Send SMS alerts to emergency contacts on prolonged inactivity</td>
+    </tr>
+    <tr>
+      <td><code>inactivityMonitorThresholdHours</code></td>
+      <td><span class="badge badge-number">Int</span></td>
+      <td><code>12</code></td>
+      <td>Hours of inactivity before SMS alert is sent</td>
+    </tr>
+  </table>
+
+  <h3>Contact Lists</h3>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr>
+      <td><code>quickContacts</code></td>
+      <td><span class="badge badge-list">List&lt;QuickContact&gt;</span></td>
+      <td><code>[]</code> (empty)</td>
+      <td>Quick-dial contacts shown as large buttons on home screen</td>
+    </tr>
+    <tr>
+      <td><code>emergencyContacts</code></td>
+      <td><span class="badge badge-list">List&lt;EmergencyContact&gt;</span></td>
+      <td><code>[]</code> (empty)</td>
+      <td>Contacts notified via SMS during inactivity alerts</td>
+    </tr>
+  </table>
+
+  <h3>Serialization</h3>
+  <p>
+    <code>ConfigData</code> has two methods for JSON conversion:
+  </p>
+  <ul>
+    <li><code>toJson(): JSONObject</code> &mdash; serializes all fields to a <code>JSONObject</code>, stored with 2-space indentation</li>
+    <li><code>fromJson(json: JSONObject): ConfigData</code> (companion) &mdash; deserializes with graceful fallback to defaults via <code>optString</code>, <code>optBoolean</code>, etc.</li>
+  </ul>
+  <div class="callout">
+    <strong>Resilience:</strong> Every field in <code>fromJson()</code> uses <code>opt*</code> methods with defaults. This means a partial JSON (e.g., from a remote URL) will fill in missing fields with defaults rather than crashing.
+  </div>
+</section>
+
+<!-- 3. APPCONFIG -->
+<section id="appconfig">
+  <h2>3. AppConfig Singleton</h2>
+  <p class="file-path">app/src/main/java/ro/softwarechef/freshboomer/data/AppConfig.kt</p>
+  <p>
+    <code>AppConfig</code> is a Kotlin <code>object</code> (process-wide singleton) that acts as the <strong>central state manager</strong> for all configuration. It owns the <code>StateFlow</code> and coordinates all persistence.
+  </p>
+
+  <h3>Public API</h3>
+  <table>
+    <tr><th>Member</th><th>Signature</th><th>Description</th></tr>
+    <tr>
+      <td><code>configFlow</code></td>
+      <td><code>StateFlow&lt;ConfigData&gt;</code></td>
+      <td>Observable stream of the current config. Compose UI and other observers collect this.</td>
+    </tr>
+    <tr>
+      <td><code>current</code></td>
+      <td><code>ConfigData</code> (getter)</td>
+      <td>Synchronous snapshot of the current config value.</td>
+    </tr>
+    <tr>
+      <td><code>init(context)</code></td>
+      <td><code>@Synchronized</code></td>
+      <td>Loads config from <code>config.json</code>, or migrates from SharedPreferences on first launch.</td>
+    </tr>
+    <tr>
+      <td><code>save(context, config)</code></td>
+      <td><code>@Synchronized</code></td>
+      <td>Persists a new config: updates flow &rarr; writes file &rarr; syncs SharedPreferences &rarr; syncs contacts repo.</td>
+    </tr>
+    <tr>
+      <td><code>resetToDefaults(context)</code></td>
+      <td><code>@Synchronized</code></td>
+      <td>Replaces current config with a fresh <code>ConfigData()</code> (all defaults).</td>
+    </tr>
+    <tr>
+      <td><code>importFromUrl(context, url)</code></td>
+      <td><code>Result&lt;Unit&gt;</code></td>
+      <td>Fetches JSON from a URL and applies it. Must be called from a background thread.</td>
+    </tr>
+  </table>
+
+  <h3>Internal Methods</h3>
+  <table>
+    <tr><th>Method</th><th>What it does</th></tr>
+    <tr>
+      <td><code>writeFile()</code></td>
+      <td>Writes <code>config.toJson().toString(2)</code> to <code>config.json</code> in the app's internal files directory.</td>
+    </tr>
+    <tr>
+      <td><code>migrateFromSharedPrefs()</code></td>
+      <td>One-time migration: reads old <code>LauncherPrefs</code> SharedPreferences, converts to <code>ConfigData</code>, and writes the JSON file. Preserves existing quick contacts from <code>QuickContactRepository</code>.</td>
+    </tr>
+    <tr>
+      <td><code>syncToSharedPrefs()</code></td>
+      <td>Writes key config fields back to SharedPreferences for backward compatibility with legacy code paths.</td>
+    </tr>
+    <tr>
+      <td><code>syncContactsToRepo()</code></td>
+      <td>Merges quick contacts from config into <code>QuickContactRepository</code>, preserving photo URIs and drawable resource names from existing contacts.</td>
+    </tr>
+  </table>
+
+  <div class="callout warning">
+    <strong>Thread safety:</strong> All public mutating methods (<code>init</code>, <code>save</code>, <code>resetToDefaults</code>) are <code>@Synchronized</code>. The <code>importFromUrl</code> method performs network I/O and must be called from a coroutine or background thread.
+  </div>
+</section>
+
+<!-- 4. LIFECYCLE -->
+<section id="lifecycle">
+  <h2>4. Lifecycle &amp; Initialization</h2>
+
+  <h3>App Startup Sequence</h3>
+  <div class="flow-diagram">
+    <span class="flow-box">App process starts</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box green">MainActivity.onCreate()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box">AppConfig.init(context)</span>
+    <br>
+    <span class="flow-arrow">&darr;</span><br>
+    <span class="flow-box purple">config.json exists?</span>
+    <br>
+    <span style="color:var(--accent2)">YES &darr;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span style="color:var(--red)">NO &darr;</span>
+    <br>
+    <span class="flow-box green">Parse JSON &rarr; ConfigData</span>
+    &nbsp;&nbsp;
+    <span class="flow-box orange">migrateFromSharedPrefs()</span>
+    <br>
+    <span class="flow-arrow">&darr;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="flow-arrow">&darr;</span>
+    <br>
+    <span class="flow-box">_configFlow.value = config</span>
+    <br>
+    <span class="flow-arrow">&darr;</span>
+    <br>
+    <span class="flow-box green">syncToSharedPrefs()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box">Ready!</span>
+  </div>
+
+  <h4>Step-by-step:</h4>
+  <ol style="padding-left:20px;margin-bottom:16px;">
+    <li><strong>MainActivity.onCreate()</strong> calls <code>AppConfig.init(this)</code> as the very first action.</li>
+    <li><code>init()</code> checks if <code>config.json</code> exists in the app's internal files directory.</li>
+    <li><strong>If it exists:</strong> reads the file, parses JSON into <code>ConfigData</code> via <code>ConfigData.fromJson()</code>, and sets the flow value. On parse failure, falls back to defaults and rewrites the file.</li>
+    <li><strong>If it doesn't exist (first launch):</strong> calls <code>migrateFromSharedPrefs()</code> to pull values from legacy <code>LauncherPrefs</code>, creates a <code>ConfigData</code>, and writes the new JSON file.</li>
+    <li>In both cases, <code>syncToSharedPrefs()</code> runs to keep the legacy preference store in sync.</li>
+    <li>After init, <code>QuickContactRepository.ensureDefaults()</code> and <code>InactivityMonitorWorker.schedule()</code> run, both depending on the now-loaded config.</li>
+  </ol>
+
+  <h3>Boot Receiver</h3>
+  <p>
+    <code>BootReceiver</code> also calls <code>AppConfig.init(context)</code> on device boot to ensure config is loaded before the inactivity monitor worker is scheduled.
+  </p>
+</section>
+
+<!-- 5. STORAGE -->
+<section id="storage">
+  <h2>5. Storage Layers</h2>
+  <p>Configuration is persisted in multiple locations for reliability and backward compatibility:</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="color:var(--accent)">Primary: config.json</div>
+      <p style="color:var(--text-muted);margin:0">
+        <code>context.filesDir/config.json</code><br><br>
+        The <strong>source of truth</strong>. A pretty-printed JSON file (2-space indent) containing all <code>ConfigData</code> fields. Read on startup, written on every save.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--accent4)">Secondary: SharedPreferences</div>
+      <p style="color:var(--text-muted);margin:0">
+        <code>LauncherPrefs</code> (MODE_PRIVATE)<br><br>
+        Kept in sync by <code>syncToSharedPrefs()</code> for legacy code that reads preferences directly. Contains a subset of fields (nickname, theme, TTS, feature toggles, language, auto_max_volume).
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--accent2)">Contacts: quick_contacts.json</div>
+      <p style="color:var(--text-muted);margin:0">
+        <code>context.filesDir/quick_contacts.json</code><br><br>
+        Managed by <code>QuickContactRepository</code>. Contains the full quick contact objects including <code>photoUri</code> and <code>drawableResName</code> (metadata not stored in config.json).
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--accent3)">In-Memory: StateFlow</div>
+      <p style="color:var(--text-muted);margin:0">
+        <code>AppConfig.configFlow: StateFlow&lt;ConfigData&gt;</code><br><br>
+        The reactive in-memory store. Compose UI collects this flow to recompose when config changes. Also accessible synchronously via <code>AppConfig.current</code>.
+      </p>
+    </div>
+  </div>
+
+  <h3>Sync Cascade on Save</h3>
+  <p>Every call to <code>AppConfig.save(context, config)</code> triggers this cascade:</p>
+  <div class="flow-diagram">
+    <span class="flow-box purple">save(context, config)</span><br><br>
+    <span class="flow-box">1. _configFlow.value = config</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box green">UI recomposes</span>
+    <br><br>
+    <span class="flow-box">2. writeFile(config.json)</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box green">Persisted to disk</span>
+    <br><br>
+    <span class="flow-box">3. syncToSharedPrefs()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box green">Legacy prefs updated</span>
+    <br><br>
+    <span class="flow-box">4. syncContactsToRepo()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box green">QuickContactRepository merged</span>
+  </div>
+</section>
+
+<!-- 6. EDITING -->
+<section id="editing">
+  <h2>6. Configuration Editing (UI)</h2>
+  <p>Users can modify configuration through three different interfaces:</p>
+
+  <h3>A. Setup Wizard (First Run)</h3>
+  <p class="file-path">ui/pages/SetupWizardScreen.kt</p>
+  <p>
+    A 7-page guided wizard that runs on first launch (tracked by <code>SetupWizardPreference</code>).
+    Collects all essential settings step by step:
+  </p>
+  <ol style="padding-left:20px;margin-bottom:16px;">
+    <li><strong>Welcome</strong> &mdash; Introduction to the app</li>
+    <li><strong>Nickname</strong> &mdash; Configure the user's name for TTS</li>
+    <li><strong>Quick Contacts</strong> &mdash; Add favorite contacts with photo picker</li>
+    <li><strong>Language</strong> &mdash; Language selection (Romanian)</li>
+    <li><strong>Emergency Contacts</strong> &mdash; Add contacts for inactivity alerts</li>
+    <li><strong>Features &amp; Theme</strong> &mdash; Theme selection, feature toggles, volume, inactivity monitor</li>
+    <li><strong>Settings Info</strong> &mdash; Instructions for accessing settings later and remote config</li>
+  </ol>
+  <p>
+    On completion, the wizard builds a <code>ConfigData</code> from all wizard state, calls <code>AppConfig.save()</code>,
+    reschedules the inactivity monitor, and marks setup as completed.
+  </p>
+
+  <h3>B. Settings Screen (QuickContactSettingsScreen)</h3>
+  <p class="file-path">ui/pages/QuickContactEditor.kt</p>
+  <p>
+    The main settings screen, accessed via a secret gesture (60 taps in 15 seconds on the home screen).
+    Contains collapsible sections for every config aspect:
+  </p>
+  <ul style="padding-left:20px;margin-bottom:16px;">
+    <li>Quick Contacts (add/edit/delete/reorder with photo picker)</li>
+    <li>Apps (launch WhatsApp, Play Store, device settings)</li>
+    <li>TTS engine and toggle</li>
+    <li>Nickname editing with TTS preview</li>
+    <li>Language selection</li>
+    <li>Emergency contacts management</li>
+    <li>Theme selection (dropdown)</li>
+    <li>Feature toggles (all 6 features + auto max volume + inactivity monitor)</li>
+    <li>Permissions verification (re-run onboarding)</li>
+    <li>Advanced Config (JSON editor + URL import)</li>
+  </ul>
+
+  <h3>C. JSON Config Editor</h3>
+  <p class="file-path">ui/composables/JsonConfigEditorScreen.kt</p>
+  <p>
+    A developer-oriented JSON editor with code-editor styling, accessible from the Advanced Config section of Settings.
+    Features:
+  </p>
+  <ul style="padding-left:20px;margin-bottom:16px;">
+    <li>Fields grouped by <code>ConfigGroup</code> (General, TTS, Features, Behavior)</li>
+    <li>Syntax highlighting: <span style="color:var(--red)">booleans</span>, <span style="color:var(--accent2)">strings</span>, <span style="color:var(--accent3)">numbers</span></li>
+    <li>Type-specific editing: toggles for booleans, dropdowns for enums, text fields for strings/numbers</li>
+    <li>Info tooltips for each field (from <code>ALL_CONFIG_FIELDS</code> metadata)</li>
+    <li>Inline editing of quick contacts and emergency contacts arrays</li>
+    <li>"Reset to Defaults" and "Save" buttons at the bottom</li>
+  </ul>
+</section>
+
+<!-- 7. REMOTE IMPORT & AUTO-SYNC -->
+<section id="remote-import">
+  <h2>7. Remote Import &amp; Auto-Sync (URL)</h2>
+  <p class="file-path">AppConfig.kt:66-78, ConfigUrlPreference.kt, QuickContactEditor.kt (ImportUrlDialog), MainActivity.kt</p>
+
+  <p>
+    The app supports importing configuration from a remote URL. This allows a caretaker to host a JSON config file
+    (e.g., on a web server or cloud storage) and apply it to the device. Once a URL is set, the app
+    <strong>automatically re-fetches the config every time the user returns to the main screen</strong>.
+  </p>
+
+  <h3>URL Storage (ConfigUrlPreference)</h3>
+  <p class="file-path">data/ConfigUrlPreference.kt</p>
+  <p>
+    The config URL is stored <strong>independently from <code>ConfigData</code></strong> in SharedPreferences
+    (key <code>config_url</code> in <code>LauncherPrefs</code>), managed by the <code>ConfigUrlPreference</code> helper object.
+    This is intentional &mdash; it prevents a remote JSON payload from overwriting or clearing the URL,
+    which would break the auto-sync loop.
+  </p>
+  <div class="callout">
+    <strong>Design decision:</strong> The config URL is <em>not</em> part of <code>ConfigData</code> or <code>config.json</code>.
+    It lives only in SharedPreferences, set exclusively from the Settings screen. Remote JSON imports cannot affect it.
+  </div>
+
+  <h3>Manual Import Flow (Settings)</h3>
+  <div class="flow-diagram">
+    <span class="flow-box">User enters URL in ImportUrlDialog</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box purple">AppConfig.importFromUrl()</span>
+    <br><br>
+    <span class="flow-arrow">&darr;</span><br>
+    <span class="flow-box">URL(url).readText()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box">JSONObject(text)</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box">ConfigData.fromJson(json)</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box green">save(context, config)</span>
+    <br><br>
+    <span class="flow-arrow">&darr;</span><br>
+    <span class="flow-box orange">ConfigUrlPreference.setUrl(url)</span>
+    <span style="color:var(--text-muted)">&larr; URL persisted for auto-sync</span>
+  </div>
+  <p>
+    When the user imports via the dialog, two things happen: (1) the fetched config is applied immediately,
+    and (2) the URL is saved via <code>ConfigUrlPreference.setUrl()</code> so it persists for auto-sync.
+    The dialog also <strong>pre-fills</strong> with the previously saved URL when re-opened.
+  </p>
+
+  <h3>Automatic Sync Flow (onResume)</h3>
+  <div class="flow-diagram">
+    <span class="flow-box green">User returns to main screen</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box">MainActivity.onResume()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box purple">fetchRemoteConfigIfNeeded()</span>
+    <br><br>
+    <span class="flow-arrow">&darr;</span><br>
+    <span class="flow-box">ConfigUrlPreference.getUrl()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box orange">URL blank? &rarr; skip</span>
+    <br><br>
+    <span style="color:var(--accent2)">URL present &darr;</span><br>
+    <span class="flow-box">CoroutineScope(IO).launch</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box">AppConfig.importFromUrl()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box green">Config updated silently</span>
+  </div>
+  <p>
+    Every time <code>onResume()</code> fires in <code>MainActivity</code>, <code>fetchRemoteConfigIfNeeded()</code>
+    checks the stored URL. If non-blank, it launches a background coroutine to fetch and apply the remote config.
+    Errors are logged silently without disrupting the user.
+  </p>
+
+  <h4>Implementation details:</h4>
+  <pre><code><span class="comment">// In MainActivity</span>
+<span class="keyword">private fun</span> <span class="func">fetchRemoteConfigIfNeeded</span>() {
+    <span class="keyword">val</span> url = <span class="type">ConfigUrlPreference</span>.<span class="func">getUrl</span>(<span class="keyword">this</span>)
+    <span class="keyword">if</span> (url.<span class="func">isBlank</span>()) <span class="keyword">return</span>
+    <span class="type">CoroutineScope</span>(<span class="type">Dispatchers</span>.IO).<span class="func">launch</span> {
+        <span class="type">AppConfig</span>.<span class="func">importFromUrl</span>(<span class="keyword">this</span>@MainActivity, url)
+    }
+}</code></pre>
+
+  <div class="callout warning">
+    <strong>Note:</strong> <code>importFromUrl()</code> uses <code>java.net.URL.readText()</code> which performs blocking network I/O. Both the manual import (via coroutine in <code>ImportUrlDialog</code>) and the auto-sync (via <code>Dispatchers.IO</code> in <code>MainActivity</code>) run this off the main thread.
+  </div>
+</section>
+
+<!-- 8. CONSUMERS -->
+<section id="consumers">
+  <h2>8. Configuration Consumers</h2>
+  <p>Config values are consumed throughout the app in several key areas:</p>
+
+  <h3>Theme System</h3>
+  <p class="file-path">ui/theme/Theme.kt</p>
+  <pre><code><span class="keyword">val</span> config <span class="keyword">by</span> <span class="type">AppConfig</span>.configFlow.<span class="func">collectAsState</span>()
+<span class="keyword">val</span> themeMode = <span class="keyword">try</span> { <span class="type">AppThemeMode</span>.<span class="func">valueOf</span>(config.themeMode) } <span class="keyword">catch</span> (_) { <span class="type">AppThemeMode</span>.SYSTEM }
+<span class="comment">// Selects dark/light/dynamic color scheme based on themeMode</span></code></pre>
+  <p>The <code>LauncherTheme</code> composable observes <code>configFlow</code> reactively. Any change to <code>themeMode</code> triggers an immediate recomposition of the entire UI theme.</p>
+
+  <h3>MainActivity (Home Screen)</h3>
+  <p class="file-path">MainActivity.kt</p>
+  <ul style="padding-left:20px;margin-bottom:16px;">
+    <li><code>AppConfig.init(this)</code> &mdash; first call in <code>onCreate()</code></li>
+    <li>Uses <code>NicknamePreference</code> for TTS announcements ("Buna ziua, Mamaie!")</li>
+    <li>Uses <code>FeatureTogglePreference</code> to conditionally show/hide UI buttons (dial pad, contacts, messages, gallery, WhatsApp)</li>
+    <li>Reads quick contacts from <code>QuickContactRepository</code> (synced from config)</li>
+  </ul>
+
+  <h3>InactivityMonitorWorker</h3>
+  <p class="file-path">services/InactivityMonitorWorker.kt</p>
+  <ul style="padding-left:20px;margin-bottom:16px;">
+    <li>Reads <code>config.inactivityMonitorEnabled</code> to decide whether to schedule</li>
+    <li>Reads <code>config.inactivityMonitorThresholdHours</code> for the alert trigger time</li>
+    <li>Reads <code>config.emergencyContacts</code> to know who to SMS</li>
+    <li>Reads <code>config.userNickname</code> for the SMS alert message text</li>
+  </ul>
+
+  <h3>ImmersiveActivity (Base Class)</h3>
+  <p>All activities inherit from <code>ImmersiveActivity</code> which uses config values for:</p>
+  <ul style="padding-left:20px;margin-bottom:16px;">
+    <li>TTS speech rate from <code>ttsSpeechRate</code></li>
+    <li>Inactivity timeout from <code>inactivityTimeoutMs</code></li>
+    <li>Speaker delay from <code>callSpeakerDelayMs</code></li>
+    <li>Max missed call announcements from <code>maxMissedCallAnnouncements</code></li>
+  </ul>
+</section>
+
+<!-- 9. PREFERENCES -->
+<section id="preferences">
+  <h2>9. Preference Helper Objects</h2>
+  <p>
+    Thin accessor objects that provide typed, named access to specific config fields.
+    They all read from / write to <code>AppConfig</code> internally.
+  </p>
+
+  <table>
+    <tr><th>Object</th><th>Fields Managed</th><th>Used By</th></tr>
+    <tr>
+      <td><code>ThemePreference</code></td>
+      <td><code>themeMode</code> &rarr; <code>AppThemeMode</code> enum</td>
+      <td>Theme.kt, Settings, Setup Wizard</td>
+    </tr>
+    <tr>
+      <td><code>NicknamePreference</code></td>
+      <td><code>userNickname</code></td>
+      <td>MainActivity (TTS), Settings</td>
+    </tr>
+    <tr>
+      <td><code>TtsPreference</code></td>
+      <td><code>ttsEnabled</code>, <code>ttsEngine</code></td>
+      <td>ImmersiveActivity, Settings</td>
+    </tr>
+    <tr>
+      <td><code>FeatureTogglePreference</code></td>
+      <td>All <code>feature*</code> booleans + <code>autoMaxVolume</code> + <code>inactivityMonitor*</code></td>
+      <td>MainActivity (show/hide buttons), Settings</td>
+    </tr>
+    <tr>
+      <td><code>ConfigUrlPreference</code></td>
+      <td><code>config_url</code> (SharedPrefs only &mdash; not in ConfigData)</td>
+      <td>ImportUrlDialog (set), MainActivity.onResume (read for auto-sync)</td>
+    </tr>
+    <tr>
+      <td><code>SetupWizardPreference</code></td>
+      <td>Setup completion flag (SharedPrefs only)</td>
+      <td>MainActivity (decide whether to show wizard)</td>
+    </tr>
+  </table>
+</section>
+
+<!-- 10. JSON SCHEMA -->
+<section id="json-schema">
+  <h2>10. JSON File Schema</h2>
+  <p>Example <code>config.json</code> with all fields and their default values:</p>
+  <pre><code>{
+  <span class="string">"user_nickname"</span>: <span class="string">"Mamaie"</span>,
+  <span class="string">"theme_mode"</span>: <span class="string">"SYSTEM"</span>,
+  <span class="string">"tts_enabled"</span>: <span class="keyword">true</span>,
+  <span class="string">"tts_engine"</span>: <span class="string">"PIPER_LILI"</span>,
+  <span class="string">"tts_speech_rate"</span>: <span class="type">0.85</span>,
+  <span class="string">"feature_quick_contacts"</span>: <span class="keyword">true</span>,
+  <span class="string">"feature_dial_pad"</span>: <span class="keyword">true</span>,
+  <span class="string">"feature_contacts"</span>: <span class="keyword">true</span>,
+  <span class="string">"feature_messages"</span>: <span class="keyword">true</span>,
+  <span class="string">"feature_gallery"</span>: <span class="keyword">true</span>,
+  <span class="string">"feature_whatsapp"</span>: <span class="keyword">false</span>,
+  <span class="string">"app_language"</span>: <span class="string">"ro"</span>,
+  <span class="string">"emergency_contacts"</span>: [
+    { <span class="string">"name"</span>: <span class="string">"Fiul"</span>, <span class="string">"phone"</span>: <span class="string">"+40712345678"</span> }
+  ],
+  <span class="string">"auto_max_volume"</span>: <span class="keyword">true</span>,
+  <span class="string">"inactivity_timeout_ms"</span>: <span class="type">20000</span>,
+  <span class="string">"max_missed_call_announcements"</span>: <span class="type">3</span>,
+  <span class="string">"call_speaker_delay_ms"</span>: <span class="type">3000</span>,
+  <span class="string">"inactivity_monitor_enabled"</span>: <span class="keyword">false</span>,
+  <span class="string">"inactivity_monitor_threshold_hours"</span>: <span class="type">12</span>,
+  <span class="string">"quick_contacts"</span>: [
+    { <span class="string">"name"</span>: <span class="string">"Gigi"</span>, <span class="string">"phone"</span>: <span class="string">"+40712345678"</span> },
+    { <span class="string">"name"</span>: <span class="string">"Lili"</span>, <span class="string">"phone"</span>: <span class="string">"+40798765432"</span> }
+  ]
+}</code></pre>
+
+  <div class="callout">
+    <strong>Partial JSON is OK:</strong> When importing from a URL, you only need to include the fields you want to change. All missing fields will use their default values via <code>ConfigData.fromJson()</code>.
+  </div>
+</section>
+
+<!-- 11. FLOW DIAGRAMS -->
+<section id="flow-diagrams">
+  <h2>11. Data Flow Diagrams</h2>
+
+  <h3>Complete Configuration Lifecycle</h3>
+  <div class="flow-diagram" style="text-align:left;padding:32px 40px;">
+    <strong style="color:var(--accent)">LOADING (app start):</strong><br>
+    &nbsp;&nbsp;config.json &rarr; JSONObject &rarr; ConfigData.fromJson() &rarr; _configFlow.value<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; syncToSharedPrefs()<br><br>
+
+    <strong style="color:var(--accent2)">EDITING (user action):</strong><br>
+    &nbsp;&nbsp;UI change &rarr; new ConfigData &rarr; AppConfig.save()<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; _configFlow.value = config &nbsp;&nbsp;(UI recomposes)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; writeFile(config.json) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(disk persist)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; syncToSharedPrefs() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(legacy sync)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; syncContactsToRepo() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(contacts merge)<br><br>
+
+    <strong style="color:var(--accent4)">REMOTE IMPORT (manual or auto-sync on every onResume):</strong><br>
+    &nbsp;&nbsp;ConfigUrlPreference.getUrl() &rarr; HTTP GET &rarr; JSON string &rarr; JSONObject &rarr; ConfigData.fromJson() &rarr; save()<br>
+    &nbsp;&nbsp;<em style="color:var(--text-muted)">(URL stored in SharedPreferences, independent of ConfigData &mdash; remote JSON cannot overwrite it)</em><br><br>
+
+    <strong style="color:var(--accent3)">CONSUMING:</strong><br>
+    &nbsp;&nbsp;Compose UI &nbsp;&nbsp;&nbsp;&nbsp;&larr;&nbsp; collectAsState(configFlow) &nbsp;&nbsp;&nbsp;&nbsp;&larr;&nbsp; _configFlow<br>
+    &nbsp;&nbsp;Workers &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&larr;&nbsp; AppConfig.current &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&larr;&nbsp; _configFlow.value<br>
+    &nbsp;&nbsp;Legacy code &nbsp;&nbsp;&larr;&nbsp; SharedPreferences &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&larr;&nbsp; syncToSharedPrefs()
+  </div>
+
+  <h3>Config Edit Entry Points</h3>
+  <div class="flow-diagram">
+    <span class="flow-box green">Setup Wizard</span>
+    &nbsp;&nbsp;
+    <span class="flow-box orange">Settings Screen</span>
+    &nbsp;&nbsp;
+    <span class="flow-box purple">JSON Editor</span>
+    &nbsp;&nbsp;
+    <span class="flow-box">URL Import (manual)</span>
+    &nbsp;&nbsp;
+    <span class="flow-box" style="border-color:var(--accent2);color:var(--accent2)">Auto-Sync (onResume)</span>
+    <br><br>
+    <span class="flow-arrow">&darr;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="flow-arrow">&darr;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="flow-arrow">&darr;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="flow-arrow">&darr;</span>
+    <br>
+    <span class="flow-box" style="font-size:1.1em;padding:10px 30px;">AppConfig.save(context, configData)</span>
+    <br><br>
+    <span class="flow-arrow">&darr;</span><br>
+    <span class="flow-box green" style="font-size:1.1em;padding:10px 30px;">Single Source of Truth</span>
+  </div>
+</section>
+
+<!-- 12. FILES -->
+<section id="files">
+  <h2>12. File Reference</h2>
+  <table>
+    <tr><th>File</th><th>Role</th></tr>
+    <tr>
+      <td><code>data/AppConfig.kt</code></td>
+      <td>Singleton state manager &mdash; init, save, reset, import, sync</td>
+    </tr>
+    <tr>
+      <td><code>data/ConfigData.kt</code></td>
+      <td>Configuration data class, JSON serialization, field metadata</td>
+    </tr>
+    <tr>
+      <td><code>data/QuickContactRepository.kt</code></td>
+      <td>Persistence for quick contacts (separate JSON file with photo metadata)</td>
+    </tr>
+    <tr>
+      <td><code>data/ThemePreference.kt</code></td>
+      <td>Typed accessor for theme mode</td>
+    </tr>
+    <tr>
+      <td><code>data/NicknamePreference.kt</code></td>
+      <td>Typed accessor for user nickname</td>
+    </tr>
+    <tr>
+      <td><code>data/TtsPreference.kt</code></td>
+      <td>Typed accessor for TTS settings</td>
+    </tr>
+    <tr>
+      <td><code>data/FeatureTogglePreference.kt</code></td>
+      <td>Typed accessor for all feature toggles</td>
+    </tr>
+    <tr>
+      <td><code>data/ConfigUrlPreference.kt</code></td>
+      <td>Stores the remote config URL in SharedPreferences (independent of ConfigData)</td>
+    </tr>
+    <tr>
+      <td><code>ui/pages/SetupWizardScreen.kt</code></td>
+      <td>First-run configuration wizard (7 pages)</td>
+    </tr>
+    <tr>
+      <td><code>ui/pages/QuickContactEditor.kt</code></td>
+      <td>Settings screen + ImportUrlDialog</td>
+    </tr>
+    <tr>
+      <td><code>ui/composables/JsonConfigEditorScreen.kt</code></td>
+      <td>Advanced JSON config editor with syntax highlighting</td>
+    </tr>
+    <tr>
+      <td><code>ui/theme/Theme.kt</code></td>
+      <td>Theme consumer &mdash; observes configFlow for theme mode</td>
+    </tr>
+    <tr>
+      <td><code>MainActivity.kt</code></td>
+      <td>Config init on startup, auto-sync from remote URL on every resume, consumes feature toggles and nickname</td>
+    </tr>
+    <tr>
+      <td><code>receivers/BootReceiver.kt</code></td>
+      <td>Re-initializes config on device boot</td>
+    </tr>
+    <tr>
+      <td><code>services/InactivityMonitorWorker.kt</code></td>
+      <td>Consumes inactivity monitor settings and emergency contacts</td>
+    </tr>
+  </table>
+</section>
+
+<footer style="text-align:center;padding:40px 0;color:var(--text-muted);border-top:1px solid var(--border);margin-top:40px;font-size:0.9em;">
+  FreshBoomer Configuration System Documentation &mdash; Generated April 2026
+</footer>
+
+</div>
+</body>
+</html>

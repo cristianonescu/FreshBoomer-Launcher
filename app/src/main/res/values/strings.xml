@@ -1,0 +1,341 @@
+<resources>
+    <string name="app_name">FreshBoomer</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         Common / Shared
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="back">Inapoi</string>
+    <string name="cancel">Anuleaza</string>
+    <string name="delete">Sterge</string>
+    <string name="yes">Da</string>
+    <string name="no">Nu</string>
+    <string name="call">Suna</string>
+    <string name="enabled">Activat</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         MainActivity — Home Screen
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="main_dial_number">Formeaza Numar</string>
+    <string name="main_phone_book">Agenda Telefon</string>
+    <string name="main_messages">Mesaje</string>
+    <string name="main_gallery">Vezi poze</string>
+    <string name="main_whatsapp">WhatsApp</string>
+    <string name="main_missed_call">Apel pierdut</string>
+    <string name="main_missed_call_time">%1$s la ora %2$s</string>
+
+    <!-- TTS — Main navigation (%1$s = nickname) -->
+    <string name="tts_open_sms">%1$s, aici vezi dacă ai mesaje. Dacă nu vrei să vezi mesaje, în stânga sus apasă pe «Înapoi».</string>
+    <string name="tts_open_phone">%1$s, aici formezi un număr pe care vrei să-l suni. Dacă nu vrei să suni pe nimeni, în stânga sus apasă pe «Înapoi».</string>
+    <string name="tts_open_contacts">%1$s, de aici suni un număr din agendă. Dacă nu vrei să suni pe nimeni, în stânga sus apasă pe «Înapoi».</string>
+    <string name="tts_open_gallery">%1$s, aici vezi pozele. Trage cu degetul la stânga sau la dreapta ca să vezi mai multe. Dacă vrei înapoi, apasă pe «Înapoi» în stânga sus.</string>
+
+    <!-- TTS — Battery (%1$s = nickname) -->
+    <string name="tts_battery_low">%1$s, telefonul e descărcat. Pune-l la încărcat!</string>
+    <string name="tts_battery_charging">%1$s, se încarcă telefonul! Lasă-l să se încarce până îți spun eu că este complet încărcat!</string>
+    <string name="tts_battery_full">%1$s, telefonul este complet încărcat! Poți să îl scoți de la încărcat!</string>
+
+    <!-- Battery banner -->
+    <string name="battery_low_banner">&#x26A0;&#xFE0F; Puneți telefonul la încărcat. Baterie scăzută (%1$d%%)</string>
+    <string name="battery_charging_banner">&#x1F50C; Se încarcă… (%1$d%%)</string>
+    <string name="battery_full_banner">&#x2705; Bateria este complet încărcată</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         ImmersiveActivity — Missed call TTS
+         ════════════════════════════════════════════════════════════════════ -->
+    <!-- %1$s = nickname, %2$s = caller info, %3$s = time -->
+    <string name="tts_missed_call">%1$s, te-a sunat %2$s la ora %3$s</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         IncomingCallActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="incoming_call_label">Te sună&#8230;</string>
+    <string name="incoming_reject">Respinge</string>
+    <string name="incoming_answer">Răspunde</string>
+    <!-- %1$s = nickname, %2$s = caller name -->
+    <string name="tts_incoming_call">%1$s, te sună %2$s! Apasă pe butonul verde ca să răspunzi!</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         WhatsAppCallActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="whatsapp_header">WhatsApp</string>
+    <string name="whatsapp_calling_label">Te sună&#8230;</string>
+    <string name="whatsapp_reject">Respinge</string>
+    <string name="whatsapp_answer">Răspunde</string>
+    <!-- %1$s = nickname, %2$s = caller name -->
+    <string name="tts_whatsapp_incoming">%1$s, te sună %2$s pe WhatsApp! Apasă pe butonul verde ca să răspunzi!</string>
+    <string name="tts_whatsapp_ended">Apelul WhatsApp s-a terminat.</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         InCallActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="in_call_dialing">Se apelează&#8230;</string>
+    <string name="in_call_holding">În așteptare</string>
+    <string name="in_call_ringing">Sună&#8230;</string>
+    <string name="in_call_ended">Apel terminat</string>
+    <string name="in_call_speaker">Difuzor</string>
+    <string name="in_call_speaker_on">Difuzor ON</string>
+    <string name="in_call_speaker_off">Difuzor OFF</string>
+    <string name="in_call_microphone">Microfon</string>
+    <string name="in_call_mic_off">Microfon OFF</string>
+    <string name="in_call_mic_on">Microfon ON</string>
+    <string name="in_call_hangup">Închide</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         PhoneActivity — Dial Pad
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="phone_header">Formeaza Numar</string>
+    <string name="phone_delete">Sterge</string>
+    <string name="phone_call">Suna</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         ContactsActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="contacts_header">Agenda</string>
+    <string name="contacts_add">Adauga</string>
+    <string name="contacts_search_placeholder">Cauta in agenda&#8230;</string>
+    <string name="contacts_count">%1$d contacte</string>
+    <string name="contacts_not_found">Nu s-a gasit nimeni cu \"%1$s\"</string>
+    <string name="contacts_empty">Agenda este goala</string>
+    <string name="contacts_call">Suna</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SmsActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="sms_header">Mesaje</string>
+    <string name="sms_conversations_count">%1$d discutii</string>
+    <string name="sms_empty">Nu ai mesaje</string>
+    <string name="sms_compose_placeholder">Scrie un mesaj&#8230;</string>
+    <string name="sms_send">Trimite</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         GalleryActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="gallery_photo_description">Poza %1$d</string>
+    <string name="gallery_next">Urmatoarea</string>
+    <string name="gallery_empty">Nu sunt poze</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         ConfirmCallDialog
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="confirm_call_prompt">%1$s, vrei să suni pe %2$s?</string>
+    <string name="toast_whatsapp_open_failed">Nu s-a putut deschide WhatsApp</string>
+    <string name="toast_whatsapp_contact_not_found">Nu s-a găsit contactul pe WhatsApp</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         TTS Model Download Dialog
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="tts_download_checking">Se verifică modelul vocal&#8230;</string>
+    <string name="tts_download_progress">Se descarcă vocea: %1$.0f/%2$.0f MB</string>
+    <string name="tts_download_progress_unknown">Se descarcă vocea: %1$.0f MB</string>
+    <string name="tts_download_error">Vocea nu s-a putut descărca</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         OnboardingScreen — Permissions & Setup
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="onboarding_header">Configurare aplicatie</string>
+    <string name="onboarding_description">Aplicatia are nevoie de urmatoarele permisiuni pentru a functiona corect</string>
+    <string name="onboarding_progress">%1$d din %2$d completate</string>
+    <string name="onboarding_continue">Continua</string>
+    <string name="onboarding_allow">Permite</string>
+    <string name="onboarding_set">Seteaza</string>
+    <string name="onboarding_open_settings">Deschide Setari</string>
+
+    <!-- Permissions section -->
+    <string name="onboarding_section_permissions">Permisiuni</string>
+    <string name="perm_phone_calls">Apeluri telefonice</string>
+    <string name="perm_phone_calls_desc">Permite efectuarea apelurilor</string>
+    <string name="perm_contacts">Contacte</string>
+    <string name="perm_contacts_desc">Permite citirea agendei</string>
+    <string name="perm_call_log">Jurnal apeluri</string>
+    <string name="perm_call_log_desc">Permite citirea apelurilor pierdute</string>
+    <string name="perm_phone_state">Stare telefon</string>
+    <string name="perm_phone_state_desc">Permite detectarea apelurilor in curs</string>
+    <string name="perm_sms">Mesaje SMS</string>
+    <string name="perm_sms_desc">Permite citirea, trimiterea si primirea mesajelor</string>
+    <string name="perm_notifications">Notificari</string>
+    <string name="perm_notifications_desc">Permite afisarea notificarilor</string>
+    <string name="perm_photos">Fotografii</string>
+    <string name="perm_photos_desc">Permite accesul la galeria foto</string>
+    <string name="perm_answer_calls">Raspunde la apeluri</string>
+    <string name="perm_answer_calls_desc">Permite raspunsul automat la apeluri</string>
+    <string name="perm_audio">Setari audio</string>
+    <string name="perm_audio_desc">Permite controlul volumului</string>
+
+    <!-- Special access section -->
+    <string name="onboarding_section_special_access">Acces special</string>
+    <string name="special_notification_access">Acces la notificari</string>
+    <string name="special_notification_access_desc">Necesar pentru detectarea apelurilor WhatsApp</string>
+    <string name="special_dnd">Nu Deranja (DND)</string>
+    <string name="special_dnd_desc">Necesar pentru controlul volumului</string>
+
+    <!-- Default app section -->
+    <string name="onboarding_section_default_app">Aplicatie implicita</string>
+    <string name="default_phone_app">Aplicatie telefon implicita</string>
+    <string name="default_phone_app_desc">Seteaza aceasta aplicatie ca telefon principal</string>
+    <string name="default_sms_app">Aplicatie SMS implicita</string>
+    <string name="default_sms_app_desc">Seteaza aceasta aplicatie pentru mesaje</string>
+    <string name="default_launcher">Launcher implicit</string>
+    <string name="default_launcher_desc">Seteaza aceasta aplicatie ca ecran principal</string>
+
+    <!-- Lock screen section -->
+    <string name="onboarding_section_lock_screen">Ecran de blocare</string>
+    <string name="lock_screen_disable">Dezactiveaza blocarea ecranului</string>
+    <string name="lock_screen_disable_desc">Seteaza blocarea ecranului la \"Fara\" pentru acces direct</string>
+
+    <!-- SMS default app dialog -->
+    <string name="sms_default_dialog_title">Aplicatie SMS implicita</string>
+    <string name="sms_default_dialog_text">Pentru a seta aceasta aplicatie ca aplicatie SMS implicita, urmati pasii de mai jos:</string>
+    <string name="sms_default_step1">1. Apasa \"Deschide Setari\" mai jos</string>
+    <string name="sms_default_step2">2. Cauta \"Aplicatie SMS\"</string>
+    <string name="sms_default_step3">3. Selecteaza \"%1$s\"</string>
+    <string name="sms_default_step4">4. Revino in aplicatie</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SetupWizardScreen — First-run Wizard
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="wizard_step_progress">Pasul %1$d din %2$d</string>
+    <string name="wizard_back">Inapoi</string>
+    <string name="wizard_skip">Sari peste</string>
+    <string name="wizard_next">Inainte</string>
+    <string name="wizard_finish">Finalizeaza</string>
+
+    <!-- Page 1: Welcome -->
+    <string name="wizard_welcome_title">Bine ai venit!</string>
+    <string name="wizard_welcome_description">FreshBoomer este un launcher simplu care face telefonul mai usor de folosit.</string>
+    <string name="wizard_welcome_instructions">In pasii urmatori poti configura aplicatia. Daca nu doresti sa faci modificari, apasa \"Sari peste\" pentru a folosi valorile implicite.</string>
+
+    <!-- Page 2: Nickname -->
+    <string name="wizard_nickname_title">Cum ii spui utilizatorului?</string>
+    <string name="wizard_nickname_description">Acest nume va fi folosit in anunturile vocale, de exemplu: \"Mamaie, ai un apel pierdut\"</string>
+    <string name="wizard_nickname_label">Porecla</string>
+    <string name="wizard_nickname_placeholder">ex: Mamaie, Bunica, Tata</string>
+
+    <!-- Page 3: Quick Contacts -->
+    <string name="wizard_contacts_title">Contacte Rapide</string>
+    <string name="wizard_contacts_description">Adauga persoanele pe care utilizatorul le suna cel mai des. Vor aparea ca butoane mari pe ecranul principal.</string>
+    <string name="wizard_contacts_add">Adauga contact</string>
+    <string name="wizard_contacts_empty">Niciun contact adaugat. Poti adauga contacte oricand mai tarziu din Setari.</string>
+    <string name="wizard_contact_name_label">Nume</string>
+    <string name="wizard_contact_name_placeholder">ex: Maria</string>
+    <string name="wizard_contact_phone_label">Telefon</string>
+    <string name="wizard_contact_phone_placeholder">ex: 0712345678</string>
+
+    <!-- Page 4: Language -->
+    <string name="wizard_language_title">Limba aplicatiei</string>
+    <string name="wizard_language_description">Alege limba in care va fi afisata aplicatia.</string>
+
+    <!-- Page 5: Emergency Contacts -->
+    <string name="wizard_emergency_title">Contacte de urgenta</string>
+    <string name="wizard_emergency_description">Adauga persoane care vor fi notificate daca utilizatorul are probleme.</string>
+    <string name="wizard_emergency_add">Adauga contact de urgenta</string>
+    <string name="wizard_emergency_empty">Niciun contact de urgenta adaugat. Poti adauga contacte de urgenta oricand mai tarziu din Setari.</string>
+
+    <!-- Page 6: Customization -->
+    <string name="wizard_customize_title">Personalizare</string>
+    <string name="wizard_customize_description">Alege ce functionalitati sa fie vizibile pe ecranul principal.</string>
+    <string name="wizard_section_theme">Tema</string>
+    <string name="wizard_theme_system">Sistem</string>
+    <string name="wizard_theme_light">Luminos</string>
+    <string name="wizard_theme_dark">Intunecat</string>
+    <string name="wizard_section_features">Functionalitati</string>
+    <string name="wizard_section_behavior">Comportament</string>
+    <string name="wizard_auto_volume">Volum automat la maxim</string>
+    <string name="wizard_auto_volume_desc">Seteaza automat volumul la maxim cand se deschide aplicatia</string>
+
+    <!-- Page 5: Before you start -->
+    <string name="wizard_before_start_title">Inainte de a incepe</string>
+    <string name="wizard_settings_access_instructions">Pe ecranul principal, in partea de stanga jos, vei vedea o mica iconita cu un lacat. Apasa de 5 ori rapid pe ea pentru a deschide panoul de Setari.</string>
+    <string name="wizard_settings_access_note">Aceasta metoda previne deschiderea accidentala a setarilor de catre utilizatorul varstnic.</string>
+    <string name="wizard_settings_contents_title">Ce gasesti in Setari</string>
+    <string name="wizard_remote_config_title">Configurare de la distanta</string>
+    <string name="wizard_remote_config_description">Poti edita configurarea aplicatiei de pe un calculator, telefon sau tableta accesand un link special.</string>
+    <string name="wizard_remote_config_how">Cum functioneaza:</string>
+    <string name="wizard_remote_config_note">Astfel poti actualiza setarile de la distanta fara sa ai acces fizic la telefon.</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         QuickContactEditor / Settings
+         ════════════════════════════════════════════════════════════════════ -->
+    <!-- Delete contact dialog -->
+    <string name="settings_delete_contact_title">Sterge contact</string>
+    <string name="settings_delete_contact_message">Sigur vrei sa stergi contactul %1$s?</string>
+
+    <!-- Settings items -->
+    <string name="settings_check_permissions">Verifica permisiuni</string>
+    <string name="settings_check_permissions_desc">Verifica daca aplicatia are toate permisiunile necesare</string>
+    <string name="settings_json_editor">Editor JSON Configurare</string>
+    <string name="settings_json_editor_desc">Editeaza toate setarile intr-un singur loc</string>
+    <string name="settings_import_config">Importa Configurare din URL</string>
+    <string name="settings_import_config_desc">Descarca si aplica o configurare de pe internet</string>
+    <string name="settings_licenses">Licente si Multumiri</string>
+    <string name="settings_licenses_desc">Licente open source, credite si informatii</string>
+    <string name="settings_whatsapp_photos">Poze WhatsApp in galerie</string>
+    <string name="settings_whatsapp_photos_desc">Cum sa configurezi WhatsApp sa descarce automat poze si filme</string>
+
+    <!-- TTS settings -->
+    <string name="settings_tts_enabled">Voce activata</string>
+    <string name="settings_tts_enabled_desc">Aplicatia vorbeste cand deschizi un ecran</string>
+    <string name="settings_tts_piper">Piper Lili (recomandat)</string>
+    <string name="settings_tts_piper_desc">Voce locala romaneasca, functioneaza fara internet</string>
+    <string name="settings_tts_device">Vocea dispozitivului</string>
+    <string name="settings_tts_device_desc">Foloseste vocea implicita de pe telefon</string>
+    <string name="settings_tts_update_model">Actualizare model vocal</string>
+
+    <!-- Nickname settings -->
+    <string name="settings_nickname_title">Cum sa te numeasca aplicatia</string>
+    <string name="settings_nickname_desc">Acest nume va fi folosit in mesajele vocale (ex: \"%1$s, te-a sunat…\")</string>
+    <string name="settings_nickname_placeholder">Mamaie</string>
+    <string name="settings_nickname_preview">%1$s, te-a sunat cineva!</string>
+
+    <!-- Language settings -->
+    <string name="settings_language_title">Limba aplicatiei</string>
+    <string name="settings_language_desc">Alege limba in care este afisata aplicatia</string>
+    <string name="language_romanian">Romana</string>
+
+    <!-- Emergency contacts settings -->
+    <string name="settings_emergency_title">Contacte de urgenta</string>
+    <string name="settings_emergency_desc">Aceste persoane vor fi notificate daca utilizatorul are probleme</string>
+    <string name="settings_emergency_add">Adauga contact de urgenta</string>
+    <string name="settings_emergency_empty">Niciun contact de urgenta adaugat.</string>
+    <string name="settings_emergency_name_label">Nume</string>
+    <string name="settings_emergency_name_placeholder">ex: Maria</string>
+    <string name="settings_emergency_phone_label">Telefon</string>
+    <string name="settings_emergency_phone_placeholder">ex: 0712345678</string>
+
+    <!-- Visual settings -->
+    <string name="settings_visual_title">Aspect vizual</string>
+    <string name="settings_visual_desc">Alege cum arata aplicatia</string>
+
+    <!-- JSON config editor -->
+    <string name="json_config_header">Configurare JSON</string>
+    <string name="json_config_quick_contacts_comment">// Contacte Rapide</string>
+    <string name="json_config_quick_contacts_tooltip">// Lista de contacte rapide&#8230;</string>
+    <string name="json_config_add_contact">Adauga contact</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         Licenses & Credits
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="licenses_header">Licente si Multumiri</string>
+    <string name="licenses_open_source_title">Licente Open Source</string>
+    <string name="licenses_open_source_intro">Aceasta aplicatie foloseste urmatoarele librarii open source:</string>
+    <string name="licenses_thanks_title">Multumiri</string>
+    <string name="licenses_piper_title">Piper TTS Romanian</string>
+    <string name="licenses_piper_desc">Modelul de voce romaneasca folosit in aceasta aplicatie</string>
+    <string name="licenses_piper_thanks">Multumim pentru contributia la sinteza vocala in limba romana!</string>
+    <string name="licenses_developer_label">Dezvoltator</string>
+    <string name="licenses_developer_name">Cristian Onescu</string>
+    <string name="licenses_developer_desc">Aceasta aplicatie a fost creata cu drag pentru a ajuta persoanele varstnice sa foloseasca telefonul mai usor.</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         Feature toggle labels (used in wizard & settings)
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="feature_phone">Formeaza Numar</string>
+    <string name="feature_phone_desc">Afiseaza butonul pentru formarea unui numar de telefon</string>
+    <string name="feature_contacts">Agenda Telefon</string>
+    <string name="feature_contacts_desc">Afiseaza butonul pentru agenda de contacte</string>
+    <string name="feature_sms">Mesaje</string>
+    <string name="feature_sms_desc">Afiseaza butonul pentru mesaje SMS</string>
+    <string name="feature_gallery">Galerie Foto</string>
+    <string name="feature_gallery_desc">Afiseaza butonul pentru vizualizarea pozelor</string>
+    <string name="feature_whatsapp">WhatsApp</string>
+    <string name="feature_whatsapp_desc">Afiseaza butonul pentru deschiderea WhatsApp</string>
+</resources>

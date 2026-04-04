@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreshBoomer - Editor Configurare</title>
+<style>
+:root {
+  --bg: #1e1e1e;
+  --bg2: #252526;
+  --bg3: #2d2d2d;
+  --fg: #d4d4d4;
+  --key: #569cd6;
+  --str: #6a9955;
+  --num: #ce9178;
+  --bool: #c586c0;
+  --comment: #6a9955;
+  --line: #858585;
+  --accent: #2196f3;
+  --border: #454545;
+  --red: #cf6679;
+  --green: #4caf50;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  color: var(--accent);
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+h2 {
+  color: var(--key);
+  font-size: 20px;
+  margin: 24px 0 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.subtitle {
+  color: var(--line);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Layout: two columns on desktop */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* Section cards */
+.section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.section-header {
+  background: var(--bg3);
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.section-header:hover { background: #333; }
+
+.section-header h3 {
+  color: var(--comment);
+  font-size: 14px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-style: italic;
+}
+
+.section-header .arrow {
+  color: var(--line);
+  transition: transform 0.2s;
+}
+
+.section-header.collapsed .arrow { transform: rotate(-90deg); }
+
+.section-body { padding: 12px 16px; }
+.section-body.hidden { display: none; }
+
+/* Field rows */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #333;
+  flex-wrap: wrap;
+}
+
+.field:last-child { border-bottom: none; }
+
+.field-key {
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  color: var(--key);
+  min-width: 220px;
+  flex-shrink: 0;
+}
+
+.field-key::before { content: '"'; }
+.field-key::after { content: '":'; }
+
+.field-input {
+  flex: 1;
+  min-width: 150px;
+}
+
+.field-input input[type="text"],
+.field-input input[type="number"],
+.field-input select {
+  background: var(--bg);
+  color: var(--str);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  width: 100%;
+}
+
+.field-input input[type="number"] { color: var(--num); }
+.field-input select { color: var(--str); }
+
+.field-input input:focus,
+.field-input select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle input { opacity: 0; width: 0; height: 0; }
+
+.toggle .slider {
+  position: absolute;
+  inset: 0;
+  background: #555;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.toggle .slider::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle input:checked + .slider { background: var(--accent); }
+.toggle input:checked + .slider::before { transform: translateX(20px); }
+
+.bool-label {
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  color: var(--bool);
+  font-weight: bold;
+  min-width: 40px;
+}
+
+/* Tooltip */
+.tooltip {
+  width: 100%;
+  font-size: 12px;
+  color: var(--comment);
+  font-style: italic;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  padding: 2px 0 0 24px;
+}
+
+.tooltip::before { content: '// '; }
+
+/* Contacts */
+.contact-row {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.contact-row input {
+  background: var(--bg3);
+  color: var(--str);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  flex: 1;
+}
+
+.contact-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.contact-row .remove-btn {
+  background: none;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.contact-row .remove-btn:hover { background: rgba(207, 102, 121, 0.15); }
+
+.add-btn {
+  background: none;
+  border: 1px dashed var(--border);
+  color: var(--key);
+  cursor: pointer;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  padding: 8px;
+  border-radius: 6px;
+  width: 100%;
+  text-align: center;
+}
+
+.add-btn:hover { border-color: var(--accent); background: rgba(33, 150, 243, 0.05); }
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.btn:hover { opacity: 0.85; }
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-outline { background: none; border: 1px solid var(--border); color: var(--fg); }
+.btn-green { background: var(--green); color: #fff; }
+.btn-red { background: var(--red); color: #fff; }
+
+/* JSON preview */
+.json-preview {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 600px;
+  overflow-y: auto;
+  position: sticky;
+  top: 20px;
+}
+
+/* Documentation */
+.docs {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.docs p { margin-bottom: 8px; }
+.docs code {
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  color: var(--key);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+th, td {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+th { background: var(--bg3); color: var(--key); }
+td code { color: var(--str); }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border);
+}
+
+.tab {
+  padding: 10px 24px;
+  cursor: pointer;
+  color: var(--line);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.tab:hover { color: var(--fg); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Import area */
+.import-area {
+  width: 100%;
+  min-height: 120px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.import-area:focus { outline: none; border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>FreshBoomer - Editor Configurare</h1>
+  <p class="subtitle">Editeaza configurarea aplicatiei si exporteaza fisierul JSON pentru import in aplicatie.</p>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('editor')">Editor</div>
+    <div class="tab" onclick="switchTab('docs')">Documentatie</div>
+    <div class="tab" onclick="switchTab('import')">Import / Export</div>
+  </div>
+
+  <!-- ═══════════ EDITOR TAB ═══════════ -->
+  <div id="tab-editor" class="tab-content active">
+    <div class="layout">
+      <div id="editor-form">
+        <!-- Generated by JS -->
+      </div>
+      <div>
+        <h2 style="margin-top:0">Previzualizare JSON</h2>
+        <div class="json-preview" id="json-preview"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ DOCS TAB ═══════════ -->
+  <div id="tab-docs" class="tab-content">
+    <div class="docs">
+      <h2 style="margin-top:0">Despre aplicatie</h2>
+      <p><strong>FreshBoomer</strong> este o aplicatie Android care inlocuieste launcher-ul, telefonul si aplicatia SMS cu o interfata simplificata cu butoane mari, text-to-speech si limba romana — conceputa pentru utilizatorii varstnici.</p>
+      <p>Aplicatia preia rolul de <strong>launcher implicit</strong> (ecranul de start), <strong>aplicatie de telefon</strong> si <strong>aplicatie de SMS</strong> pe dispozitivul Android.</p>
+      <p>Configurarea aplicatiei este stocata intr-un fisier <code>config.json</code> care poate fi importat de pe un URL din setarile aplicatiei.</p>
+
+      <h2>Cum se acceseaza Setarile din aplicatie</h2>
+      <p>Pe ecranul principal, in partea de stanga jos, exista o mica iconita cu un lacat. Apasa rapid de <strong>5 ori in mai putin de 3 secunde</strong> pentru a deschide setarile. Aceasta metoda previne deschiderea accidentala de catre utilizatorul varstnic.</p>
+
+      <h2>Setari disponibile</h2>
+      <table>
+        <thead>
+          <tr><th>Cheie JSON</th><th>Tip</th><th>Implicit</th><th>Descriere</th></tr>
+        </thead>
+        <tbody id="docs-table">
+          <!-- Generated by JS -->
+        </tbody>
+      </table>
+
+      <h2>Contacte rapide (quick_contacts)</h2>
+      <p>Contactele rapide sunt afisate ca butoane mari pe ecranul principal. Utilizatorul poate suna pe cineva cu o singura apasare. Daca un contact nu are poza setata, se afiseaza initialele numelui pe un fundal colorat.</p>
+      <p>Campul <code>quick_contacts</code> este un array de obiecte, fiecare cu:</p>
+      <table>
+        <thead><tr><th>Camp</th><th>Tip</th><th>Descriere</th></tr></thead>
+        <tbody>
+          <tr><td><code>name</code></td><td>String</td><td>Numele contactului afisat pe buton</td></tr>
+          <tr><td><code>phone</code></td><td>String</td><td>Numarul de telefon (format international sau local)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Contacte de urgenta (emergency_contacts)</h2>
+      <p>Contactele de urgenta sunt persoanele care vor fi notificate prin SMS daca functia de <strong>monitorizare a inactivitatii</strong> este activata si utilizatorul nu a interactionat cu telefonul pentru o perioada configurata.</p>
+      <p>Campul <code>emergency_contacts</code> este un array de obiecte, fiecare cu:</p>
+      <table>
+        <thead><tr><th>Camp</th><th>Tip</th><th>Descriere</th></tr></thead>
+        <tbody>
+          <tr><td><code>name</code></td><td>String</td><td>Numele persoanei de contact</td></tr>
+          <tr><td><code>phone</code></td><td>String</td><td>Numarul de telefon la care se trimite alerta SMS</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Monitorizare inactivitate</h2>
+      <p>Aceasta functie trimite automat un SMS de alerta catre toate contactele de urgenta daca utilizatorul nu a interactionat cu telefonul pentru un numar configurat de ore (implicit: 12 ore). Este <strong>dezactivata implicit</strong>.</p>
+      <p><strong>Cerinte:</strong></p>
+      <p>- Campul <code>inactivity_monitor_enabled</code> trebuie setat pe <code>true</code></p>
+      <p>- Cel putin un contact de urgenta trebuie configurat in <code>emergency_contacts</code></p>
+      <p><strong>Ce se considera interactiune:</strong></p>
+      <p>- Orice atingere a ecranului</p>
+      <p>- Revenirea pe orice ecran al aplicatiei (inclusiv deblocarea telefonului)</p>
+      <p>- Conectarea incarcatorului</p>
+      <p><strong>Mesajul SMS trimis:</strong> <em>"FreshBoomer: [porecla] nu a folosit telefonul de peste [ore] ore. Verificati daca este in regula."</em></p>
+      <p>Alerta se trimite o singura data per perioada de inactivitate — nu se repeta pana cand utilizatorul interactioneaza din nou cu telefonul.</p>
+
+      <h2>Text-to-Speech (TTS)</h2>
+      <p>Aplicatia poate anunta vocal diverse evenimente (apeluri pierdute, deschiderea ecranelor etc.) in limba romana.</p>
+      <p><strong>Motoare disponibile:</strong></p>
+      <p>- <code>PIPER_LILI</code> — motor offline de sinteza vocala cu voce romaneasca naturala (recomandat). Modelul se descarca automat la prima utilizare.</p>
+      <p>- <code>DEVICE_DEFAULT</code> — motorul TTS implicit al dispozitivului Android.</p>
+      <p>Viteza vorbirii se poate ajusta cu <code>tts_speech_rate</code>: valori mici (0.5) = lent, valori mari (2.0) = rapid. Implicit: 0.85.</p>
+
+      <h2>Functionalitati (Features)</h2>
+      <p>Fiecare functionalitate poate fi activata sau dezactivata independent:</p>
+      <table>
+        <thead><tr><th>Setare</th><th>Ce controleaza</th></tr></thead>
+        <tbody>
+          <tr><td><code>feature_quick_contacts</code></td><td>Butoanele mari de apel rapid pe ecranul principal</td></tr>
+          <tr><td><code>feature_dial_pad</code></td><td>Butonul "Formeaza Numar" — tastatura de apel</td></tr>
+          <tr><td><code>feature_contacts</code></td><td>Butonul "Agenda" — lista de contacte din telefon</td></tr>
+          <tr><td><code>feature_messages</code></td><td>Butonul "Mesaje" — conversatii SMS</td></tr>
+          <tr><td><code>feature_gallery</code></td><td>Butonul "Galerie" — vizualizare poze</td></tr>
+          <tr><td><code>feature_whatsapp</code></td><td>Butonul WhatsApp pe ecranul principal (necesita WhatsApp instalat)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Comportament</h2>
+      <table>
+        <thead><tr><th>Setare</th><th>Ce face</th></tr></thead>
+        <tbody>
+          <tr><td><code>auto_max_volume</code></td><td>Seteaza automat toate volumele la maxim. Util pentru a preveni situatiile in care utilizatorul reduce accidental volumul.</td></tr>
+          <tr><td><code>inactivity_timeout_ms</code></td><td>Dupa cate milisecunde de inactivitate revine automat pe ecranul principal (de pe orice alt ecran). Implicit: 20000 (20 secunde).</td></tr>
+          <tr><td><code>max_missed_call_announcements</code></td><td>De cate ori se anunta vocal un apel pierdut de la acelasi numar. Implicit: 3.</td></tr>
+          <tr><td><code>call_speaker_delay_ms</code></td><td>Intarziere (ms) inainte de activarea automata a difuzorului la apel. Implicit: 3000 (3 secunde).</td></tr>
+          <tr><td><code>inactivity_monitor_enabled</code></td><td>Activeaza monitorizarea inactivitatii si alertele SMS. Implicit: dezactivat.</td></tr>
+          <tr><td><code>inactivity_monitor_threshold_hours</code></td><td>Dupa cate ore de inactivitate se trimite alerta SMS. Implicit: 12 ore.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Tema</h2>
+      <p>Campul <code>theme_mode</code> controleaza aspectul vizual al aplicatiei:</p>
+      <p>- <code>SYSTEM</code> — urmareste tema sistemului Android (luminos/intunecat)</p>
+      <p>- <code>LIGHT</code> — tema luminoasa permanent</p>
+      <p>- <code>DARK</code> — tema intunecata permanent</p>
+
+      <h2>Cum se foloseste editorul</h2>
+      <p>1. Editeaza setarile in tab-ul <strong>Editor</strong>.</p>
+      <p>2. Descarca fisierul JSON din tab-ul <strong>Import / Export</strong>.</p>
+      <p>3. Incarca fisierul pe un server web (sau foloseste un serviciu ca GitHub Gist, Pastebin, etc.).</p>
+      <p>4. In aplicatie: <strong>Setari → Configurare Avansata → Importa Configurare din URL</strong> → lipeste URL-ul.</p>
+      <p style="margin-top:12px"><strong>Alternativ</strong>, poti importa un JSON existent in editor folosind tab-ul <strong>Import / Export</strong> (lipeste textul sau incarca un fisier .json).</p>
+
+      <h2>Exemplu config.json complet</h2>
+      <p>Un fisier JSON valid pentru FreshBoomer arata astfel:</p>
+      <pre style="background:var(--bg);padding:12px;border-radius:6px;border:1px solid var(--border);font-size:13px;overflow-x:auto;color:var(--fg)">{
+  "user_nickname": "Mamaie",
+  "theme_mode": "SYSTEM",
+  "tts_enabled": true,
+  "tts_engine": "PIPER_LILI",
+  "tts_speech_rate": 0.85,
+  "feature_quick_contacts": true,
+  "feature_dial_pad": true,
+  "feature_contacts": true,
+  "feature_messages": true,
+  "feature_gallery": true,
+  "feature_whatsapp": false,
+  "app_language": "ro",
+  "auto_max_volume": true,
+  "inactivity_timeout_ms": 20000,
+  "max_missed_call_announcements": 3,
+  "call_speaker_delay_ms": 3000,
+  "inactivity_monitor_enabled": false,
+  "inactivity_monitor_threshold_hours": 12,
+  "emergency_contacts": [
+    { "name": "Fiul", "phone": "0712345678" }
+  ],
+  "quick_contacts": [
+    { "name": "Maria", "phone": "0723456789" },
+    { "name": "Ion", "phone": "0734567890" }
+  ]
+}</pre>
+      <p style="margin-top:8px;color:var(--line);font-size:13px">Toate campurile sunt optionale — valorile lipsa vor folosi valorile implicite.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════ IMPORT/EXPORT TAB ═══════════ -->
+  <div id="tab-import" class="tab-content">
+    <h2 style="margin-top:0">Import JSON</h2>
+    <p style="margin-bottom:12px; color: var(--line);">Lipeste un JSON existent pentru a-l incarca in editor:</p>
+    <textarea class="import-area" id="import-area" placeholder='{"user_nickname": "Mamaie", ...}'></textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="importJson()">Incarca in Editor</button>
+      <button class="btn btn-outline" onclick="loadFromFile()">Incarca din Fisier</button>
+      <input type="file" id="file-input" accept=".json" style="display:none" onchange="handleFile(event)">
+    </div>
+
+    <h2>Export JSON</h2>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="downloadJson()">Descarca config.json</button>
+      <button class="btn btn-outline" onclick="copyJson()">Copiaza in Clipboard</button>
+    </div>
+
+    <h2>Reseteaza</h2>
+    <div class="btn-row">
+      <button class="btn btn-red" onclick="resetDefaults()">Reseteaza la Valori Implicite</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════ CONFIG SCHEMA ═══════════
+const FIELDS = [
+  { key: "user_nickname", type: "string", default: "Mamaie", group: "General", tooltip: "Numele folosit in anunturile vocale (inlocuieste 'Mamaie')" },
+  { key: "theme_mode", type: "enum", default: "SYSTEM", group: "General", options: ["SYSTEM", "LIGHT", "DARK"], tooltip: "Tema aplicatiei" },
+  { key: "app_language", type: "enum", default: "ro", group: "General", options: ["ro"], tooltip: "Limba aplicatiei" },
+  { key: "tts_enabled", type: "boolean", default: true, group: "Text-to-Speech", tooltip: "Activeaza/dezactiveaza anunturile vocale" },
+  { key: "tts_engine", type: "enum", default: "PIPER_LILI", group: "Text-to-Speech", options: ["PIPER_LILI", "DEVICE_DEFAULT"], tooltip: "Motorul de voce folosit" },
+  { key: "tts_speech_rate", type: "float", default: 0.85, group: "Text-to-Speech", tooltip: "Viteza vorbirii: 0.5 (lent) - 2.0 (rapid)", min: 0.5, max: 2.0, step: 0.05 },
+  { key: "feature_quick_contacts", type: "boolean", default: true, group: "Functionalitati", tooltip: "Arata butoanele de apel rapid pe ecranul principal" },
+  { key: "feature_dial_pad", type: "boolean", default: true, group: "Functionalitati", tooltip: "Arata tastatura de apel" },
+  { key: "feature_contacts", type: "boolean", default: true, group: "Functionalitati", tooltip: "Arata agenda de contacte" },
+  { key: "feature_messages", type: "boolean", default: true, group: "Functionalitati", tooltip: "Arata mesajele SMS" },
+  { key: "feature_gallery", type: "boolean", default: true, group: "Functionalitati", tooltip: "Arata galeria foto" },
+  { key: "feature_whatsapp", type: "boolean", default: false, group: "Functionalitati", tooltip: "Arata butonul WhatsApp pe ecranul principal" },
+  { key: "auto_max_volume", type: "boolean", default: true, group: "Comportament", tooltip: "Seteaza automat toate volumele la maxim pentru a preveni situatiile in care utilizatorul reduce volumul accidental" },
+  { key: "inactivity_timeout_ms", type: "long", default: 20000, group: "Comportament", tooltip: "Milisecunde pana la revenirea automata pe ecranul principal", min: 5000, step: 1000 },
+  { key: "max_missed_call_announcements", type: "int", default: 3, group: "Comportament", tooltip: "De cate ori se anunta un apel pierdut", min: 0, max: 10 },
+  { key: "call_speaker_delay_ms", type: "long", default: 3000, group: "Comportament", tooltip: "Intarziere (ms) inainte de activarea difuzorului", min: 0, step: 500 },
+  { key: "inactivity_monitor_enabled", type: "boolean", default: false, group: "Comportament", tooltip: "Trimite SMS contactelor de urgenta daca utilizatorul nu interactioneaza cu telefonul pentru o perioada lunga" },
+  { key: "inactivity_monitor_threshold_hours", type: "int", default: 12, group: "Comportament", tooltip: "Ore de inactivitate dupa care se trimite alerta SMS. Implicit: 12", min: 1, max: 72 },
+];
+
+const DEFAULT_CONTACTS = [];
+const DEFAULT_EMERGENCY_CONTACTS = [];
+
+// ═══════════ STATE ═══════════
+let config = {};
+let contacts = [];
+let emergencyContacts = [];
+
+function initDefaults() {
+  config = {};
+  FIELDS.forEach(f => config[f.key] = f.default);
+  contacts = DEFAULT_CONTACTS.map(c => ({...c}));
+  emergencyContacts = DEFAULT_EMERGENCY_CONTACTS.map(c => ({...c}));
+}
+
+initDefaults();
+
+// ═══════════ TABS ═══════════
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab-content#tab-${name}`).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'editor') updatePreview();
+}
+
+// ═══════════ RENDER EDITOR ═══════════
+function renderEditor() {
+  const form = document.getElementById('editor-form');
+  const groups = {};
+  FIELDS.forEach(f => {
+    if (!groups[f.group]) groups[f.group] = [];
+    groups[f.group].push(f);
+  });
+
+  let html = '';
+  for (const [group, fields] of Object.entries(groups)) {
+    html += `<div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h3>// ${group}</h3>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="section-body">`;
+
+    for (const f of fields) {
+      html += renderField(f);
+    }
+
+    html += '</div></div>';
+  }
+
+  // Contacts section
+  html += `<div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h3>// Contacte Rapide</h3>
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body" id="contacts-body">
+      ${renderContacts()}
+    </div>
+  </div>`;
+
+  // Emergency contacts section
+  html += `<div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h3>// Contacte de Urgenta</h3>
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body" id="emergency-contacts-body">
+      ${renderEmergencyContacts()}
+    </div>
+  </div>`;
+
+  form.innerHTML = html;
+  updatePreview();
+}
+
+function renderField(f) {
+  let inputHtml = '';
+  const val = config[f.key];
+
+  if (f.type === 'boolean') {
+    inputHtml = `
+      <label class="toggle">
+        <input type="checkbox" ${val ? 'checked' : ''} onchange="setVal('${f.key}', this.checked)">
+        <span class="slider"></span>
+      </label>
+      <span class="bool-label" id="bool-${f.key}">${val}</span>`;
+  } else if (f.type === 'enum') {
+    const opts = f.options.map(o => `<option value="${o}" ${o === val ? 'selected' : ''}>${o}</option>`).join('');
+    inputHtml = `<div class="field-input"><select onchange="setVal('${f.key}', this.value)">${opts}</select></div>`;
+  } else if (f.type === 'string') {
+    inputHtml = `<div class="field-input"><input type="text" value="${escHtml(val)}" onchange="setVal('${f.key}', this.value)"></div>`;
+  } else {
+    const step = f.step || (f.type === 'float' ? 0.05 : 1);
+    const min = f.min !== undefined ? `min="${f.min}"` : '';
+    const max = f.max !== undefined ? `max="${f.max}"` : '';
+    inputHtml = `<div class="field-input"><input type="number" value="${val}" step="${step}" ${min} ${max} onchange="setVal('${f.key}', parseNum(this.value, '${f.type}'))"></div>`;
+  }
+
+  return `<div class="field">
+    <span class="field-key">${f.key}</span>
+    ${inputHtml}
+    <div class="tooltip">${f.tooltip}${f.options ? ' Optiuni: ' + f.options.join(', ') : ''}</div>
+  </div>`;
+}
+
+function renderContacts() {
+  let html = '';
+  contacts.forEach((c, i) => {
+    html += `<div class="contact-row">
+      <input type="text" value="${escHtml(c.name)}" placeholder="Nume" onchange="contacts[${i}].name=this.value; updatePreview()">
+      <input type="text" value="${escHtml(c.phone)}" placeholder="Telefon" onchange="contacts[${i}].phone=this.value; updatePreview()">
+      <button class="remove-btn" onclick="removeContact(${i})" title="Sterge">&times;</button>
+    </div>`;
+  });
+  html += `<button class="add-btn" onclick="addContact()">+ Adauga contact</button>`;
+  return html;
+}
+
+// ═══════════ ACTIONS ═══════════
+function setVal(key, value) {
+  config[key] = value;
+  const boolLabel = document.getElementById(`bool-${key}`);
+  if (boolLabel) boolLabel.textContent = value;
+  updatePreview();
+}
+
+function parseNum(val, type) {
+  if (type === 'float') return parseFloat(val) || 0;
+  return parseInt(val) || 0;
+}
+
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  header.nextElementSibling.classList.toggle('hidden');
+}
+
+function addContact() {
+  contacts.push({ name: '', phone: '' });
+  document.getElementById('contacts-body').innerHTML = renderContacts();
+  updatePreview();
+}
+
+function removeContact(i) {
+  contacts.splice(i, 1);
+  document.getElementById('contacts-body').innerHTML = renderContacts();
+  updatePreview();
+}
+
+function renderEmergencyContacts() {
+  let html = '';
+  emergencyContacts.forEach((c, i) => {
+    html += `<div class="contact-row">
+      <input type="text" value="${escHtml(c.name)}" placeholder="Nume" onchange="emergencyContacts[${i}].name=this.value; updatePreview()">
+      <input type="text" value="${escHtml(c.phone)}" placeholder="Telefon" onchange="emergencyContacts[${i}].phone=this.value; updatePreview()">
+      <button class="remove-btn" onclick="removeEmergencyContact(${i})" title="Sterge">&times;</button>
+    </div>`;
+  });
+  html += `<button class="add-btn" onclick="addEmergencyContact()">+ Adauga contact de urgenta</button>`;
+  return html;
+}
+
+function addEmergencyContact() {
+  emergencyContacts.push({ name: '', phone: '' });
+  document.getElementById('emergency-contacts-body').innerHTML = renderEmergencyContacts();
+  updatePreview();
+}
+
+function removeEmergencyContact(i) {
+  emergencyContacts.splice(i, 1);
+  document.getElementById('emergency-contacts-body').innerHTML = renderEmergencyContacts();
+  updatePreview();
+}
+
+// ═══════════ JSON PREVIEW ═══════════
+function buildJson() {
+  const obj = {
+    ...config,
+    emergency_contacts: emergencyContacts.map(c => ({ name: c.name, phone: c.phone })),
+    quick_contacts: contacts.map(c => ({ name: c.name, phone: c.phone }))
+  };
+  return JSON.stringify(obj, null, 2);
+}
+
+function updatePreview() {
+  const pre = document.getElementById('json-preview');
+  if (!pre) return;
+  const json = buildJson();
+  pre.innerHTML = syntaxHighlight(json);
+}
+
+function syntaxHighlight(json) {
+  return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"([^"]+)":/g, '<span style="color:var(--key)">"$1"</span>:')
+    .replace(/: "([^"]*)"/g, ': <span style="color:var(--str)">"$1"</span>')
+    .replace(/: (true|false)/g, ': <span style="color:var(--bool);font-weight:bold">$1</span>')
+    .replace(/: (-?\d+\.?\d*)/g, ': <span style="color:var(--num)">$1</span>');
+}
+
+// ═══════════ IMPORT / EXPORT ═══════════
+function importJson() {
+  const text = document.getElementById('import-area').value.trim();
+  if (!text) { alert('Lipeste un JSON mai intai.'); return; }
+  try {
+    const obj = JSON.parse(text);
+    loadFromObj(obj);
+    switchTabByName('editor');
+    alert('Configurare incarcata cu succes!');
+  } catch (e) {
+    alert('JSON invalid: ' + e.message);
+  }
+}
+
+function loadFromObj(obj) {
+  FIELDS.forEach(f => {
+    if (obj[f.key] !== undefined) config[f.key] = obj[f.key];
+  });
+  if (Array.isArray(obj.quick_contacts)) {
+    contacts = obj.quick_contacts.map(c => ({ name: c.name || '', phone: c.phone || '' }));
+  }
+  if (Array.isArray(obj.emergency_contacts)) {
+    emergencyContacts = obj.emergency_contacts.map(c => ({ name: c.name || '', phone: c.phone || '' }));
+  }
+  renderEditor();
+}
+
+function loadFromFile() {
+  document.getElementById('file-input').click();
+}
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('import-area').value = ev.target.result;
+    importJson();
+  };
+  reader.readAsText(file);
+}
+
+function downloadJson() {
+  const json = buildJson();
+  const blob = new Blob([json], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'config.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function copyJson() {
+  navigator.clipboard.writeText(buildJson()).then(() => {
+    alert('JSON copiat in clipboard!');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = buildJson();
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('JSON copiat in clipboard!');
+  });
+}
+
+function resetDefaults() {
+  if (!confirm('Sigur vrei sa resetezi toate setarile la valorile implicite?')) return;
+  initDefaults();
+  renderEditor();
+}
+
+function switchTabByName(name) {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.textContent.toLowerCase().includes(name));
+  });
+  document.querySelectorAll('.tab-content').forEach(t => {
+    t.classList.toggle('active', t.id === 'tab-' + name);
+  });
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ═══════════ DOCS TABLE ═══════════
+function renderDocsTable() {
+  const tbody = document.getElementById('docs-table');
+  tbody.innerHTML = FIELDS.map(f => `<tr>
+    <td><code>${f.key}</code></td>
+    <td>${f.type}${f.options ? ' (' + f.options.join(', ') + ')' : ''}</td>
+    <td><code>${JSON.stringify(f.default)}</code></td>
+    <td>${f.tooltip}</td>
+  </tr>`).join('');
+}
+
+// ═══════════ INIT ═══════════
+renderEditor();
+renderDocsTable();
+</script>
+</body>
+</html>

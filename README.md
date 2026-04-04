@@ -4,6 +4,10 @@ A simplified Android home launcher designed for elderly users. Replaces the defa
 
 **Package:** `ro.softwarechef.freshboomer`
 
+## Download
+
+Get the latest APK from the [Releases](https://github.com/cristianonescu/FreshBoomer-Launcher/releases) page.
+
 ## Screenshots
 
 _Coming soon_

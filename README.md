@@ -146,6 +146,25 @@ The app registers as the device's:
 - **Default phone** (DIAL handler)
 - **Default SMS app** (SMS_DELIVER receiver)
 
+## Open Source Licenses
+
+This project uses the following open source libraries:
+
+| Library | License |
+|---------|---------|
+| [Jetpack Compose](https://developer.android.com/jetpack/compose) | Apache License 2.0 |
+| [AndroidX Core / AppCompat / Lifecycle](https://developer.android.com/jetpack/androidx) | Apache License 2.0 |
+| [Material Design 3](https://m3.material.io) | Apache License 2.0 |
+| [Coil](https://coil-kt.github.io/coil/) | Apache License 2.0 |
+| [Kotlin Coroutines](https://github.com/Kotlin/kotlinx.coroutines) | Apache License 2.0 |
+| [Sherpa ONNX](https://github.com/k2-fsa/sherpa-onnx) | Apache License 2.0 |
+| [Piper TTS](https://github.com/rhasspy/piper) | MIT License |
+
+## Credits
+
+- **Piper TTS Romanian** -- The Romanian voice model used in this app is created by [eduardem](https://huggingface.co/eduardem/piper-tts-romanian). Thank you for the contribution to Romanian speech synthesis!
+- **Developer** -- Cristian Onescu
+
 ## License
 
 All rights reserved.

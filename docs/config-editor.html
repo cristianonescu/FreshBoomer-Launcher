@@ -413,7 +413,7 @@ td code { color: var(--str); }
   <div id="tab-docs" class="tab-content">
     <div class="docs">
       <h2 style="margin-top:0">Despre aplicatie</h2>
-      <p><strong>FreshBoomer</strong> este o aplicatie Android care inlocuieste launcher-ul, telefonul si aplicatia SMS cu o interfata simplificata cu butoane mari, text-to-speech si limba romana — conceputa pentru utilizatorii varstnici.</p>
+      <p><strong>FreshBoomer</strong> este o aplicatie Android care inlocuieste launcher-ul, telefonul si aplicatia SMS cu o interfata simplificata cu butoane mari, text-to-speech si limba romana — conceputa pentru utilizatorii varstnici. Disponibila in romana si engleza.</p>
       <p>Aplicatia preia rolul de <strong>launcher implicit</strong> (ecranul de start), <strong>aplicatie de telefon</strong> si <strong>aplicatie de SMS</strong> pe dispozitivul Android.</p>
       <p>Configurarea aplicatiei este stocata intr-un fisier <code>config.json</code> care poate fi importat de pe un URL din setarile aplicatiei.</p>
 
@@ -465,7 +465,7 @@ td code { color: var(--str); }
       <p>Alerta se trimite o singura data per perioada de inactivitate — nu se repeta pana cand utilizatorul interactioneaza din nou cu telefonul.</p>
 
       <h2>Text-to-Speech (TTS)</h2>
-      <p>Aplicatia poate anunta vocal diverse evenimente (apeluri pierdute, deschiderea ecranelor etc.) in limba romana.</p>
+      <p>Aplicatia poate anunta vocal diverse evenimente (apeluri pierdute, deschiderea ecranelor etc.).</p>
       <p><strong>Motoare disponibile:</strong></p>
       <p>- <code>PIPER_SANDA</code> — motor offline de sinteza vocala cu voce romaneasca naturala (recomandat). Modelul se descarca automat la prima utilizare.</p>
       <p>- <code>PIPER_LILI</code> — voce alternativa romaneasca offline. Modelul se descarca automat la prima utilizare.</p>
@@ -504,6 +504,13 @@ td code { color: var(--str); }
       <p>- <code>SYSTEM</code> — urmareste tema sistemului Android (luminos/intunecat)</p>
       <p>- <code>LIGHT</code> — tema luminoasa permanent</p>
       <p>- <code>DARK</code> — tema intunecata permanent</p>
+
+      <h2>Limba / Language</h2>
+      <p>Campul <code>app_language</code> controleaza limba interfetei:</p>
+      <p>- <code>ro</code> — Romana (implicit)</p>
+      <p>- <code>en</code> — English</p>
+      <p>Limba poate fi schimbata si din aplicatie: in ecranul de bun venit (la prima instalare) sau din Setari → Limba. Schimbarea se aplica imediat — aplicatia se recreeaza cu noua limba.</p>
+      <p>Daca limba este schimbata prin configurarea de la distanta (remote config), aplicatia detecteaza automat schimbarea si se recreeaza.</p>
 
       <h2>Cum se foloseste editorul</h2>
       <p>1. Editeaza setarile in tab-ul <strong>Editor</strong>.</p>
@@ -574,7 +581,7 @@ td code { color: var(--str); }
 const FIELDS = [
   { key: "user_nickname", type: "string", default: "Mamaie", group: "General", tooltip: "Numele folosit in anunturile vocale (inlocuieste 'Mamaie')" },
   { key: "theme_mode", type: "enum", default: "SYSTEM", group: "General", options: ["SYSTEM", "LIGHT", "DARK"], tooltip: "Tema aplicatiei" },
-  { key: "app_language", type: "enum", default: "ro", group: "General", options: ["ro"], tooltip: "Limba aplicatiei" },
+  { key: "app_language", type: "enum", default: "ro", group: "General", options: ["ro", "en"], tooltip: "Limba aplicatiei / App language" },
   { key: "tts_enabled", type: "boolean", default: true, group: "Text-to-Speech", tooltip: "Activeaza/dezactiveaza anunturile vocale" },
   { key: "tts_engine", type: "enum", default: "PIPER_SANDA", group: "Text-to-Speech", options: ["PIPER_SANDA", "PIPER_LILI", "DEVICE_DEFAULT"], tooltip: "Motorul de voce folosit" },
   { key: "tts_speech_rate", type: "float", default: 0.85, group: "Text-to-Speech", tooltip: "Viteza vorbirii: 0.5 (lent) - 2.0 (rapid)", min: 0.5, max: 2.0, step: 0.05 },

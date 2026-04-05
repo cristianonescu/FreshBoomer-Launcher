@@ -1,5 +1,6 @@
 package ro.softwarechef.freshboomer
 
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -199,7 +200,7 @@ fun ContactsScreen(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "Agenda",
+                text = stringResource(R.string.contacts_header),
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f)
@@ -216,7 +217,7 @@ fun ContactsScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Adauga",
+                    text = stringResource(R.string.contacts_add),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -232,7 +233,7 @@ fun ContactsScreen(
                 .padding(bottom = 12.dp),
             placeholder = {
                 Text(
-                    "Cauta in agenda...",
+                    stringResource(R.string.contacts_search_placeholder),
                     fontSize = 22.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )
@@ -298,7 +299,7 @@ fun ContactsScreen(
                         text = if (searchQuery.isNotEmpty())
                             "Nu s-a gasit nimeni cu \"$searchQuery\""
                         else
-                            "Agenda este goala",
+                            stringResource(R.string.contacts_empty),
                         fontSize = 24.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
@@ -437,7 +438,7 @@ fun ContactItem(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Suna",
+                    text = stringResource(R.string.contacts_call),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )

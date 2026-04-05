@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import ro.softwarechef.freshboomer.data.InactivityTracker
+import ro.softwarechef.freshboomer.data.LocaleHelper
 import ro.softwarechef.freshboomer.data.NicknamePreference
 import ro.softwarechef.freshboomer.tts.PiperTtsEngine
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +68,10 @@ abstract class ImmersiveActivity : ComponentActivity() {
                 Log.d("ImmersiveActivity", "Charger connected — interaction recorded")
             }
         }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.wrap(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -433,7 +438,7 @@ abstract class ImmersiveActivity : ComponentActivity() {
 
     private fun configureFallbackTts() {
         fallbackTts?.apply {
-            language = Locale("ro", "RO")
+            language = LocaleHelper.getLocale()
             setSpeechRate(ro.softwarechef.freshboomer.data.AppConfig.current.ttsSpeechRate)
             setAudioAttributes(
                 AudioAttributes.Builder()

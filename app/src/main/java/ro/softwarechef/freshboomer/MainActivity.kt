@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import androidx.compose.ui.res.stringResource
+import ro.softwarechef.freshboomer.R
 import ro.softwarechef.freshboomer.data.AppConfig
 import ro.softwarechef.freshboomer.data.ConfigUrlPreference
 import ro.softwarechef.freshboomer.data.FeatureTogglePreference
@@ -116,6 +118,8 @@ class MainActivity : ImmersiveActivity() {
                                 QuickContactRepository.invalidateCache()
                                 contactsVersion++
                                 themeVersion++
+                                // Recreate so attachBaseContext() applies the selected language
+                                recreate()
                             }
                         )
                     }
@@ -191,7 +195,7 @@ class MainActivity : ImmersiveActivity() {
                                             val pkgInfo = packageManager.getPackageInfo(packageName, 0)
                                             val versionName = pkgInfo.versionName ?: "?"
                                             val versionCode = pkgInfo.longVersionCode
-                                            "Launcher creat pentru $nick - v$versionName ($versionCode) - (c) ${Year.now().value} Cristian O."
+                                            getString(R.string.footer_copyright, nick, versionName, versionCode, Year.now().value)
                                         },
                                         onSettingsClick = { showSettings = true }
                                     )
@@ -228,8 +232,14 @@ class MainActivity : ImmersiveActivity() {
     private fun fetchRemoteConfigIfNeeded() {
         val url = ConfigUrlPreference.getUrl(this)
         if (url.isBlank()) return
+        val langBefore = AppConfig.current.appLanguage
         CoroutineScope(Dispatchers.IO).launch {
-            AppConfig.importFromUrl(this@MainActivity, url)
+            val result = AppConfig.importFromUrl(this@MainActivity, url)
+            if (result.isSuccess && AppConfig.current.appLanguage != langBefore) {
+                withContext(Dispatchers.Main) {
+                    recreate()
+                }
+            }
         }
     }
 
@@ -381,8 +391,10 @@ fun LauncherScreen(
                     confirmCallPhotoUri = photoUri
                     confirmIcon = icon
                 },
-                footerContent = footerContent
+                modifier = Modifier.weight(1f)
             )
+
+            footerContent()
         }
     }
 }
@@ -395,7 +407,7 @@ fun GridLayout(
     onContactsClick: () -> Unit,
     onGalleryClick: () -> Unit,
     onQuickCall: (name: String, number: String, profile: Int?, photoUri: String?, icon: ImageVector?) -> Unit,
-    footerContent: @Composable () -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val toggles = remember { FeatureTogglePreference.getToggles(context) }
@@ -420,7 +432,7 @@ fun GridLayout(
             (if (hasUtilityRow) 1 else 0)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -492,7 +504,7 @@ fun GridLayout(
                 ) {
                     if (toggles.dialPad) {
                         GridButton(
-                            text = "Formeaza Numar",
+                            text = stringResource(R.string.main_dial_number),
                             icon = Icons.Default.Call,
                             onClick = onPhoneClick,
                             modifier = Modifier.fillMaxWidth().fillMaxHeight(0.15f),
@@ -501,7 +513,7 @@ fun GridLayout(
                     }
                     if (toggles.contacts) {
                         GridButton(
-                            text = "Agenda Telefon",
+                            text = stringResource(R.string.main_phone_book),
                             icon = Icons.Default.Person,
                             onClick = onContactsClick,
                             modifier = Modifier.fillMaxWidth().fillMaxHeight(0.15f),
@@ -510,7 +522,7 @@ fun GridLayout(
                     }
                     if (toggles.messages) {
                         GridButton(
-                            text = "Mesaje",
+                            text = stringResource(R.string.main_messages),
                             icon = Icons.Default.Email,
                             onClick = onSmsClick,
                             modifier = Modifier.fillMaxWidth().fillMaxHeight(0.15f),
@@ -526,7 +538,7 @@ fun GridLayout(
                 ) {
                     if (toggles.dialPad) {
                         GridButton(
-                            text = "Formeaza Numar",
+                            text = stringResource(R.string.main_dial_number),
                             icon = Icons.Default.Call,
                             onClick = onPhoneClick,
                             modifier = Modifier.weight(1f),
@@ -535,7 +547,7 @@ fun GridLayout(
                     }
                     if (toggles.contacts) {
                         GridButton(
-                            text = "Agenda Telefon",
+                            text = stringResource(R.string.main_phone_book),
                             icon = Icons.Default.Person,
                             onClick = onContactsClick,
                             modifier = Modifier.weight(1f),
@@ -544,7 +556,7 @@ fun GridLayout(
                     }
                     if (toggles.messages) {
                         GridButton(
-                            text = "Mesaje",
+                            text = stringResource(R.string.main_messages),
                             icon = Icons.Default.Email,
                             onClick = onSmsClick,
                             modifier = Modifier.weight(1f),
@@ -560,7 +572,7 @@ fun GridLayout(
                 ) {
                     if (toggles.dialPad) {
                         GridButton(
-                            text = "Formeaza Numar",
+                            text = stringResource(R.string.main_dial_number),
                             icon = Icons.Default.Call,
                             onClick = onPhoneClick,
                             modifier = Modifier.weight(1f),
@@ -569,7 +581,7 @@ fun GridLayout(
                     }
                     if (toggles.contacts) {
                         GridButton(
-                            text = "Agenda Telefon",
+                            text = stringResource(R.string.main_phone_book),
                             icon = Icons.Default.Person,
                             onClick = onContactsClick,
                             modifier = Modifier.weight(1f),
@@ -578,7 +590,7 @@ fun GridLayout(
                     }
                     if (toggles.messages) {
                         GridButton(
-                            text = "Mesaje",
+                            text = stringResource(R.string.main_messages),
                             icon = Icons.Default.Email,
                             onClick = onSmsClick,
                             modifier = Modifier.weight(1f),
@@ -598,13 +610,13 @@ fun GridLayout(
             ) {
                 Icon(
                     imageVector = Icons.Default.Face,
-                    contentDescription = "Poze",
+                    contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Vezi poze",
+                    text = stringResource(R.string.main_gallery),
                     style = MaterialTheme.typography.titleLarge,
                     color = colorResource(id = R.color.white)
                 )
@@ -633,8 +645,6 @@ fun GridLayout(
                 )
             }
         }
-
-        footerContent()
     }
 }
 
@@ -927,7 +937,7 @@ fun LastCallerBanner(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Suna", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.call), style = MaterialTheme.typography.titleMedium)
                 }
             }
         }
@@ -952,7 +962,7 @@ fun SystemClock(
             minutes = now.get(java.util.Calendar.MINUTE)
             seconds = now.get(java.util.Calendar.SECOND)
             val sdf = SimpleDateFormat(timeFormat, Locale.getDefault())
-            val sdf2 = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("ro"))
+            val sdf2 = SimpleDateFormat("EEEE, d MMMM yyyy", ro.softwarechef.freshboomer.data.LocaleHelper.getLocale())
             currentTime = sdf.format(Date())
             currentDate = sdf2.format(Date())
             delay(1000)

@@ -37,7 +37,10 @@ import ro.softwarechef.freshboomer.data.AppConfig
 import ro.softwarechef.freshboomer.data.EmergencyContact
 import ro.softwarechef.freshboomer.data.QuickContactRepository
 import ro.softwarechef.freshboomer.data.AppThemeMode
+import androidx.compose.ui.res.stringResource
+import ro.softwarechef.freshboomer.R
 import ro.softwarechef.freshboomer.data.FeatureTogglePreference
+import ro.softwarechef.freshboomer.data.LocaleHelper
 import ro.softwarechef.freshboomer.data.FeatureToggles
 import ro.softwarechef.freshboomer.data.NicknamePreference
 import ro.softwarechef.freshboomer.data.ThemePreference
@@ -787,11 +790,11 @@ private fun TtsSection(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Voce activata",
+                        text = stringResource(R.string.settings_tts_enabled),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Aplicatia vorbeste cand deschizi un ecran",
+                        text = stringResource(R.string.settings_tts_enabled_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -815,11 +818,11 @@ private fun TtsSection(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Piper Sanda (recomandat)",
+                        text = stringResource(R.string.settings_tts_sanda),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Voce locala romaneasca, functioneaza fara internet",
+                        text = stringResource(R.string.settings_tts_sanda_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -839,11 +842,11 @@ private fun TtsSection(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Piper Lili",
+                        text = stringResource(R.string.settings_tts_piper),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Voce alternativa romaneasca, functioneaza fara internet",
+                        text = stringResource(R.string.settings_tts_piper_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -863,11 +866,11 @@ private fun TtsSection(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Vocea dispozitivului",
+                        text = stringResource(R.string.settings_tts_device),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Foloseste vocea implicita de pe telefon",
+                        text = stringResource(R.string.settings_tts_device_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -905,23 +908,23 @@ private fun TtsUpdateRow() {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Actualizare model vocal",
+                text = stringResource(R.string.settings_tts_update_model),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
                 text = when (checkState) {
-                    UpdateCheckState.Idle -> "Apasa pentru a verifica daca exista o versiune noua"
-                    UpdateCheckState.Checking -> "Se verifica..."
-                    UpdateCheckState.UpToDate -> "Modelul este la zi"
+                    UpdateCheckState.Idle -> stringResource(R.string.settings_tts_update_idle)
+                    UpdateCheckState.Checking -> stringResource(R.string.settings_tts_update_checking)
+                    UpdateCheckState.UpToDate -> stringResource(R.string.settings_tts_update_up_to_date)
                     UpdateCheckState.Downloading -> {
                         if (totalMb > 0)
-                            "Se descarca: %.0f/%.0f MB".format(downloadedMb, totalMb)
+                            stringResource(R.string.settings_tts_update_downloading, downloadedMb, totalMb)
                         else
-                            "Se descarca: %.0f MB".format(downloadedMb)
+                            stringResource(R.string.settings_tts_update_downloading_unknown, downloadedMb)
                     }
-                    UpdateCheckState.Done -> "Actualizare finalizata!"
-                    UpdateCheckState.Error -> "Eroare la verificare. Verifica conexiunea la internet."
-                    UpdateCheckState.NoModel -> "Modelul nu este descarcat. Se descarca..."
+                    UpdateCheckState.Done -> stringResource(R.string.settings_tts_update_done)
+                    UpdateCheckState.Error -> stringResource(R.string.settings_tts_update_error)
+                    UpdateCheckState.NoModel -> stringResource(R.string.settings_tts_update_no_model)
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = when (checkState) {
@@ -982,7 +985,7 @@ private fun TtsUpdateRow() {
                     && checkState != UpdateCheckState.Downloading
                     && checkState != UpdateCheckState.NoModel
         ) {
-            Text("Verifica")
+            Text(stringResource(R.string.settings_tts_update_check))
         }
     }
 }
@@ -1001,57 +1004,57 @@ private fun FeatureToggleSection(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             FeatureToggleRow(
-                label = "Contacte rapide",
-                description = "Butoanele mari de pe ecranul principal",
+                label = stringResource(R.string.wizard_feature_quick_contacts),
+                description = stringResource(R.string.wizard_feature_quick_contacts_desc),
                 checked = toggles.quickContacts,
                 onCheckedChange = { onToggleChange(FeatureTogglePreference.QUICK_CONTACTS, it) }
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             FeatureToggleRow(
-                label = "Formeaza Numar",
-                description = "Tastatura pentru apelat numere",
+                label = stringResource(R.string.wizard_feature_dial_pad),
+                description = stringResource(R.string.wizard_feature_dial_pad_desc),
                 checked = toggles.dialPad,
                 onCheckedChange = { onToggleChange(FeatureTogglePreference.DIAL_PAD, it) }
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             FeatureToggleRow(
-                label = "Agenda Telefon",
-                description = "Lista de contacte din telefon",
+                label = stringResource(R.string.wizard_feature_contacts),
+                description = stringResource(R.string.wizard_feature_contacts_desc),
                 checked = toggles.contacts,
                 onCheckedChange = { onToggleChange(FeatureTogglePreference.CONTACTS, it) }
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             FeatureToggleRow(
-                label = "Mesaje",
-                description = "Conversatii SMS",
+                label = stringResource(R.string.wizard_feature_sms),
+                description = stringResource(R.string.wizard_feature_sms_desc),
                 checked = toggles.messages,
                 onCheckedChange = { onToggleChange(FeatureTogglePreference.MESSAGES, it) }
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             FeatureToggleRow(
-                label = "Vezi poze",
-                description = "Galeria de fotografii",
+                label = stringResource(R.string.wizard_feature_gallery),
+                description = stringResource(R.string.wizard_feature_gallery_desc),
                 checked = toggles.gallery,
                 onCheckedChange = { onToggleChange(FeatureTogglePreference.GALLERY, it) }
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             FeatureToggleRow(
                 label = "WhatsApp",
-                description = "Buton WhatsApp pe ecranul principal",
+                description = stringResource(R.string.wizard_feature_whatsapp_desc),
                 checked = toggles.whatsapp,
                 onCheckedChange = { onToggleChange(FeatureTogglePreference.WHATSAPP, it) }
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             FeatureToggleRow(
-                label = "Volum automat la maxim",
-                description = "Seteaza automat toate volumele la maxim pentru a preveni situatiile in care utilizatorul reduce volumul accidental",
+                label = stringResource(R.string.wizard_feature_auto_volume),
+                description = stringResource(R.string.wizard_feature_auto_volume_desc),
                 checked = toggles.autoMaxVolume,
                 onCheckedChange = { onToggleChange(FeatureTogglePreference.AUTO_MAX_VOLUME, it) }
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             FeatureToggleRow(
-                label = "Monitorizare inactivitate",
-                description = "Trimite SMS contactelor de urgenta daca telefonul nu e folosit. Necesita cel putin un contact de urgenta.",
+                label = stringResource(R.string.wizard_feature_inactivity_monitor),
+                description = stringResource(R.string.wizard_feature_inactivity_monitor_desc),
                 checked = toggles.inactivityMonitor,
                 onCheckedChange = { onToggleChange(FeatureTogglePreference.INACTIVITY_MONITOR, it) }
             )
@@ -1197,17 +1200,18 @@ private fun LanguageSection(
     appLanguage: String,
     onLanguageChange: (String) -> Unit
 ) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = "Limba aplicatiei",
+                text = stringResource(R.string.settings_language_title),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = "Alege limba in care este afisata aplicatia",
+                text = stringResource(R.string.settings_language_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
@@ -1218,9 +1222,28 @@ private fun LanguageSection(
             ) {
                 FilterChip(
                     selected = appLanguage == "ro",
-                    onClick = { onLanguageChange("ro") },
+                    onClick = {
+                        if (appLanguage != "ro") {
+                            onLanguageChange("ro")
+                            LocaleHelper.applyLanguage(context as android.app.Activity, "ro")
+                        }
+                    },
                     label = { Text("Romana") },
                     leadingIcon = if (appLanguage == "ro") {
+                        { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                    } else null,
+                    modifier = Modifier.weight(1f)
+                )
+                FilterChip(
+                    selected = appLanguage == "en",
+                    onClick = {
+                        if (appLanguage != "en") {
+                            onLanguageChange("en")
+                            LocaleHelper.applyLanguage(context as android.app.Activity, "en")
+                        }
+                    },
+                    label = { Text("English") },
+                    leadingIcon = if (appLanguage == "en") {
                         { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
                     } else null,
                     modifier = Modifier.weight(1f)
@@ -1945,6 +1968,8 @@ private fun ImportUrlDialog(
                             ro.softwarechef.freshboomer.data.ConfigUrlPreference.setUrl(context, url.trim())
                             android.widget.Toast.makeText(context, "Configurare importata cu succes", android.widget.Toast.LENGTH_SHORT).show()
                             onImported()
+                            // Recreate activity to apply locale/theme changes from imported config
+                            (context as? android.app.Activity)?.recreate()
                         } else {
                             error = "Eroare: ${result.exceptionOrNull()?.localizedMessage ?: "necunoscuta"}"
                         }

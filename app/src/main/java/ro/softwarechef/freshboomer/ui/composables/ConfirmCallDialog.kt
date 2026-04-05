@@ -9,6 +9,7 @@ import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
 import ro.softwarechef.freshboomer.R
+import ro.softwarechef.freshboomer.data.LocaleHelper
 import ro.softwarechef.freshboomer.data.NicknamePreference
 import ro.softwarechef.freshboomer.tts.PiperTtsEngine
 import androidx.compose.foundation.Image
@@ -80,7 +81,7 @@ fun ConfirmCallDialog(
             var fallbackTts: TextToSpeech? = null
             fallbackTts = TextToSpeech(context) { status ->
                 if (status == TextToSpeech.SUCCESS) {
-                    fallbackTts?.language = Locale("ro", "RO")
+                    fallbackTts?.language = LocaleHelper.getLocale()
                     fallbackTts?.setSpeechRate(0.85f)
                     fallbackTts?.setAudioAttributes(
                         AudioAttributes.Builder()

@@ -1,0 +1,398 @@
+<resources>
+    <string name="app_name">FreshBoomer</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         Common / Shared
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="call">Call</string>
+    <string name="enabled">Enabled</string>
+    <string name="footer_copyright">Launcher made for %1$s - v%2$s (%3$d) - (c) %4$d Cristian O.</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         MainActivity — Home Screen
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="main_dial_number">Dial Number</string>
+    <string name="main_phone_book">Phone Book</string>
+    <string name="main_messages">Messages</string>
+    <string name="main_gallery">View Photos</string>
+    <string name="main_whatsapp">WhatsApp</string>
+    <string name="main_missed_call">Missed call</string>
+    <string name="main_missed_call_time">%1$s at %2$s</string>
+
+    <!-- TTS — Main navigation (%1$s = nickname) -->
+    <string name="tts_open_sms">%1$s, here you can see if you have messages. If you don\'t want to see messages, press \"Back\" in the top left.</string>
+    <string name="tts_open_phone">%1$s, here you can dial a number you want to call. If you don\'t want to call anyone, press \"Back\" in the top left.</string>
+    <string name="tts_open_contacts">%1$s, from here you can call a number from your contacts. If you don\'t want to call anyone, press \"Back\" in the top left.</string>
+    <string name="tts_open_gallery">%1$s, here you can see the photos. Swipe left or right to see more. If you want to go back, press \"Back\" in the top left.</string>
+
+    <!-- TTS — Battery (%1$s = nickname) -->
+    <string name="tts_battery_low">%1$s, the phone is running low on battery. Please plug it in to charge!</string>
+    <string name="tts_battery_charging">%1$s, the phone is charging! Leave it to charge until I tell you it is fully charged!</string>
+    <string name="tts_battery_full">%1$s, the phone is fully charged! You can unplug it now!</string>
+
+    <!-- Battery banner -->
+    <string name="battery_low_banner">&#x26A0;&#xFE0F; Please plug in the phone. Low battery (%1$d%%)</string>
+    <string name="battery_charging_banner">&#x1F50C; Charging… (%1$d%%)</string>
+    <string name="battery_full_banner">&#x2705; Battery is fully charged</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         ImmersiveActivity — Missed call TTS
+         ════════════════════════════════════════════════════════════════════ -->
+    <!-- %1$s = nickname, %2$s = caller info, %3$s = time -->
+    <string name="tts_missed_call">%1$s, %2$s called you at %3$s</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         IncomingCallActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="incoming_call_label">Incoming call&#8230;</string>
+    <string name="incoming_reject">Reject</string>
+    <string name="incoming_answer">Answer</string>
+    <!-- %1$s = nickname, %2$s = caller name -->
+    <string name="tts_incoming_call">%1$s, %2$s is calling you! Press the green button to answer!</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         WhatsAppCallActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="whatsapp_header">WhatsApp</string>
+    <string name="whatsapp_calling_label">Incoming call&#8230;</string>
+    <string name="whatsapp_reject">Reject</string>
+    <string name="whatsapp_answer">Answer</string>
+    <!-- %1$s = nickname, %2$s = caller name -->
+    <string name="tts_whatsapp_incoming">%1$s, %2$s is calling you on WhatsApp! Press the green button to answer!</string>
+    <string name="tts_whatsapp_ended">The WhatsApp call has ended.</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         InCallActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="in_call_dialing">Dialing&#8230;</string>
+    <string name="in_call_holding">On hold</string>
+    <string name="in_call_ringing">Ringing&#8230;</string>
+    <string name="in_call_ended">Call ended</string>
+    <string name="in_call_speaker">Speaker</string>
+    <string name="in_call_speaker_on">Speaker ON</string>
+    <string name="in_call_speaker_off">Speaker OFF</string>
+    <string name="in_call_microphone">Microphone</string>
+    <string name="in_call_mic_off">Microphone OFF</string>
+    <string name="in_call_mic_on">Microphone ON</string>
+    <string name="in_call_hangup">Hang Up</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         PhoneActivity — Dial Pad
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="phone_header">Dial Number</string>
+    <string name="phone_delete">Delete</string>
+    <string name="phone_call">Call</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         ContactsActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="contacts_header">Contacts</string>
+    <string name="contacts_add">Add</string>
+    <string name="contacts_search_placeholder">Search contacts&#8230;</string>
+    <string name="contacts_count">%1$d contacts</string>
+    <string name="contacts_not_found">No one found matching \"%1$s\"</string>
+    <string name="contacts_empty">Contacts list is empty</string>
+    <string name="contacts_call">Call</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SmsActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="sms_header">Messages</string>
+    <string name="sms_conversations_count">%1$d conversations</string>
+    <string name="sms_empty">You have no messages</string>
+    <string name="sms_compose_placeholder">Write a message&#8230;</string>
+    <string name="sms_send">Send</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         GalleryActivity
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="gallery_photo_description">Photo %1$d</string>
+    <string name="gallery_next">Next</string>
+    <string name="gallery_empty">No photos</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         ConfirmCallDialog
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="confirm_call_prompt">%1$s, do you want to call %2$s?</string>
+    <string name="toast_whatsapp_open_failed">Could not open WhatsApp</string>
+    <string name="toast_whatsapp_contact_not_found">Contact not found on WhatsApp</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         TTS Model Download Dialog
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="tts_download_checking">Checking voice model&#8230;</string>
+    <string name="tts_download_progress">Downloading voice: %1$.0f/%2$.0f MB</string>
+    <string name="tts_download_progress_unknown">Downloading voice: %1$.0f MB</string>
+    <string name="tts_download_error">Voice could not be downloaded</string>
+    <string name="tts_download_error_retry">Voice could not be downloaded. Tap to retry.</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         OnboardingScreen — Permissions & Setup
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="onboarding_header">App Setup</string>
+    <string name="onboarding_description">The app needs the following permissions to work correctly</string>
+    <string name="onboarding_progress">%1$d of %2$d completed</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_allow">Allow</string>
+    <string name="onboarding_set">Set</string>
+    <string name="onboarding_open_settings">Open Settings</string>
+
+    <!-- Permissions section -->
+    <string name="onboarding_section_permissions">Permissions</string>
+    <string name="perm_phone_calls">Phone Calls</string>
+    <string name="perm_phone_calls_desc">Allow making phone calls</string>
+    <string name="perm_contacts">Contacts</string>
+    <string name="perm_contacts_desc">Allow reading contacts</string>
+    <string name="perm_call_log">Call Log</string>
+    <string name="perm_call_log_desc">Allow reading missed calls</string>
+    <string name="perm_phone_state">Phone State</string>
+    <string name="perm_phone_state_desc">Allow detecting active calls</string>
+    <string name="perm_sms">SMS Messages</string>
+    <string name="perm_sms_desc">Allow reading, sending, and receiving messages</string>
+    <string name="perm_notifications">Notifications</string>
+    <string name="perm_notifications_desc">Allow showing notifications</string>
+    <string name="perm_photos">Photos</string>
+    <string name="perm_photos_desc">Allow access to photo gallery</string>
+    <string name="perm_answer_calls">Answer Calls</string>
+    <string name="perm_answer_calls_desc">Allow automatic call answering</string>
+    <string name="perm_audio">Audio Settings</string>
+    <string name="perm_audio_desc">Allow volume control</string>
+
+    <!-- Special access section -->
+    <string name="onboarding_section_special_access">Special Access</string>
+    <string name="special_notification_access">Notification Access</string>
+    <string name="special_notification_access_desc">Required to detect WhatsApp calls</string>
+    <string name="special_dnd">Do Not Disturb (DND)</string>
+    <string name="special_dnd_desc">Required for volume control</string>
+
+    <!-- Default app section -->
+    <string name="onboarding_section_default_app">Default App</string>
+    <string name="default_phone_app">Default Phone App</string>
+    <string name="default_phone_app_desc">Set this app as the main phone app</string>
+    <string name="default_sms_app">Default SMS App</string>
+    <string name="default_sms_app_desc">Set this app for messages</string>
+    <string name="default_launcher">Default Launcher</string>
+    <string name="default_launcher_desc">Set this app as the home screen</string>
+
+    <!-- Lock screen section -->
+    <string name="onboarding_section_lock_screen">Lock Screen</string>
+    <string name="lock_screen_disable">Disable Lock Screen</string>
+    <string name="lock_screen_disable_desc">Set screen lock to \"None\" for direct access</string>
+
+    <!-- SMS default app dialog -->
+    <string name="sms_default_dialog_title">Default SMS App</string>
+    <string name="sms_default_dialog_text">To set this app as the default SMS app, follow these steps:</string>
+    <string name="sms_default_step1">1. Press \"Open Settings\" below</string>
+    <string name="sms_default_step2">2. Find \"SMS App\"</string>
+    <string name="sms_default_step3">3. Select \"%1$s\"</string>
+    <string name="sms_default_step4">4. Return to the app</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         SetupWizardScreen — First-run Wizard
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="wizard_step_progress">Step %1$d of %2$d</string>
+    <string name="wizard_back">Back</string>
+    <string name="wizard_skip">Skip</string>
+    <string name="wizard_next">Next</string>
+    <string name="wizard_finish">Finish</string>
+
+    <!-- Page 1: Welcome -->
+    <string name="wizard_welcome_title">Welcome!</string>
+    <string name="wizard_welcome_description">FreshBoomer is a simple launcher that makes the phone easier to use.</string>
+    <string name="wizard_welcome_instructions">In the following steps you can configure the app. If you don\'t want to make changes, press \"Skip\" to use the default settings.</string>
+
+    <!-- Page 2: Nickname -->
+    <string name="wizard_nickname_title">What do you call the user?</string>
+    <string name="wizard_nickname_description">This name will be used in voice announcements, for example: \"Grandma, you have a missed call\"</string>
+    <string name="wizard_nickname_label">Nickname</string>
+    <string name="wizard_nickname_placeholder">e.g.: Grandma, Nana, Dad</string>
+
+    <!-- Page 3: Quick Contacts -->
+    <string name="wizard_contacts_title">Quick Contacts</string>
+    <string name="wizard_contacts_description">Add the people the user calls most often. They will appear as large buttons on the home screen.</string>
+    <string name="wizard_contacts_add">Add contact</string>
+    <string name="wizard_contacts_empty">No contacts added. You can add contacts anytime later from Settings.</string>
+    <string name="wizard_contact_name_label">Name</string>
+    <string name="wizard_contact_name_placeholder">e.g.: Mary</string>
+    <string name="wizard_contact_phone_label">Phone</string>
+    <string name="wizard_contact_phone_placeholder">e.g.: 0712345678</string>
+
+    <!-- Page 4: Language -->
+    <string name="wizard_language_title">App Language</string>
+    <string name="wizard_language_description">Choose the language in which the app will be displayed.</string>
+
+    <!-- Page 5: Emergency Contacts -->
+    <string name="wizard_emergency_title">Emergency Contacts</string>
+    <string name="wizard_emergency_description">Add people who will be notified if the user has problems.</string>
+    <string name="wizard_emergency_add">Add emergency contact</string>
+    <string name="wizard_emergency_empty">No emergency contacts added. You can add emergency contacts anytime later from Settings.</string>
+
+    <!-- Page 6: Customization -->
+    <string name="wizard_customize_title">Customization</string>
+    <string name="wizard_customize_description">Choose which features should be visible on the home screen.</string>
+    <string name="wizard_section_theme">Theme</string>
+    <string name="wizard_theme_system">System</string>
+    <string name="wizard_theme_light">Light</string>
+    <string name="wizard_theme_dark">Dark</string>
+    <string name="wizard_section_features">Features</string>
+    <string name="wizard_section_behavior">Behavior</string>
+    <string name="wizard_auto_volume">Auto max volume</string>
+    <string name="wizard_auto_volume_desc">Automatically set volume to maximum when the app opens</string>
+
+    <!-- Page 7: Before you start -->
+    <string name="wizard_before_start_title">Before you start</string>
+    <string name="wizard_settings_access_instructions">On the home screen, in the bottom left corner, you will see a small lock icon. Tap it 5 times quickly to open the Settings panel.</string>
+    <string name="wizard_settings_access_note">This method prevents the elderly user from accidentally opening settings.</string>
+    <string name="wizard_settings_contents_title">What you\'ll find in Settings</string>
+    <string name="wizard_remote_config_title">Remote Configuration</string>
+    <string name="wizard_remote_config_description">You can edit the app configuration from a computer, phone, or tablet by accessing a special link.</string>
+    <string name="wizard_remote_config_how">How it works:</string>
+    <string name="wizard_remote_config_note">This way you can update settings remotely without physical access to the phone.</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         QuickContactEditor / Settings
+         ════════════════════════════════════════════════════════════════════ -->
+    <!-- Delete contact dialog -->
+    <string name="settings_delete_contact_title">Delete contact</string>
+    <string name="settings_delete_contact_message">Are you sure you want to delete %1$s?</string>
+
+    <!-- Settings items -->
+    <string name="settings_check_permissions">Check permissions</string>
+    <string name="settings_check_permissions_desc">Check if the app has all required permissions</string>
+    <string name="settings_json_editor">JSON Config Editor</string>
+    <string name="settings_json_editor_desc">Edit all settings in one place</string>
+    <string name="settings_import_config">Import Config from URL</string>
+    <string name="settings_import_config_desc">Download and apply a configuration from the internet</string>
+    <string name="settings_licenses">Licenses &amp; Credits</string>
+    <string name="settings_licenses_desc">Open source licenses, credits, and information</string>
+    <string name="settings_whatsapp_photos">WhatsApp photos in gallery</string>
+    <string name="settings_whatsapp_photos_desc">How to set up WhatsApp to automatically download photos and videos</string>
+
+    <!-- TTS settings -->
+    <string name="settings_tts_enabled">Voice enabled</string>
+    <string name="settings_tts_enabled_desc">The app speaks when you open a screen</string>
+    <string name="settings_tts_piper">Piper Lili</string>
+    <string name="settings_tts_piper_desc">Alternative Romanian offline voice</string>
+    <string name="settings_tts_sanda">Piper Sanda (recommended)</string>
+    <string name="settings_tts_sanda_desc">Local Romanian voice, works without internet</string>
+    <string name="settings_tts_device">Device voice</string>
+    <string name="settings_tts_device_desc">Use the phone\'s default voice</string>
+    <string name="settings_tts_update_model">Update voice model</string>
+    <string name="settings_tts_update_idle">Tap to check if a new version is available</string>
+    <string name="settings_tts_update_checking">Checking…</string>
+    <string name="settings_tts_update_up_to_date">Model is up to date</string>
+    <string name="settings_tts_update_downloading">Downloading: %1$.0f/%2$.0f MB</string>
+    <string name="settings_tts_update_downloading_unknown">Downloading: %1$.0f MB</string>
+    <string name="settings_tts_update_done">Update complete!</string>
+    <string name="settings_tts_update_error">Check failed. Verify your internet connection.</string>
+    <string name="settings_tts_update_no_model">Model not downloaded. Downloading…</string>
+    <string name="settings_tts_update_check">Check</string>
+
+    <!-- Nickname settings -->
+    <string name="settings_nickname_title">What should the app call you</string>
+    <string name="settings_nickname_desc">This name will be used in voice messages (e.g.: \"%1$s, someone called…\")</string>
+    <string name="settings_nickname_placeholder">Grandma</string>
+    <string name="settings_nickname_preview">%1$s, someone called you!</string>
+
+    <!-- Language settings -->
+    <string name="settings_language_title">App Language</string>
+    <string name="settings_language_desc">Choose the language the app is displayed in</string>
+    <string name="language_romanian">Romanian</string>
+    <string name="language_english">English</string>
+
+    <!-- Emergency contacts settings -->
+    <string name="settings_emergency_title">Emergency Contacts</string>
+    <string name="settings_emergency_desc">These people will be notified if the user has problems</string>
+    <string name="settings_emergency_add">Add emergency contact</string>
+    <string name="settings_emergency_empty">No emergency contacts added.</string>
+    <string name="settings_emergency_name_label">Name</string>
+    <string name="settings_emergency_name_placeholder">e.g.: Mary</string>
+    <string name="settings_emergency_phone_label">Phone</string>
+    <string name="settings_emergency_phone_placeholder">e.g.: 0712345678</string>
+
+    <!-- Visual settings -->
+    <string name="settings_visual_title">Visual Appearance</string>
+    <string name="settings_visual_desc">Choose how the app looks</string>
+
+    <!-- JSON config editor -->
+    <string name="json_config_header">JSON Configuration</string>
+    <string name="json_config_quick_contacts_comment">// Quick Contacts</string>
+    <string name="json_config_quick_contacts_tooltip">// Quick contacts list&#8230;</string>
+    <string name="json_config_add_contact">Add contact</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         Licenses & Credits
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="licenses_header">Licenses &amp; Credits</string>
+    <string name="licenses_open_source_title">Open Source Licenses</string>
+    <string name="licenses_open_source_intro">This app uses the following open source libraries:</string>
+    <string name="licenses_thanks_title">Credits</string>
+    <string name="licenses_piper_title">Piper TTS Romanian</string>
+    <string name="licenses_piper_desc">The Romanian voice model used in this app</string>
+    <string name="licenses_piper_thanks">Thank you for the contribution to Romanian speech synthesis!</string>
+    <string name="licenses_developer_label">Developer</string>
+    <string name="licenses_developer_name">Cristian Onescu</string>
+    <string name="licenses_developer_desc">This app was created with love to help elderly people use their phone more easily.</string>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         Feature toggle labels (used in wizard & settings)
+         ════════════════════════════════════════════════════════════════════ -->
+    <string name="feature_phone">Dial Number</string>
+    <string name="feature_phone_desc">Show the dial pad button</string>
+    <string name="feature_contacts">Phone Book</string>
+    <string name="feature_contacts_desc">Show the contacts button</string>
+    <string name="feature_sms">Messages</string>
+    <string name="feature_sms_desc">Show the SMS messages button</string>
+    <string name="feature_gallery">Photo Gallery</string>
+    <string name="feature_gallery_desc">Show the photo gallery button</string>
+    <string name="feature_whatsapp">WhatsApp</string>
+    <string name="feature_whatsapp_desc">Show the WhatsApp button</string>
+
+    <!-- Wizard feature toggle labels -->
+    <string name="wizard_feature_quick_contacts">Quick Contacts</string>
+    <string name="wizard_feature_quick_contacts_desc">Large call buttons on the home screen</string>
+    <string name="wizard_feature_dial_pad">Dial Pad</string>
+    <string name="wizard_feature_dial_pad_desc">Dial a phone number</string>
+    <string name="wizard_feature_contacts">Contacts</string>
+    <string name="wizard_feature_contacts_desc">Phone contacts list</string>
+    <string name="wizard_feature_sms">SMS Messages</string>
+    <string name="wizard_feature_sms_desc">Read and send messages</string>
+    <string name="wizard_feature_gallery">Photo Gallery</string>
+    <string name="wizard_feature_gallery_desc">View photos on the phone</string>
+    <string name="wizard_feature_whatsapp_desc">WhatsApp button on the home screen</string>
+    <string name="wizard_feature_auto_volume">Auto max volume</string>
+    <string name="wizard_feature_auto_volume_desc">Automatically set all volumes to maximum to prevent the user from accidentally lowering the volume</string>
+    <string name="wizard_feature_inactivity_monitor">Inactivity monitor</string>
+    <string name="wizard_feature_inactivity_monitor_desc">Send SMS to emergency contacts if the phone is not used. Requires at least one emergency contact.</string>
+    <string name="wizard_feature_inactivity_no_contacts">No emergency contacts configured. Add at least one emergency contact (previous step) for this feature to work.</string>
+    <string name="wizard_feature_alert_after">Alert after</string>
+    <string name="wizard_feature_hours">hours</string>
+
+    <!-- Settings info page -->
+    <string name="wizard_settings_info_lock">On the home screen, in the bottom left corner, you will see a small lock icon. Tap it 5 times quickly within 3 seconds to open settings.</string>
+    <string name="wizard_settings_info_note">This method prevents the elderly user from accidentally opening settings.</string>
+    <string name="wizard_settings_info_contents">What you\'ll find in Settings</string>
+    <string name="wizard_settings_info_config_editor">You can edit the app configuration from a computer using the config-editor.html file included in the project. It lets you modify all settings visually and export a JSON file.</string>
+    <string name="wizard_settings_info_how">How it works:</string>
+    <string name="wizard_settings_info_remote_note">This way you can update settings remotely without physical access to the phone.</string>
+    <string name="wizard_settings_info_access_title">How to access Settings</string>
+    <string name="wizard_settings_info_item_contacts">Quick Contacts — add, delete, reorder, and set photos</string>
+    <string name="wizard_settings_info_item_theme">Theme — switch between light, dark, or automatic mode</string>
+    <string name="wizard_settings_info_item_tts">Voice (TTS) — enable/disable voice announcements</string>
+    <string name="wizard_settings_info_item_features">Features — choose which buttons appear on the home screen</string>
+    <string name="wizard_settings_info_item_permissions">Permissions — re-check app permissions</string>
+    <string name="wizard_settings_info_item_advanced">Advanced Config — JSON editor and URL import</string>
+    <string name="wizard_settings_info_remote_title">Remote Configuration</string>
+    <string name="wizard_settings_info_step1">1. Open config-editor.html in a browser on your computer</string>
+    <string name="wizard_settings_info_step2">2. Modify settings and contacts</string>
+    <string name="wizard_settings_info_step3">3. Export the JSON file</string>
+    <string name="wizard_settings_info_step4">4. Upload the file to a web server (GitHub Gist, Pastebin, your own server, etc.)</string>
+    <string name="wizard_settings_info_step5">5. In the app: Settings → Advanced Config → Import from URL → paste the link</string>
+</resources>
+
+

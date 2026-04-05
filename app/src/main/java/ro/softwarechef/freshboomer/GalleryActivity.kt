@@ -1,5 +1,6 @@
 package ro.softwarechef.freshboomer
 
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.ContentUris
 import android.content.pm.PackageManager
@@ -143,7 +144,7 @@ fun GalleryScreen(photos: List<Uri>) {
                             .data(photos[page])
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Poza ${page + 1}",
+                        contentDescription = stringResource(R.string.gallery_photo_description, page + 1),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit
                     )
@@ -172,11 +173,11 @@ fun GalleryScreen(photos: List<Uri>) {
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Inapoi",
+                        contentDescription = null,
                         modifier = Modifier.size(32.dp)
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Inapoi", style = MaterialTheme.typography.titleLarge)
+                    Text(stringResource(R.string.back), style = MaterialTheme.typography.titleLarge)
                 }
 
                 Button(
@@ -191,11 +192,11 @@ fun GalleryScreen(photos: List<Uri>) {
                     modifier = Modifier.height(56.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("Urmatoarea", style = MaterialTheme.typography.titleLarge)
+                    Text(stringResource(R.string.gallery_next), style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.width(8.dp))
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Urmatoarea",
+                        contentDescription = null,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -207,7 +208,7 @@ fun GalleryScreen(photos: List<Uri>) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Nu sunt poze",
+                    text = stringResource(R.string.gallery_empty),
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White
                 )

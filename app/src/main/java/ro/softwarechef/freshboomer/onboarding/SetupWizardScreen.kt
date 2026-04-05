@@ -21,13 +21,19 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import ro.softwarechef.freshboomer.R
 import ro.softwarechef.freshboomer.data.*
 import ro.softwarechef.freshboomer.models.QuickContact
 import ro.softwarechef.freshboomer.services.InactivityMonitorWorker
@@ -58,24 +65,36 @@ object SetupWizardPreference {
     }
 }
 
-private const val TOTAL_PAGES = 7
+private const val TOTAL_PAGES = 6
 
 @Composable
 fun SetupWizardScreen(
     onThemeChanged: () -> Unit = {},
     onComplete: () -> Unit
 ) {
-    val context = LocalContext.current
+    val baseContext = LocalContext.current
     var currentPage by remember { mutableIntStateOf(0) }
 
     // Wizard state
-    var nickname by remember { mutableStateOf(NicknamePreference.getNickname(context)) }
+    var nickname by remember { mutableStateOf(NicknamePreference.getNickname(baseContext)) }
     var quickContacts by remember { mutableStateOf(listOf<QuickContact>()) }
-    var featureToggles by remember { mutableStateOf(FeatureTogglePreference.getToggles(context)) }
-    var themeMode by remember { mutableStateOf(ThemePreference.getThemeMode(context)) }
+    var featureToggles by remember { mutableStateOf(FeatureTogglePreference.getToggles(baseContext)) }
+    var themeMode by remember { mutableStateOf(ThemePreference.getThemeMode(baseContext)) }
     var appLanguage by remember { mutableStateOf(AppConfig.current.appLanguage) }
     var emergencyContacts by remember { mutableStateOf(AppConfig.current.emergencyContacts) }
     var inactivityThresholdHours by remember { mutableIntStateOf(AppConfig.current.inactivityMonitorThresholdHours) }
+
+    // Create a locale-aware context so stringResource() resolves to the selected language.
+    // We also explicitly re-provide Activity-dependent composition locals because
+    // createConfigurationContext() returns a plain Context, not an Activity.
+    val activity = baseContext as androidx.activity.ComponentActivity
+    val localeContext = remember(appLanguage) {
+        val locale = java.util.Locale(appLanguage)
+        java.util.Locale.setDefault(locale)
+        val config = android.content.res.Configuration(baseContext.resources.configuration)
+        config.setLocale(locale)
+        baseContext.createConfigurationContext(config)
+    }
 
     fun saveAndFinish() {
         // Save everything via AppConfig (which syncs contacts to repo)
@@ -95,16 +114,23 @@ fun SetupWizardScreen(
             emergencyContacts = emergencyContacts,
             quickContacts = quickContacts
         )
-        AppConfig.save(context, config)
+        AppConfig.save(baseContext, config)
 
         // Schedule or cancel inactivity monitor based on new config
-        InactivityMonitorWorker.reschedule(context)
+        InactivityMonitorWorker.reschedule(baseContext)
 
         // Mark setup as completed
-        SetupWizardPreference.setCompleted(context, true)
+        SetupWizardPreference.setCompleted(baseContext, true)
         onComplete()
     }
 
+    CompositionLocalProvider(
+        LocalContext provides localeContext,
+        LocalActivityResultRegistryOwner provides activity,
+        LocalOnBackPressedDispatcherOwner provides activity,
+        LocalLifecycleOwner provides activity,
+        LocalSavedStateRegistryOwner provides activity,
+    ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -120,7 +146,7 @@ fun SetupWizardScreen(
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
         Text(
-            text = "Pasul ${currentPage + 1} din $TOTAL_PAGES",
+            text = stringResource(R.string.wizard_step_progress, currentPage + 1, TOTAL_PAGES),
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
@@ -131,7 +157,13 @@ fun SetupWizardScreen(
             modifier = Modifier.weight(1f)
         ) {
             when (currentPage) {
-                0 -> WelcomePage()
+                0 -> WelcomePage(
+                    appLanguage = appLanguage,
+                    onLanguageChanged = {
+                        appLanguage = it
+                        AppConfig.save(baseContext, AppConfig.current.copy(appLanguage = it))
+                    }
+                )
                 1 -> NicknamePage(
                     nickname = nickname,
                     onNicknameChanged = { nickname = it }
@@ -140,28 +172,24 @@ fun SetupWizardScreen(
                     contacts = quickContacts,
                     onContactsChanged = { quickContacts = it }
                 )
-                3 -> LanguagePage(
-                    appLanguage = appLanguage,
-                    onLanguageChanged = { appLanguage = it }
-                )
-                4 -> EmergencyContactsPage(
+                3 -> EmergencyContactsPage(
                     emergencyContacts = emergencyContacts,
                     onContactsChanged = { emergencyContacts = it }
                 )
-                5 -> FeaturesPage(
+                4 -> FeaturesPage(
                     toggles = featureToggles,
                     onTogglesChanged = { featureToggles = it },
                     themeMode = themeMode,
                     onThemeModeChanged = {
                         themeMode = it
-                        ThemePreference.setThemeMode(context, it)
+                        ThemePreference.setThemeMode(baseContext, it)
                         onThemeChanged()
                     },
                     inactivityThresholdHours = inactivityThresholdHours,
                     onThresholdHoursChanged = { inactivityThresholdHours = it },
                     hasEmergencyContacts = emergencyContacts.any { it.phoneNumber.isNotBlank() }
                 )
-                6 -> SettingsInfoPage()
+                5 -> SettingsInfoPage()
             }
         }
 
@@ -181,7 +209,7 @@ fun SetupWizardScreen(
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Inapoi", fontSize = 18.sp)
+                    Text(stringResource(R.string.wizard_back), fontSize = 18.sp)
                 }
             } else {
                 // Skip button on first page
@@ -189,7 +217,7 @@ fun SetupWizardScreen(
                     onClick = { saveAndFinish() },
                     modifier = Modifier.height(52.dp)
                 ) {
-                    Text("Sari peste", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                    Text(stringResource(R.string.wizard_skip), fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
                 }
             }
 
@@ -199,7 +227,7 @@ fun SetupWizardScreen(
                     modifier = Modifier.height(52.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("Inainte", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.wizard_next), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(20.dp))
                 }
@@ -209,19 +237,24 @@ fun SetupWizardScreen(
                     modifier = Modifier.height(52.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("Finalizeaza", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.wizard_finish), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(20.dp))
                 }
             }
         }
     }
+    } // CompositionLocalProvider
 }
 
 // ─── Page 1: Welcome ───
 
 @Composable
-private fun WelcomePage() {
+private fun WelcomePage(
+    appLanguage: String,
+    onLanguageChanged: (String) -> Unit
+) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -237,7 +270,7 @@ private fun WelcomePage() {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Bine ai venit!",
+            text = stringResource(R.string.wizard_welcome_title),
             fontSize = 34.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -245,7 +278,7 @@ private fun WelcomePage() {
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "FreshBoomer este un launcher simplu care face telefonul mai usor de folosit.",
+            text = stringResource(R.string.wizard_welcome_description),
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
@@ -253,12 +286,42 @@ private fun WelcomePage() {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "In pasii urmatori poti configura aplicatia. Daca nu doresti sa faci modificari, apasa \"Sari peste\" pentru a folosi valorile implicite.",
+            text = stringResource(R.string.wizard_welcome_instructions),
             fontSize = 17.sp,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             modifier = Modifier.padding(horizontal = 16.dp)
         )
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Language selection
+        Text(
+            text = stringResource(R.string.wizard_language_title),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            FilterChip(
+                selected = appLanguage == "ro",
+                onClick = { if (appLanguage != "ro") onLanguageChanged("ro") },
+                label = { Text("Romana", fontSize = 18.sp) },
+                leadingIcon = if (appLanguage == "ro") {
+                    { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                } else null
+            )
+            FilterChip(
+                selected = appLanguage == "en",
+                onClick = { if (appLanguage != "en") onLanguageChanged("en") },
+                label = { Text("English", fontSize = 18.sp) },
+                leadingIcon = if (appLanguage == "en") {
+                    { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                } else null
+            )
+        }
     }
 }
 
@@ -284,7 +347,7 @@ private fun NicknamePage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Cum ii spui utilizatorului?",
+            text = stringResource(R.string.wizard_nickname_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -292,7 +355,7 @@ private fun NicknamePage(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Acest nume va fi folosit in anunturile vocale, de exemplu: \"Mamaie, ai un apel pierdut\"",
+            text = stringResource(R.string.wizard_nickname_description),
             fontSize = 17.sp,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
@@ -302,8 +365,8 @@ private fun NicknamePage(
         OutlinedTextField(
             value = nickname,
             onValueChange = onNicknameChanged,
-            label = { Text("Porecla", fontSize = 18.sp) },
-            placeholder = { Text("ex: Mamaie, Bunica, Tata") },
+            label = { Text(stringResource(R.string.wizard_nickname_label), fontSize = 18.sp) },
+            placeholder = { Text(stringResource(R.string.wizard_nickname_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
@@ -343,14 +406,14 @@ private fun QuickContactsPage(
         modifier = Modifier.fillMaxSize()
     ) {
         Text(
-            text = "Contacte Rapide",
+            text = stringResource(R.string.wizard_contacts_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Adauga persoanele pe care utilizatorul le suna cel mai des. Vor aparea ca butoane mari pe ecranul principal.",
+            text = stringResource(R.string.wizard_contacts_description),
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
@@ -406,13 +469,13 @@ private fun QuickContactsPage(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Adauga contact", fontSize = 18.sp)
+                Text(stringResource(R.string.wizard_contacts_add), fontSize = 18.sp)
             }
 
             if (contacts.isEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Niciun contact adaugat. Poti adauga contacte oricand mai tarziu din Setari.",
+                    text = stringResource(R.string.wizard_contacts_empty),
                     fontSize = 15.sp,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
@@ -477,8 +540,8 @@ private fun QuickContactRow(
                 OutlinedTextField(
                     value = contact.name,
                     onValueChange = onNameChanged,
-                    label = { Text("Nume") },
-                    placeholder = { Text("ex: Maria") },
+                    label = { Text(stringResource(R.string.wizard_contact_name_label)) },
+                    placeholder = { Text(stringResource(R.string.wizard_contact_name_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
@@ -488,8 +551,8 @@ private fun QuickContactRow(
                 OutlinedTextField(
                     value = contact.phoneNumber,
                     onValueChange = onPhoneChanged,
-                    label = { Text("Telefon") },
-                    placeholder = { Text("ex: 0712345678") },
+                    label = { Text(stringResource(R.string.wizard_contact_phone_label)) },
+                    placeholder = { Text(stringResource(R.string.wizard_contact_phone_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
@@ -522,6 +585,7 @@ private fun LanguagePage(
     appLanguage: String,
     onLanguageChanged: (String) -> Unit
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -537,14 +601,14 @@ private fun LanguagePage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Limba aplicatiei",
+            text = stringResource(R.string.wizard_language_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Alege limba in care va fi afisata aplicatia.",
+            text = stringResource(R.string.wizard_language_description),
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
@@ -552,9 +616,19 @@ private fun LanguagePage(
 
         FilterChip(
             selected = appLanguage == "ro",
-            onClick = { onLanguageChanged("ro") },
+            onClick = { if (appLanguage != "ro") onLanguageChanged("ro") },
             label = { Text("Romana", fontSize = 18.sp) },
             leadingIcon = if (appLanguage == "ro") {
+                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
+            } else null,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        FilterChip(
+            selected = appLanguage == "en",
+            onClick = { if (appLanguage != "en") onLanguageChanged("en") },
+            label = { Text("English", fontSize = 18.sp) },
+            leadingIcon = if (appLanguage == "en") {
                 { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
             } else null,
             modifier = Modifier.fillMaxWidth()
@@ -584,14 +658,14 @@ private fun EmergencyContactsPage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Contacte de urgenta",
+            text = stringResource(R.string.wizard_emergency_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Adauga persoane care vor fi notificate daca utilizatorul are probleme.",
+            text = stringResource(R.string.wizard_emergency_description),
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
@@ -616,8 +690,8 @@ private fun EmergencyContactsPage(
                                 updated[index] = contact.copy(name = newName)
                                 onContactsChanged(updated)
                             },
-                            label = { Text("Nume") },
-                            placeholder = { Text("ex: Maria") },
+                            label = { Text(stringResource(R.string.settings_emergency_name_label)) },
+                            placeholder = { Text(stringResource(R.string.settings_emergency_name_placeholder)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             shape = RoundedCornerShape(8.dp)
@@ -630,8 +704,8 @@ private fun EmergencyContactsPage(
                                 updated[index] = contact.copy(phoneNumber = newPhone)
                                 onContactsChanged(updated)
                             },
-                            label = { Text("Telefon") },
-                        placeholder = { Text("ex: 0712345678") },
+                            label = { Text(stringResource(R.string.settings_emergency_phone_label)) },
+                        placeholder = { Text(stringResource(R.string.settings_emergency_phone_placeholder)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -670,13 +744,13 @@ private fun EmergencyContactsPage(
         ) {
             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Adauga contact de urgenta", fontSize = 16.sp)
+            Text(stringResource(R.string.wizard_emergency_add), fontSize = 16.sp)
         }
 
         if (emergencyContacts.isEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Niciun contact de urgenta adaugat. Poti adauga contacte de urgenta oricand mai tarziu din Setari.",
+                text = stringResource(R.string.wizard_emergency_empty),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                 textAlign = TextAlign.Center,
@@ -704,14 +778,14 @@ private fun FeaturesPage(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = "Personalizare",
+            text = stringResource(R.string.wizard_customize_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Alege ce functionalitati sa fie vizibile pe ecranul principal.",
+            text = stringResource(R.string.wizard_customize_description),
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
@@ -719,7 +793,7 @@ private fun FeaturesPage(
 
         // Theme
         Text(
-            text = "Tema",
+            text = stringResource(R.string.wizard_section_theme),
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -728,37 +802,37 @@ private fun FeaturesPage(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ThemeChip("Sistem", AppThemeMode.SYSTEM, themeMode, onThemeModeChanged, Modifier.weight(1f))
-            ThemeChip("Luminos", AppThemeMode.LIGHT, themeMode, onThemeModeChanged, Modifier.weight(1f))
-            ThemeChip("Intunecat", AppThemeMode.DARK, themeMode, onThemeModeChanged, Modifier.weight(1f))
+            ThemeChip(stringResource(R.string.wizard_theme_system), AppThemeMode.SYSTEM, themeMode, onThemeModeChanged, Modifier.weight(1f))
+            ThemeChip(stringResource(R.string.wizard_theme_light), AppThemeMode.LIGHT, themeMode, onThemeModeChanged, Modifier.weight(1f))
+            ThemeChip(stringResource(R.string.wizard_theme_dark), AppThemeMode.DARK, themeMode, onThemeModeChanged, Modifier.weight(1f))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Feature toggles
         Text(
-            text = "Functionalitati",
+            text = stringResource(R.string.wizard_section_features),
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        FeatureToggleRow("Contacte rapide", "Butoane mari de apel pe ecranul principal", Icons.Default.Call, toggles.quickContacts) {
+        FeatureToggleRow(stringResource(R.string.wizard_feature_quick_contacts), stringResource(R.string.wizard_feature_quick_contacts_desc), Icons.Default.Call, toggles.quickContacts) {
             onTogglesChanged(toggles.copy(quickContacts = it))
         }
-        FeatureToggleRow("Tastatura de apel", "Formeaza un numar de telefon", Icons.Default.Phone, toggles.dialPad) {
+        FeatureToggleRow(stringResource(R.string.wizard_feature_dial_pad), stringResource(R.string.wizard_feature_dial_pad_desc), Icons.Default.Phone, toggles.dialPad) {
             onTogglesChanged(toggles.copy(dialPad = it))
         }
-        FeatureToggleRow("Agenda", "Lista de contacte din telefon", Icons.Default.Person, toggles.contacts) {
+        FeatureToggleRow(stringResource(R.string.wizard_feature_contacts), stringResource(R.string.wizard_feature_contacts_desc), Icons.Default.Person, toggles.contacts) {
             onTogglesChanged(toggles.copy(contacts = it))
         }
-        FeatureToggleRow("Mesaje SMS", "Citeste si trimite mesaje", Icons.Default.Email, toggles.messages) {
+        FeatureToggleRow(stringResource(R.string.wizard_feature_sms), stringResource(R.string.wizard_feature_sms_desc), Icons.Default.Email, toggles.messages) {
             onTogglesChanged(toggles.copy(messages = it))
         }
-        FeatureToggleRow("Galerie foto", "Vizualizeaza pozele din telefon", Icons.Default.Face, toggles.gallery) {
+        FeatureToggleRow(stringResource(R.string.wizard_feature_gallery), stringResource(R.string.wizard_feature_gallery_desc), Icons.Default.Face, toggles.gallery) {
             onTogglesChanged(toggles.copy(gallery = it))
         }
-        FeatureToggleRow("WhatsApp", "Buton WhatsApp pe ecranul principal", Icons.Default.Call, toggles.whatsapp) {
+        FeatureToggleRow("WhatsApp", stringResource(R.string.wizard_feature_whatsapp_desc), Icons.Default.Call, toggles.whatsapp) {
             onTogglesChanged(toggles.copy(whatsapp = it))
         }
 
@@ -766,23 +840,23 @@ private fun FeaturesPage(
 
         // Behavior
         Text(
-            text = "Comportament",
+            text = stringResource(R.string.wizard_section_behavior),
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         FeatureToggleRow(
-            "Volum automat la maxim",
-            "Seteaza automat toate volumele la maxim pentru a preveni situatiile in care utilizatorul reduce volumul accidental",
+            stringResource(R.string.wizard_feature_auto_volume),
+            stringResource(R.string.wizard_feature_auto_volume_desc),
             Icons.Default.Notifications,
             toggles.autoMaxVolume
         ) {
             onTogglesChanged(toggles.copy(autoMaxVolume = it))
         }
         FeatureToggleRow(
-            "Monitorizare inactivitate",
-            "Trimite SMS contactelor de urgenta daca telefonul nu e folosit. Necesita cel putin un contact de urgenta.",
+            stringResource(R.string.wizard_feature_inactivity_monitor),
+            stringResource(R.string.wizard_feature_inactivity_monitor_desc),
             Icons.Default.Warning,
             toggles.inactivityMonitor
         ) {
@@ -792,7 +866,7 @@ private fun FeaturesPage(
         if (toggles.inactivityMonitor) {
             if (!hasEmergencyContacts) {
                 Text(
-                    text = "Niciun contact de urgenta configurat. Adauga cel putin un contact de urgenta (pasul anterior) pentru ca aceasta functie sa functioneze.",
+                    text = stringResource(R.string.wizard_feature_inactivity_no_contacts),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(start = 40.dp, top = 4.dp, end = 8.dp)
@@ -804,7 +878,7 @@ private fun FeaturesPage(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Alerta dupa",
+                    text = stringResource(R.string.wizard_feature_alert_after),
                     fontSize = 16.sp,
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -825,7 +899,7 @@ private fun FeaturesPage(
                     shape = RoundedCornerShape(10.dp)
                 )
                 Text(
-                    text = "ore",
+                    text = stringResource(R.string.wizard_feature_hours),
                     fontSize = 16.sp,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -853,7 +927,7 @@ private fun SettingsInfoPage() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Inainte de a incepe",
+            text = stringResource(R.string.wizard_before_start_title),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
@@ -863,16 +937,16 @@ private fun SettingsInfoPage() {
         // How to access settings
         InfoCard(
             icon = Icons.Default.Lock,
-            title = "Cum accesezi Setarile"
+            title = stringResource(R.string.wizard_settings_info_access_title)
         ) {
             Text(
-                text = "Pe ecranul principal, in partea de stanga jos, vei vedea o mica iconita cu un lacat. Apasa rapid de 5 ori pe ea in mai putin de 3 secunde pentru a deschide setarile.",
+                text = stringResource(R.string.wizard_settings_info_lock),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Aceasta metoda previne deschiderea accidentala a setarilor de catre utilizatorul varstnic.",
+                text = stringResource(R.string.wizard_settings_info_note),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
@@ -884,15 +958,15 @@ private fun SettingsInfoPage() {
         // What's in settings
         InfoCard(
             icon = Icons.Default.Settings,
-            title = "Ce gasesti in Setari"
+            title = stringResource(R.string.wizard_settings_info_contents)
         ) {
             val items = listOf(
-                "Contacte rapide — adauga, sterge, reordoneaza si seteaza poze",
-                "Tema — schimba intre modul luminos, intunecat sau automat",
-                "Voce (TTS) — activeaza/dezactiveaza anunturile vocale",
-                "Functionalitati — alege ce butoane apar pe ecranul principal",
-                "Permisiuni — re-verifica permisiunile aplicatiei",
-                "Configurare avansata — editor JSON si import din URL"
+                stringResource(R.string.wizard_settings_info_item_contacts),
+                stringResource(R.string.wizard_settings_info_item_theme),
+                stringResource(R.string.wizard_settings_info_item_tts),
+                stringResource(R.string.wizard_settings_info_item_features),
+                stringResource(R.string.wizard_settings_info_item_permissions),
+                stringResource(R.string.wizard_settings_info_item_advanced)
             )
             items.forEach { item ->
                 Row(modifier = Modifier.padding(vertical = 2.dp)) {
@@ -911,25 +985,25 @@ private fun SettingsInfoPage() {
         // Remote config
         InfoCard(
             icon = Icons.Default.Share,
-            title = "Configurare de la distanta"
+            title = stringResource(R.string.wizard_settings_info_remote_title)
         ) {
             Text(
-                text = "Poti edita configurarea aplicatiei de pe un calculator folosind fisierul config-editor.html inclus in proiect. Acesta iti permite sa modifici toate setarile vizual si sa exporti un fisier JSON.",
+                text = stringResource(R.string.wizard_settings_info_config_editor),
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Cum functioneaza:",
+                text = stringResource(R.string.wizard_settings_info_how),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold
             )
             val steps = listOf(
-                "1. Deschide config-editor.html in browser pe calculator",
-                "2. Modifica setarile si contactele",
-                "3. Exporta fisierul JSON",
-                "4. Incarca fisierul pe un server web (GitHub Gist, Pastebin, un server propriu etc.)",
-                "5. In aplicatie: Setari → Configurare Avansata → Importa din URL → lipeste link-ul"
+                stringResource(R.string.wizard_settings_info_step1),
+                stringResource(R.string.wizard_settings_info_step2),
+                stringResource(R.string.wizard_settings_info_step3),
+                stringResource(R.string.wizard_settings_info_step4),
+                stringResource(R.string.wizard_settings_info_step5)
             )
             steps.forEach { step ->
                 Text(
@@ -941,7 +1015,7 @@ private fun SettingsInfoPage() {
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Astfel poti actualiza setarile de la distanta fara sa ai acces fizic la telefon.",
+                text = stringResource(R.string.wizard_settings_info_remote_note),
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic

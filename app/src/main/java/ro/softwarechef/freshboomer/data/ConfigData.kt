@@ -154,7 +154,7 @@ val ALL_CONFIG_FIELDS: List<ConfigFieldMeta> = listOf(
     // General
     ConfigFieldMeta("user_nickname", "user_nickname", "Numele folosit in anunturile vocale (inlocuieste 'Mamaie')", ConfigGroup.GENERAL, FieldType.STRING),
     ConfigFieldMeta("theme_mode", "theme_mode", "Tema aplicatiei", ConfigGroup.GENERAL, FieldType.ENUM, listOf("SYSTEM", "LIGHT", "DARK")),
-    ConfigFieldMeta("app_language", "app_language", "Limba aplicatiei", ConfigGroup.GENERAL, FieldType.ENUM, listOf("ro")),
+    ConfigFieldMeta("app_language", "app_language", "Limba aplicatiei", ConfigGroup.GENERAL, FieldType.ENUM, listOf("ro", "en")),
 
     // TTS
     ConfigFieldMeta("tts_enabled", "tts_enabled", "Activeaza/dezactiveaza anunturile vocale", ConfigGroup.TTS, FieldType.BOOLEAN),

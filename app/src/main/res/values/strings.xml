@@ -11,6 +11,7 @@
     <string name="no">Nu</string>
     <string name="call">Suna</string>
     <string name="enabled">Activat</string>
+    <string name="footer_copyright">Launcher creat pentru %1$s - v%2$s (%3$d) - (c) %4$d Cristian O.</string>
 
     <!-- ════════════════════════════════════════════════════════════════════
          MainActivity — Home Screen
@@ -128,6 +129,7 @@
     <string name="tts_download_progress">Se descarcă vocea: %1$.0f/%2$.0f MB</string>
     <string name="tts_download_progress_unknown">Se descarcă vocea: %1$.0f MB</string>
     <string name="tts_download_error">Vocea nu s-a putut descărca</string>
+    <string name="tts_download_error_retry">Vocea nu s-a putut descărca. Apasă pentru a reîncerca.</string>
 
     <!-- ════════════════════════════════════════════════════════════════════
          OnboardingScreen — Permissions & Setup
@@ -281,6 +283,15 @@
     <string name="settings_tts_device">Vocea dispozitivului</string>
     <string name="settings_tts_device_desc">Foloseste vocea implicita de pe telefon</string>
     <string name="settings_tts_update_model">Actualizare model vocal</string>
+    <string name="settings_tts_update_idle">Apasa pentru a verifica daca exista o versiune noua</string>
+    <string name="settings_tts_update_checking">Se verifica…</string>
+    <string name="settings_tts_update_up_to_date">Modelul este la zi</string>
+    <string name="settings_tts_update_downloading">Se descarca: %1$.0f/%2$.0f MB</string>
+    <string name="settings_tts_update_downloading_unknown">Se descarca: %1$.0f MB</string>
+    <string name="settings_tts_update_done">Actualizare finalizata!</string>
+    <string name="settings_tts_update_error">Eroare la verificare. Verifica conexiunea la internet.</string>
+    <string name="settings_tts_update_no_model">Modelul nu este descarcat. Se descarca…</string>
+    <string name="settings_tts_update_check">Verifica</string>
 
     <!-- Nickname settings -->
     <string name="settings_nickname_title">Cum sa te numeasca aplicatia</string>
@@ -292,6 +303,7 @@
     <string name="settings_language_title">Limba aplicatiei</string>
     <string name="settings_language_desc">Alege limba in care este afisata aplicatia</string>
     <string name="language_romanian">Romana</string>
+    <string name="language_english">English</string>
 
     <!-- Emergency contacts settings -->
     <string name="settings_emergency_title">Contacte de urgenta</string>
@@ -340,4 +352,47 @@
     <string name="feature_gallery_desc">Afiseaza butonul pentru vizualizarea pozelor</string>
     <string name="feature_whatsapp">WhatsApp</string>
     <string name="feature_whatsapp_desc">Afiseaza butonul pentru deschiderea WhatsApp</string>
+
+    <!-- Wizard feature toggle labels -->
+    <string name="wizard_feature_quick_contacts">Contacte rapide</string>
+    <string name="wizard_feature_quick_contacts_desc">Butoane mari de apel pe ecranul principal</string>
+    <string name="wizard_feature_dial_pad">Tastatura de apel</string>
+    <string name="wizard_feature_dial_pad_desc">Formeaza un numar de telefon</string>
+    <string name="wizard_feature_contacts">Agenda</string>
+    <string name="wizard_feature_contacts_desc">Lista de contacte din telefon</string>
+    <string name="wizard_feature_sms">Mesaje SMS</string>
+    <string name="wizard_feature_sms_desc">Citeste si trimite mesaje</string>
+    <string name="wizard_feature_gallery">Galerie foto</string>
+    <string name="wizard_feature_gallery_desc">Vizualizeaza pozele din telefon</string>
+    <string name="wizard_feature_whatsapp_desc">Buton WhatsApp pe ecranul principal</string>
+    <string name="wizard_feature_auto_volume">Volum automat la maxim</string>
+    <string name="wizard_feature_auto_volume_desc">Seteaza automat toate volumele la maxim pentru a preveni situatiile in care utilizatorul reduce volumul accidental</string>
+    <string name="wizard_feature_inactivity_monitor">Monitorizare inactivitate</string>
+    <string name="wizard_feature_inactivity_monitor_desc">Trimite SMS contactelor de urgenta daca telefonul nu e folosit. Necesita cel putin un contact de urgenta.</string>
+    <string name="wizard_feature_inactivity_no_contacts">Niciun contact de urgenta configurat. Adauga cel putin un contact de urgenta (pasul anterior) pentru ca aceasta functie sa functioneze.</string>
+    <string name="wizard_feature_alert_after">Alerta dupa</string>
+    <string name="wizard_feature_hours">ore</string>
+
+    <!-- Settings info page -->
+    <string name="wizard_settings_info_lock">Pe ecranul principal, in partea de stanga jos, vei vedea o mica iconita cu un lacat. Apasa rapid de 5 ori pe ea in mai putin de 3 secunde pentru a deschide setarile.</string>
+    <string name="wizard_settings_info_note">Aceasta metoda previne deschiderea accidentala a setarilor de catre utilizatorul varstnic.</string>
+    <string name="wizard_settings_info_contents">Ce gasesti in Setari</string>
+    <string name="wizard_settings_info_config_editor">Poti edita configurarea aplicatiei de pe un calculator folosind fisierul config-editor.html inclus in proiect. Acesta iti permite sa modifici toate setarile vizual si sa exporti un fisier JSON.</string>
+    <string name="wizard_settings_info_how">Cum functioneaza:</string>
+    <string name="wizard_settings_info_remote_note">Astfel poti actualiza setarile de la distanta fara sa ai acces fizic la telefon.</string>
+    <string name="wizard_settings_info_access_title">Cum accesezi Setarile</string>
+    <string name="wizard_settings_info_item_contacts">Contacte rapide — adauga, sterge, reordoneaza si seteaza poze</string>
+    <string name="wizard_settings_info_item_theme">Tema — schimba intre modul luminos, intunecat sau automat</string>
+    <string name="wizard_settings_info_item_tts">Voce (TTS) — activeaza/dezactiveaza anunturile vocale</string>
+    <string name="wizard_settings_info_item_features">Functionalitati — alege ce butoane apar pe ecranul principal</string>
+    <string name="wizard_settings_info_item_permissions">Permisiuni — re-verifica permisiunile aplicatiei</string>
+    <string name="wizard_settings_info_item_advanced">Configurare avansata — editor JSON si import din URL</string>
+    <string name="wizard_settings_info_remote_title">Configurare de la distanta</string>
+    <string name="wizard_settings_info_step1">1. Deschide config-editor.html in browser pe calculator</string>
+    <string name="wizard_settings_info_step2">2. Modifica setarile si contactele</string>
+    <string name="wizard_settings_info_step3">3. Exporta fisierul JSON</string>
+    <string name="wizard_settings_info_step4">4. Incarca fisierul pe un server web (GitHub Gist, Pastebin, un server propriu etc.)</string>
+    <string name="wizard_settings_info_step5">5. In aplicatie: Setari → Configurare Avansata → Importa din URL → lipeste link-ul</string>
 </resources>
+
+

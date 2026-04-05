@@ -1,6 +1,6 @@
 # FreshBoomer
 
-A simplified Android home launcher designed for elderly users. Replaces the default launcher, phone, and SMS apps with a large-button, accessible, Romanian-language interface featuring text-to-speech accessibility.
+A simplified Android home launcher designed for elderly users. Replaces the default launcher, phone, and SMS apps with a large-button, accessible interface in Romanian and English featuring text-to-speech accessibility.
 
 **Package:** `ro.softwarechef.freshboomer`
 
@@ -15,7 +15,7 @@ _Coming soon_
 ## Features
 
 ### Home Screen
-- Analog + digital clock with date in Romanian
+- Analog + digital clock with localized date
 - Battery status indicators (low, charging, full)
 - Quick-dial contact grid with custom photos and color-coded avatars
 - Missed call banner with caller info and quick call-back
@@ -61,12 +61,13 @@ _Coming soon_
 - Advanced JSON config editor
 - Remote config import from URL (HTTP & HTTPS) with automatic re-sync on every home screen resume
 - Theme selection (System / Light / Dark)
+- Language selection (Romanian / English) with runtime locale switching
 
 ### Accessibility
 - Full-screen immersive mode
 - Large fonts (24-40sp), high-contrast colors, rounded buttons
 - Portrait-only, single-task launch mode
-- All UI text in Romanian
+- Multi-language support (Romanian and English), selectable during onboarding and in settings
 
 ## Requirements
 
@@ -99,7 +100,7 @@ app/src/main/java/ro/softwarechef/freshboomer/
 ├── IncomingCallActivity.kt      # Incoming call UI
 ├── WhatsAppCallActivity.kt      # WhatsApp call UI
 ├── call/                        # Call manager & InCallService
-├── data/                        # AppConfig, ConfigData, preferences, repositories
+├── data/                        # AppConfig, ConfigData, LocaleHelper, preferences, repositories
 ├── models/                      # Contact, QuickContact
 ├── onboarding/                  # Setup wizard, permission onboarding
 ├── receivers/                   # SMS, MMS, phone call receivers
@@ -115,6 +116,7 @@ Single-module, activity-based architecture with Jetpack Compose UI. No DI framew
 
 - **State management:** Compose `mutableStateOf` / `remember` + `StateFlow` for config
 - **Configuration:** Centralized `AppConfig` singleton with JSON file persistence, SharedPreferences sync, and remote URL import
+- **Localization:** Runtime locale switching via `LocaleHelper` — language is read from `config.json` on disk at `attachBaseContext()` time, before `AppConfig` initializes. Full English translation in `values-en/strings.xml`
 - **TTS:** Piper ONNX engine (offline Romanian) with device default fallback
 - **Persistence:** JSON files (`config.json`, `quick_contacts.json`) + SharedPreferences
 

@@ -2,6 +2,8 @@ package ro.softwarechef.freshboomer.tts
 
 import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.res.stringResource
+import ro.softwarechef.freshboomer.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -111,7 +113,7 @@ fun TtsStatusFooter(
         when (state) {
             DownloadState.CHECKING -> {
                 Text(
-                    text = "Se verifică modelul vocal...",
+                    text = stringResource(R.string.tts_download_checking),
                     fontSize = 8.sp,
                     color = Color.Gray
                 )
@@ -130,9 +132,9 @@ fun TtsStatusFooter(
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = if (totalMb > 0)
-                            "Se descarcă vocea: %.0f/%.0f MB".format(downloadedMb, totalMb)
+                            stringResource(R.string.tts_download_progress, downloadedMb, totalMb)
                         else
-                            "Se descarcă vocea: %.0f MB".format(downloadedMb),
+                            stringResource(R.string.tts_download_progress_unknown, downloadedMb),
                         fontSize = 8.sp,
                         color = Color.Gray
                     )
@@ -165,12 +167,13 @@ fun TtsStatusFooter(
                     )
                 }
                 Text(
-                    text = "Vocea nu s-a putut descărca. Apasă pentru a reîncerca.",
+                    text = stringResource(R.string.tts_download_error_retry),
                     fontSize = 8.sp,
                     color = Color.Red,
-                    modifier = Modifier.clickable {
-                        retryCount++
-                    }
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { retryCount++ },
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }
             DownloadState.DONE -> {

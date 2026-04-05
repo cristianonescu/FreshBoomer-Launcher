@@ -1,5 +1,6 @@
 package ro.softwarechef.freshboomer
 
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -93,7 +94,7 @@ fun PhoneScreen(onCall: (String) -> Unit) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "Formeaza Numar",
+                text = stringResource(R.string.phone_header),
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -196,7 +197,7 @@ fun DialPad(
                 )
             ) {
                 Text(
-                    text = "Sterge",
+                    text = stringResource(R.string.phone_delete),
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -220,7 +221,7 @@ fun DialPad(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Suna",
+                    text = stringResource(R.string.phone_call),
                     style = MaterialTheme.typography.displayLarge,
                     color = Color.White
                 )

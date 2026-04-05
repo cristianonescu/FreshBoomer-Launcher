@@ -1,5 +1,6 @@
 package ro.softwarechef.freshboomer
 
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -233,7 +234,7 @@ fun SmsScreen(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = "Mesaje",
+                    text = stringResource(R.string.sms_header),
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
@@ -242,7 +243,7 @@ fun SmsScreen(
 
             // Conversation count
             Text(
-                text = "${conversationsState.size} discutii",
+                text = stringResource(R.string.sms_conversations_count, conversationsState.size),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
@@ -264,7 +265,7 @@ fun SmsScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Nu ai mesaje",
+                            text = stringResource(R.string.sms_empty),
                             fontSize = 24.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )

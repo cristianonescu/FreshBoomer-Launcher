@@ -44,6 +44,7 @@ import ro.softwarechef.freshboomer.data.ThemePreference
 import ro.softwarechef.freshboomer.data.TtsEngine
 import ro.softwarechef.freshboomer.data.TtsPreference
 import ro.softwarechef.freshboomer.models.QuickContact
+import ro.softwarechef.freshboomer.tts.PiperVoice
 import ro.softwarechef.freshboomer.tts.TtsModelManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -808,17 +809,41 @@ private fun TtsSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
+                    selected = selectedEngine == TtsEngine.PIPER_SANDA,
+                    onClick = { onEngineChange(TtsEngine.PIPER_SANDA) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Piper Sanda (recomandat)",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Voce locala romaneasca, functioneaza fara internet",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            }
+            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
                     selected = selectedEngine == TtsEngine.PIPER_LILI,
                     onClick = { onEngineChange(TtsEngine.PIPER_LILI) }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Piper Lili (recomandat)",
+                        text = "Piper Lili",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Voce locala romaneasca, functioneaza fara internet",
+                        text = "Voce alternativa romaneasca, functioneaza fara internet",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -861,6 +886,11 @@ private fun TtsSection(
 private fun TtsUpdateRow() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    val selectedVoice = when (TtsPreference.getEngine(context)) {
+        TtsEngine.PIPER_SANDA -> PiperVoice.SANDA
+        else -> PiperVoice.LILI
+    }
 
     var checkState by remember { mutableStateOf<UpdateCheckState>(UpdateCheckState.Idle) }
     var downloadProgress by remember { mutableFloatStateOf(0f) }
@@ -914,11 +944,11 @@ private fun TtsUpdateRow() {
                 scope.launch {
                     checkState = UpdateCheckState.Checking
                     val modelExists = withContext(Dispatchers.IO) {
-                        TtsModelManager.isModelDownloaded(context)
+                        TtsModelManager.isModelDownloaded(context, selectedVoice)
                     }
                     if (!modelExists) {
                         checkState = UpdateCheckState.NoModel
-                        val success = TtsModelManager.downloadModel(context) { downloaded, total ->
+                        val success = TtsModelManager.downloadModel(context, selectedVoice) { downloaded, total ->
                             downloadedMb = downloaded / (1024f * 1024f)
                             if (total > 0) {
                                 totalMb = total / (1024f * 1024f)
@@ -929,7 +959,7 @@ private fun TtsUpdateRow() {
                         checkState = if (success) UpdateCheckState.Done else UpdateCheckState.Error
                         return@launch
                     }
-                    val updateAvailable = TtsModelManager.isUpdateAvailable(context)
+                    val updateAvailable = TtsModelManager.isUpdateAvailable(context, selectedVoice)
                     if (!updateAvailable) {
                         checkState = UpdateCheckState.UpToDate
                         return@launch
@@ -938,7 +968,7 @@ private fun TtsUpdateRow() {
                     downloadProgress = 0f
                     downloadedMb = 0f
                     totalMb = 0f
-                    val success = TtsModelManager.downloadModel(context) { downloaded, total ->
+                    val success = TtsModelManager.downloadModel(context, selectedVoice) { downloaded, total ->
                         downloadedMb = downloaded / (1024f * 1024f)
                         if (total > 0) {
                             totalMb = total / (1024f * 1024f)
@@ -1602,7 +1632,7 @@ private val LICENSES = listOf(
         "Sherpa ONNX",
         "Apache License 2.0",
         "https://github.com/k2-fsa/sherpa-onnx",
-        "Motor text-to-speech offline (vocea Piper Lili)"
+        "Motor text-to-speech offline (vocile Piper Lili si Sanda)"
     ),
     LicenseInfo(
         "Piper TTS",

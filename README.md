@@ -46,7 +46,7 @@ _Coming soon_
 - Dedicated call screen with caller name
 
 ### Text-to-Speech (Romanian)
-- Offline TTS via Piper (ONNX VITS model, Lili voice) with device default fallback
+- Offline TTS via Piper (ONNX VITS models, Sanda and Lili voices) with device default fallback
 - Voice announcements for navigation, calls, missed calls, battery status
 - Configurable speech rate (0.5x - 2.0x)
 
@@ -166,7 +166,7 @@ This project uses the following open source libraries:
 
 ## Credits
 
-- **Piper TTS Romanian** -- The Romanian voice model used in this app is created by [eduardem](https://huggingface.co/eduardem/piper-tts-romanian). Thank you for the contribution to Romanian speech synthesis!
+- **Piper TTS Romanian** -- The Romanian voice models (Lili and Sanda) used in this app are created by [eduardem](https://huggingface.co/eduardem/piper-tts-romanian). Thank you for the contribution to Romanian speech synthesis!
 - **Developer** -- Cristian Onescu
 
 ## License

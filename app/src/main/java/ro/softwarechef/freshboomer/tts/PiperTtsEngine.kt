@@ -21,10 +21,24 @@ object PiperTtsEngine {
     private var tts: OfflineTts? = null
     private var audioTrack: AudioTrack? = null
     private var initialized = false
+    private var loadedVoice: PiperVoice? = null
 
     var lengthScale: Float = 1.0f
 
     val isReady: Boolean get() = initialized && tts != null
+
+    fun isReadyFor(voice: PiperVoice): Boolean = isReady && loadedVoice == voice
+
+    /**
+     * Initialize with a specific voice. If a different voice was loaded, releases it first.
+     */
+    fun initialize(context: Context, voice: PiperVoice): Boolean {
+        if (initialized && loadedVoice == voice) return true
+        if (initialized) release()
+        return initializeInternal(context, voice.modelFilename).also {
+            if (it) loadedVoice = voice
+        }
+    }
 
     /**
      * Initialize the Piper TTS engine and run a warmup generation.
@@ -33,9 +47,15 @@ object PiperTtsEngine {
     fun initialize(context: Context): Boolean {
         if (initialized) return true
 
+        return initializeInternal(context, TtsModelManager.MODEL_FILENAME).also {
+            if (it) loadedVoice = PiperVoice.LILI
+        }
+    }
+
+    private fun initializeInternal(context: Context, modelFilename: String): Boolean {
         try {
             val modelDir = TtsModelManager.getModelDir(context)
-            val modelFile = File(modelDir, TtsModelManager.MODEL_FILENAME)
+            val modelFile = File(modelDir, modelFilename)
             val tokensFile = File(modelDir, TOKENS_FILE)
             val espeakDataDir = File(modelDir, ESPEAK_DATA_DIR)
 

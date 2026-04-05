@@ -70,7 +70,8 @@ fun ConfirmCallDialog(
     LaunchedEffect(Unit) {
         val ttsText = context.getString(R.string.confirm_call_prompt, nickname, name)
         val preferredEngine = ro.softwarechef.freshboomer.data.TtsPreference.getEngine(context)
-        if (preferredEngine == ro.softwarechef.freshboomer.data.TtsEngine.PIPER_LILI && PiperTtsEngine.isReady) {
+        if ((preferredEngine == ro.softwarechef.freshboomer.data.TtsEngine.PIPER_LILI ||
+             preferredEngine == ro.softwarechef.freshboomer.data.TtsEngine.PIPER_SANDA) && PiperTtsEngine.isReady) {
             launch(Dispatchers.IO) {
                 PiperTtsEngine.speak(ttsText)
             }

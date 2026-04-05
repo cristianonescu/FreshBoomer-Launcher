@@ -4,6 +4,7 @@ import android.content.Context
 
 enum class TtsEngine {
     PIPER_LILI,
+    PIPER_SANDA,
     DEVICE_DEFAULT
 }
 
@@ -18,7 +19,7 @@ object TtsPreference {
         return try {
             TtsEngine.valueOf(AppConfig.current.ttsEngine)
         } catch (_: IllegalArgumentException) {
-            TtsEngine.PIPER_LILI
+            TtsEngine.PIPER_SANDA
         }
     }
 

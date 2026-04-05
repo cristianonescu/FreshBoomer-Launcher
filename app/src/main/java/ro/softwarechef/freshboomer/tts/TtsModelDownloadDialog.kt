@@ -47,7 +47,7 @@ enum class DownloadState {
  */
 @Composable
 fun TtsStatusFooter(
-    onComplete: () -> Unit,
+    onComplete: (PiperVoice) -> Unit,
     copyrightText: String,
     onSettingsClick: (() -> Unit)? = null
 ) {
@@ -56,27 +56,38 @@ fun TtsStatusFooter(
     var progress by remember { mutableFloatStateOf(0f) }
     var downloadedMb by remember { mutableFloatStateOf(0f) }
     var totalMb by remember { mutableFloatStateOf(0f) }
+    var retryCount by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(Unit) {
-        TtsModelManager.ensureMetadataInjected(context)
-        val modelExists = TtsModelManager.isModelDownloaded(context)
+    LaunchedEffect(retryCount) {
+        state = DownloadState.CHECKING
+        progress = 0f
+        downloadedMb = 0f
+        totalMb = 0f
+        val selectedEngine = ro.softwarechef.freshboomer.data.TtsPreference.getEngine(context)
+        val voice = when (selectedEngine) {
+            ro.softwarechef.freshboomer.data.TtsEngine.PIPER_SANDA -> PiperVoice.SANDA
+            else -> PiperVoice.LILI
+        }
+
+        TtsModelManager.ensureMetadataInjected(context, voice)
+        val modelExists = TtsModelManager.isModelDownloaded(context, voice)
 
         if (modelExists) {
             state = DownloadState.CHECKING
-            val updateAvailable = TtsModelManager.isUpdateAvailable(context)
+            val updateAvailable = TtsModelManager.isUpdateAvailable(context, voice)
             if (!updateAvailable) {
-                Log.d(TAG, "Model is up-to-date")
+                Log.d(TAG, "${voice.name} model is up-to-date")
                 state = DownloadState.DONE
-                onComplete()
+                onComplete(voice)
                 return@LaunchedEffect
             }
-            Log.d(TAG, "Model update available, downloading...")
+            Log.d(TAG, "${voice.name} model update available, downloading...")
         } else {
-            Log.d(TAG, "Model not found, downloading...")
+            Log.d(TAG, "${voice.name} model not found, downloading...")
         }
 
         state = DownloadState.DOWNLOADING
-        val success = TtsModelManager.downloadModel(context) { downloaded, total ->
+        val success = TtsModelManager.downloadModel(context, voice) { downloaded, total ->
             downloadedMb = downloaded / (1024f * 1024f)
             if (total > 0) {
                 totalMb = total / (1024f * 1024f)
@@ -86,7 +97,7 @@ fun TtsStatusFooter(
 
         if (success) {
             state = DownloadState.DONE
-            onComplete()
+            onComplete(voice)
         } else {
             state = DownloadState.ERROR
         }
@@ -128,10 +139,38 @@ fun TtsStatusFooter(
                 }
             }
             DownloadState.ERROR -> {
+                if (onSettingsClick != null) {
+                    var tapCount by remember { mutableIntStateOf(0) }
+                    var firstTapTime by remember { mutableLongStateOf(0L) }
+
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clickable {
+                                val now = System.currentTimeMillis()
+                                if (now - firstTapTime > 3000L) {
+                                    tapCount = 1
+                                    firstTapTime = now
+                                } else {
+                                    tapCount++
+                                }
+                                if (tapCount >= 5) {
+                                    tapCount = 0
+                                    onSettingsClick()
+                                }
+                            },
+                        tint = Color.Gray.copy(alpha = 0.3f)
+                    )
+                }
                 Text(
-                    text = "Vocea nu s-a putut descărca",
+                    text = "Vocea nu s-a putut descărca. Apasă pentru a reîncerca.",
                     fontSize = 8.sp,
-                    color = Color.Red
+                    color = Color.Red,
+                    modifier = Modifier.clickable {
+                        retryCount++
+                    }
                 )
             }
             DownloadState.DONE -> {

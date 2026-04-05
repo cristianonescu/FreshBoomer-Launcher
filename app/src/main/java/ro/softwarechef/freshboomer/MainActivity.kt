@@ -178,9 +178,9 @@ class MainActivity : ImmersiveActivity() {
                                 showSettingsButton = false,
                                 footerContent = {
                                     TtsStatusFooter(
-                                        onComplete = {
+                                        onComplete = { voice ->
                                             coroutineScope.launch(Dispatchers.IO) {
-                                                PiperTtsEngine.initialize(this@MainActivity)
+                                                PiperTtsEngine.initialize(this@MainActivity, voice)
                                                 withContext(Dispatchers.Main) {
                                                     ttsReady = true
                                                 }

@@ -11,7 +11,7 @@ data class ConfigData(
 
     // TTS
     val ttsEnabled: Boolean = true,
-    val ttsEngine: String = "PIPER_LILI",
+    val ttsEngine: String = "PIPER_SANDA",
     val ttsSpeechRate: Float = 0.85f,
 
     // Features
@@ -158,7 +158,7 @@ val ALL_CONFIG_FIELDS: List<ConfigFieldMeta> = listOf(
 
     // TTS
     ConfigFieldMeta("tts_enabled", "tts_enabled", "Activeaza/dezactiveaza anunturile vocale", ConfigGroup.TTS, FieldType.BOOLEAN),
-    ConfigFieldMeta("tts_engine", "tts_engine", "Motorul de voce folosit", ConfigGroup.TTS, FieldType.ENUM, listOf("PIPER_LILI", "DEVICE_DEFAULT")),
+    ConfigFieldMeta("tts_engine", "tts_engine", "Motorul de voce folosit", ConfigGroup.TTS, FieldType.ENUM, listOf("PIPER_SANDA", "PIPER_LILI", "DEVICE_DEFAULT")),
     ConfigFieldMeta("tts_speech_rate", "tts_speech_rate", "Viteza vorbirii: 0.5 (lent) - 2.0 (rapid). Implicit: 0.85", ConfigGroup.TTS, FieldType.FLOAT),
 
     // Features

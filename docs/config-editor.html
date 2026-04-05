@@ -467,7 +467,8 @@ td code { color: var(--str); }
       <h2>Text-to-Speech (TTS)</h2>
       <p>Aplicatia poate anunta vocal diverse evenimente (apeluri pierdute, deschiderea ecranelor etc.) in limba romana.</p>
       <p><strong>Motoare disponibile:</strong></p>
-      <p>- <code>PIPER_LILI</code> — motor offline de sinteza vocala cu voce romaneasca naturala (recomandat). Modelul se descarca automat la prima utilizare.</p>
+      <p>- <code>PIPER_SANDA</code> — motor offline de sinteza vocala cu voce romaneasca naturala (recomandat). Modelul se descarca automat la prima utilizare.</p>
+      <p>- <code>PIPER_LILI</code> — voce alternativa romaneasca offline. Modelul se descarca automat la prima utilizare.</p>
       <p>- <code>DEVICE_DEFAULT</code> — motorul TTS implicit al dispozitivului Android.</p>
       <p>Viteza vorbirii se poate ajusta cu <code>tts_speech_rate</code>: valori mici (0.5) = lent, valori mari (2.0) = rapid. Implicit: 0.85.</p>
 
@@ -517,7 +518,7 @@ td code { color: var(--str); }
   "user_nickname": "Mamaie",
   "theme_mode": "SYSTEM",
   "tts_enabled": true,
-  "tts_engine": "PIPER_LILI",
+  "tts_engine": "PIPER_SANDA",
   "tts_speech_rate": 0.85,
   "feature_quick_contacts": true,
   "feature_dial_pad": true,
@@ -575,7 +576,7 @@ const FIELDS = [
   { key: "theme_mode", type: "enum", default: "SYSTEM", group: "General", options: ["SYSTEM", "LIGHT", "DARK"], tooltip: "Tema aplicatiei" },
   { key: "app_language", type: "enum", default: "ro", group: "General", options: ["ro"], tooltip: "Limba aplicatiei" },
   { key: "tts_enabled", type: "boolean", default: true, group: "Text-to-Speech", tooltip: "Activeaza/dezactiveaza anunturile vocale" },
-  { key: "tts_engine", type: "enum", default: "PIPER_LILI", group: "Text-to-Speech", options: ["PIPER_LILI", "DEVICE_DEFAULT"], tooltip: "Motorul de voce folosit" },
+  { key: "tts_engine", type: "enum", default: "PIPER_SANDA", group: "Text-to-Speech", options: ["PIPER_SANDA", "PIPER_LILI", "DEVICE_DEFAULT"], tooltip: "Motorul de voce folosit" },
   { key: "tts_speech_rate", type: "float", default: 0.85, group: "Text-to-Speech", tooltip: "Viteza vorbirii: 0.5 (lent) - 2.0 (rapid)", min: 0.5, max: 2.0, step: 0.05 },
   { key: "feature_quick_contacts", type: "boolean", default: true, group: "Functionalitati", tooltip: "Arata butoanele de apel rapid pe ecranul principal" },
   { key: "feature_dial_pad", type: "boolean", default: true, group: "Functionalitati", tooltip: "Arata tastatura de apel" },

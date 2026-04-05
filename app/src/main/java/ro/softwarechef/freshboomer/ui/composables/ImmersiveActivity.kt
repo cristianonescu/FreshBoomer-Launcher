@@ -405,7 +405,8 @@ abstract class ImmersiveActivity : ComponentActivity() {
         }
 
         val preferredEngine = ro.softwarechef.freshboomer.data.TtsPreference.getEngine(this)
-        if (preferredEngine == ro.softwarechef.freshboomer.data.TtsEngine.PIPER_LILI && PiperTtsEngine.isReady) {
+        if ((preferredEngine == ro.softwarechef.freshboomer.data.TtsEngine.PIPER_LILI ||
+             preferredEngine == ro.softwarechef.freshboomer.data.TtsEngine.PIPER_SANDA) && PiperTtsEngine.isReady) {
             ttsScope.launch {
                 PiperTtsEngine.speak(text)
             }

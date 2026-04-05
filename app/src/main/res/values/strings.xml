@@ -274,8 +274,10 @@
     <!-- TTS settings -->
     <string name="settings_tts_enabled">Voce activata</string>
     <string name="settings_tts_enabled_desc">Aplicatia vorbeste cand deschizi un ecran</string>
-    <string name="settings_tts_piper">Piper Lili (recomandat)</string>
-    <string name="settings_tts_piper_desc">Voce locala romaneasca, functioneaza fara internet</string>
+    <string name="settings_tts_piper">Piper Lili</string>
+    <string name="settings_tts_piper_desc">Voce alternativa romaneasca, functioneaza fara internet</string>
+    <string name="settings_tts_sanda">Piper Sanda (recomandat)</string>
+    <string name="settings_tts_sanda_desc">Voce locala romaneasca, functioneaza fara internet</string>
     <string name="settings_tts_device">Vocea dispozitivului</string>
     <string name="settings_tts_device_desc">Foloseste vocea implicita de pe telefon</string>
     <string name="settings_tts_update_model">Actualizare model vocal</string>

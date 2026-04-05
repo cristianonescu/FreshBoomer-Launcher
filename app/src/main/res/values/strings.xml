@@ -315,9 +315,56 @@
     <string name="settings_emergency_phone_label">Telefon</string>
     <string name="settings_emergency_phone_placeholder">ex: 0712345678</string>
 
-    <!-- Visual settings -->
+    <!-- Settings section headers -->
+    <string name="settings_section_quick_contacts">Contacte Rapide (%1$d)</string>
+    <string name="settings_section_apps">Aplicatii</string>
+    <string name="settings_section_tts">Voce (Text-to-Speech)</string>
+    <string name="settings_section_customize">Personalizare</string>
+    <string name="settings_section_language">Limba</string>
+    <string name="settings_section_emergency">Contacte de urgenta</string>
+    <string name="settings_section_theme">Tema</string>
+    <string name="settings_section_home_screen">Ecran Principal</string>
+    <string name="settings_section_permissions">Permisiuni</string>
+    <string name="settings_section_advanced">Configurare Avansata</string>
+    <string name="settings_section_tips">Sfaturi utile</string>
+    <string name="settings_section_about">Despre aplicatie</string>
+    <string name="settings_add_contact">Adauga contact</string>
+    <string name="settings_open">Deschide</string>
+    <string name="settings_import">Importa</string>
+    <string name="settings_see">Vezi</string>
+    <string name="settings_understood">Am inteles</string>
+
+    <!-- Inactivity in settings -->
+    <string name="settings_inactivity_no_contacts">Niciun contact de urgenta configurat. Adauga cel putin un contact de urgenta pentru ca aceasta functie sa functioneze.</string>
+    <string name="settings_inactivity_alert_after">Alerta dupa</string>
+    <string name="settings_inactivity_hours">ore</string>
+
+    <!-- WhatsApp guide -->
+    <string name="settings_whatsapp_guide_title">Descarcarea automata in WhatsApp</string>
+    <string name="settings_whatsapp_guide_intro">Pentru ca pozele si filmele primite pe WhatsApp sa apara in galerie, trebuie sa activezi descarcarea automata:</string>
+    <string name="settings_whatsapp_guide_step1">Deschide WhatsApp</string>
+    <string name="settings_whatsapp_guide_step2">Apasa pe cele 3 puncte din dreapta sus</string>
+    <string name="settings_whatsapp_guide_step3">Apasa pe \"Setari\" (Settings)</string>
+    <string name="settings_whatsapp_guide_step4">Apasa pe \"Stocare si date\" (Storage and data)</string>
+    <string name="settings_whatsapp_guide_step5">La sectiunea \"Descarcare automata media\", activeaza descarcarea pentru Fotografii si Video pe Wi-Fi si Date mobile</string>
+    <string name="settings_whatsapp_guide_done">Dupa activare, toate pozele si filmele primite pe WhatsApp vor fi salvate automat si vor aparea in galerie.</string>
+
+    <!-- App shortcuts -->
+    <string name="settings_app_google_play">Google Play</string>
+    <string name="settings_app_device_settings">Setari Dispozitiv</string>
+
+    <!-- Visual / Theme settings -->
     <string name="settings_visual_title">Aspect vizual</string>
     <string name="settings_visual_desc">Alege cum arata aplicatia</string>
+    <string name="settings_theme_auto">Automat (dupa sistem)</string>
+    <string name="settings_theme_auto_short">Automat</string>
+    <string name="settings_theme_light">Luminos</string>
+    <string name="settings_theme_dark">Intunecat</string>
+
+    <!-- Contact editor -->
+    <string name="settings_contact_name">Nume</string>
+    <string name="settings_contact_phone">Numar telefon</string>
+    <string name="settings_contact_save">Salveaza</string>
 
     <!-- JSON config editor -->
     <string name="json_config_header">Configurare JSON</string>

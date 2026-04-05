@@ -315,9 +315,56 @@
     <string name="settings_emergency_phone_label">Phone</string>
     <string name="settings_emergency_phone_placeholder">e.g.: 0712345678</string>
 
-    <!-- Visual settings -->
+    <!-- Settings section headers -->
+    <string name="settings_section_quick_contacts">Quick Contacts (%1$d)</string>
+    <string name="settings_section_apps">Apps</string>
+    <string name="settings_section_tts">Voice (Text-to-Speech)</string>
+    <string name="settings_section_customize">Customization</string>
+    <string name="settings_section_language">Language</string>
+    <string name="settings_section_emergency">Emergency Contacts</string>
+    <string name="settings_section_theme">Theme</string>
+    <string name="settings_section_home_screen">Home Screen</string>
+    <string name="settings_section_permissions">Permissions</string>
+    <string name="settings_section_advanced">Advanced Config</string>
+    <string name="settings_section_tips">Useful Tips</string>
+    <string name="settings_section_about">About the App</string>
+    <string name="settings_add_contact">Add contact</string>
+    <string name="settings_open">Open</string>
+    <string name="settings_import">Import</string>
+    <string name="settings_see">See</string>
+    <string name="settings_understood">Got it</string>
+
+    <!-- Inactivity in settings -->
+    <string name="settings_inactivity_no_contacts">No emergency contacts configured. Add at least one emergency contact for this feature to work.</string>
+    <string name="settings_inactivity_alert_after">Alert after</string>
+    <string name="settings_inactivity_hours">hours</string>
+
+    <!-- WhatsApp guide -->
+    <string name="settings_whatsapp_guide_title">WhatsApp Auto-Download</string>
+    <string name="settings_whatsapp_guide_intro">For photos and videos received on WhatsApp to appear in the gallery, you need to enable auto-download:</string>
+    <string name="settings_whatsapp_guide_step1">Open WhatsApp</string>
+    <string name="settings_whatsapp_guide_step2">Tap the 3 dots in the top right</string>
+    <string name="settings_whatsapp_guide_step3">Tap \"Settings\"</string>
+    <string name="settings_whatsapp_guide_step4">Tap \"Storage and data\"</string>
+    <string name="settings_whatsapp_guide_step5">Under \"Media auto-download\", enable download for Photos and Video on Wi-Fi and Mobile data</string>
+    <string name="settings_whatsapp_guide_done">Once enabled, all photos and videos received on WhatsApp will be saved automatically and appear in the gallery.</string>
+
+    <!-- App shortcuts -->
+    <string name="settings_app_google_play">Google Play</string>
+    <string name="settings_app_device_settings">Device Settings</string>
+
+    <!-- Visual / Theme settings -->
     <string name="settings_visual_title">Visual Appearance</string>
     <string name="settings_visual_desc">Choose how the app looks</string>
+    <string name="settings_theme_auto">Automatic (follow system)</string>
+    <string name="settings_theme_auto_short">Auto</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+
+    <!-- Contact editor -->
+    <string name="settings_contact_name">Name</string>
+    <string name="settings_contact_phone">Phone number</string>
+    <string name="settings_contact_save">Save</string>
 
     <!-- JSON config editor -->
     <string name="json_config_header">JSON Configuration</string>

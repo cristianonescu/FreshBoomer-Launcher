@@ -100,8 +100,8 @@ fun QuickContactSettingsScreen(
         if (contactToDelete != null) {
             AlertDialog(
                 onDismissRequest = { deleteConfirmId = null },
-                title = { Text("Sterge contact") },
-                text = { Text("Sigur vrei sa stergi contactul ${contactToDelete.name}?") },
+                title = { Text(stringResource(R.string.settings_delete_contact_title)) },
+                text = { Text(stringResource(R.string.settings_delete_contact_message, contactToDelete.name)) },
                 confirmButton = {
                     Button(
                         onClick = {
@@ -111,12 +111,12 @@ fun QuickContactSettingsScreen(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                     ) {
-                        Text("Sterge")
+                        Text(stringResource(R.string.delete))
                     }
                 },
                 dismissButton = {
                     OutlinedButton(onClick = { deleteConfirmId = null }) {
-                        Text("Anuleaza")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -180,7 +180,7 @@ fun QuickContactSettingsScreen(
             // ─── Group 1: Quick Contacts (collapsible) ───
             item {
                 SectionHeader(
-                    title = "Contacte Rapide (${contacts.size})",
+                    title = stringResource(R.string.settings_section_quick_contacts, contacts.size),
                     icon = Icons.Default.Person,
                     expandable = true,
                     expanded = contactsExpanded,
@@ -240,7 +240,7 @@ fun QuickContactSettingsScreen(
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Adauga contact")
+                        Text(stringResource(R.string.settings_add_contact))
                     }
                 }
             }
@@ -249,7 +249,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Aplicatii",
+                    title = stringResource(R.string.settings_section_apps),
                     icon = Icons.Default.Favorite
                 )
             }
@@ -262,7 +262,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Voce (Text-to-Speech)",
+                    title = stringResource(R.string.settings_section_tts),
                     icon = Icons.Default.PlayArrow
                 )
             }
@@ -286,7 +286,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Personalizare",
+                    title = stringResource(R.string.settings_section_customize),
                     icon = Icons.Default.Person
                 )
             }
@@ -305,7 +305,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Limba",
+                    title = stringResource(R.string.settings_section_language),
                     icon = Icons.Default.Place
                 )
             }
@@ -324,7 +324,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Contacte de urgenta",
+                    title = stringResource(R.string.settings_section_emergency),
                     icon = Icons.Default.Warning
                 )
             }
@@ -343,7 +343,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Tema",
+                    title = stringResource(R.string.settings_section_theme),
                     icon = Icons.Default.Settings
                 )
             }
@@ -363,7 +363,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Ecran Principal",
+                    title = stringResource(R.string.settings_section_home_screen),
                     icon = Icons.Default.Home
                 )
             }
@@ -393,7 +393,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Permisiuni",
+                    title = stringResource(R.string.settings_section_permissions),
                     icon = Icons.Default.Lock
                 )
             }
@@ -411,11 +411,11 @@ fun QuickContactSettingsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Verifica permisiuni",
+                                text = stringResource(R.string.settings_check_permissions),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = "Verifica daca aplicatia are toate permisiunile necesare",
+                                text = stringResource(R.string.settings_check_permissions_desc),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
@@ -425,7 +425,7 @@ fun QuickContactSettingsScreen(
                             onClick = onOpenOnboarding,
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Deschide")
+                            Text(stringResource(R.string.settings_open))
                         }
                     }
                 }
@@ -435,7 +435,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Configurare Avansata",
+                    title = stringResource(R.string.settings_section_advanced),
                     icon = Icons.Default.Build
                 )
             }
@@ -453,11 +453,11 @@ fun QuickContactSettingsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Editor JSON Configurare",
+                                text = stringResource(R.string.settings_json_editor),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = "Editeaza toate setarile intr-un singur loc",
+                                text = stringResource(R.string.settings_json_editor_desc),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
@@ -467,7 +467,7 @@ fun QuickContactSettingsScreen(
                             onClick = { showJsonEditor = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Deschide")
+                            Text(stringResource(R.string.settings_open))
                         }
                     }
                 }
@@ -486,11 +486,11 @@ fun QuickContactSettingsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Importa Configurare din URL",
+                                text = stringResource(R.string.settings_import_config),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = "Descarca si aplica o configurare de pe internet",
+                                text = stringResource(R.string.settings_import_config_desc),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
@@ -500,7 +500,7 @@ fun QuickContactSettingsScreen(
                             onClick = { showImportUrlDialog = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Importa")
+                            Text(stringResource(R.string.settings_import))
                         }
                     }
                 }
@@ -510,7 +510,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Sfaturi utile",
+                    title = stringResource(R.string.settings_section_tips),
                     icon = Icons.Default.Info
                 )
             }
@@ -523,7 +523,7 @@ fun QuickContactSettingsScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 SectionHeader(
-                    title = "Despre aplicatie",
+                    title = stringResource(R.string.settings_section_about),
                     icon = Icons.Default.Info
                 )
             }
@@ -541,11 +541,11 @@ fun QuickContactSettingsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Licente si Multumiri",
+                                text = stringResource(R.string.settings_licenses),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = "Licente open source, credite si informatii",
+                                text = stringResource(R.string.settings_licenses_desc),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
@@ -555,7 +555,7 @@ fun QuickContactSettingsScreen(
                             onClick = { showAboutScreen = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Deschide")
+                            Text(stringResource(R.string.settings_open))
                         }
                     }
                 }
@@ -573,7 +573,7 @@ private fun TipsSection() {
             onDismissRequest = { showWhatsAppGuide = false },
             title = {
                 Text(
-                    "Descarcarea automata in WhatsApp",
+                    stringResource(R.string.settings_whatsapp_guide_title),
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                 )
             },
@@ -583,18 +583,18 @@ private fun TipsSection() {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        "Pentru ca pozele si filmele primite pe WhatsApp sa apara in \"Vezi poze\", trebuie sa activezi descarcarea automata:",
+                        stringResource(R.string.settings_whatsapp_guide_intro),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    GuideStep("1", "Deschide WhatsApp")
-                    GuideStep("2", "Apasa pe cele 3 puncte din dreapta sus")
-                    GuideStep("3", "Apasa pe \"Setari\" (Settings)")
-                    GuideStep("4", "Apasa pe \"Stocare si date\" (Storage and data)")
-                    GuideStep("5", "La sectiunea \"Descarcare automata media\", activeaza descarcarea pentru Fotografii si Video pe Wi-Fi si Date mobile")
+                    GuideStep("1", stringResource(R.string.settings_whatsapp_guide_step1))
+                    GuideStep("2", stringResource(R.string.settings_whatsapp_guide_step2))
+                    GuideStep("3", stringResource(R.string.settings_whatsapp_guide_step3))
+                    GuideStep("4", stringResource(R.string.settings_whatsapp_guide_step4))
+                    GuideStep("5", stringResource(R.string.settings_whatsapp_guide_step5))
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        "Dupa activare, toate pozele si filmele primite pe WhatsApp vor fi salvate automat si vor aparea in galeria \"Vezi poze\".",
+                        stringResource(R.string.settings_whatsapp_guide_done),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
@@ -602,7 +602,7 @@ private fun TipsSection() {
             },
             confirmButton = {
                 Button(onClick = { showWhatsAppGuide = false }) {
-                    Text("Am inteles")
+                    Text(stringResource(R.string.settings_understood))
                 }
             }
         )
@@ -621,11 +621,11 @@ private fun TipsSection() {
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Poze WhatsApp in galerie",
+                        text = stringResource(R.string.settings_whatsapp_photos),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Cum sa configurezi WhatsApp sa descarce automat poze si filme",
+                        text = stringResource(R.string.settings_whatsapp_photos_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -635,7 +635,7 @@ private fun TipsSection() {
                     onClick = { showWhatsAppGuide = true },
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Vezi")
+                    Text(stringResource(R.string.settings_see))
                 }
             }
         }
@@ -720,7 +720,7 @@ private fun AppsSection() {
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             AppRow(
-                name = "Google Play",
+                name = stringResource(R.string.settings_app_google_play),
                 icon = Icons.Default.ShoppingCart,
                 onClick = {
                     val intent = context.packageManager.getLaunchIntentForPackage("com.android.vending")
@@ -731,7 +731,7 @@ private fun AppsSection() {
             )
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             AppRow(
-                name = "Setari Dispozitiv",
+                name = stringResource(R.string.settings_app_device_settings),
                 icon = Icons.Default.Settings,
                 onClick = {
                     context.startActivity(Intent(Settings.ACTION_SETTINGS))
@@ -765,7 +765,7 @@ private fun AppRow(
             modifier = Modifier.weight(1f)
         )
         Button(onClick = onClick) {
-            Text("Deschide")
+            Text(stringResource(R.string.settings_open))
         }
     }
 }
@@ -1062,7 +1062,7 @@ private fun FeatureToggleSection(
             if (toggles.inactivityMonitor) {
                 if (!hasEmergencyContacts) {
                     Text(
-                        text = "Niciun contact de urgenta configurat. Adauga cel putin un contact de urgenta pentru ca aceasta functie sa functioneze.",
+                        text = stringResource(R.string.settings_inactivity_no_contacts),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 8.dp)
@@ -1073,7 +1073,7 @@ private fun FeatureToggleSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Alerta dupa",
+                        text = stringResource(R.string.settings_inactivity_alert_after),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(end = 8.dp)
                     )
@@ -1096,7 +1096,7 @@ private fun FeatureToggleSection(
                         shape = RoundedCornerShape(8.dp)
                     )
                     Text(
-                        text = "ore",
+                        text = stringResource(R.string.settings_inactivity_hours),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -1155,11 +1155,11 @@ private fun NicknameSection(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = "Cum sa te numeasca aplicatia",
+                text = stringResource(R.string.settings_nickname_title),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = "Acest nume va fi folosit in mesajele vocale (ex: \"$nickname, te-a sunat...\")",
+                text = stringResource(R.string.settings_nickname_desc, nickname),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
@@ -1172,7 +1172,7 @@ private fun NicknameSection(
                     onValueChange = onNicknameChange,
                     modifier = Modifier.weight(1f),
                     singleLine = true,
-                    placeholder = { Text("Mamaie") },
+                    placeholder = { Text(stringResource(R.string.settings_nickname_placeholder)) },
                     shape = RoundedCornerShape(12.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -1264,11 +1264,11 @@ private fun EmergencyContactsSection(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = "Contacte de urgenta",
+                text = stringResource(R.string.settings_emergency_title),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = "Aceste persoane vor fi notificate daca utilizatorul are probleme",
+                text = stringResource(R.string.settings_emergency_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
@@ -1276,7 +1276,7 @@ private fun EmergencyContactsSection(
 
             if (emergencyContacts.isEmpty()) {
                 Text(
-                    text = "Niciun contact de urgenta adaugat.",
+                    text = stringResource(R.string.settings_emergency_empty),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )
@@ -1303,8 +1303,8 @@ private fun EmergencyContactsSection(
                                         updated[index] = contact.copy(name = newName)
                                         onContactsChanged(updated)
                                     },
-                                    label = { Text("Nume") },
-                                    placeholder = { Text("ex: Maria") },
+                                    label = { Text(stringResource(R.string.settings_emergency_name_label)) },
+                                    placeholder = { Text(stringResource(R.string.settings_emergency_name_placeholder)) },
                                     modifier = Modifier.fillMaxWidth(),
                                     singleLine = true,
                                     shape = RoundedCornerShape(8.dp)
@@ -1317,8 +1317,8 @@ private fun EmergencyContactsSection(
                                         updated[index] = contact.copy(phoneNumber = newPhone)
                                         onContactsChanged(updated)
                                     },
-                                    label = { Text("Telefon") },
-                                    placeholder = { Text("ex: 0712345678") },
+                                    label = { Text(stringResource(R.string.settings_emergency_phone_label)) },
+                                    placeholder = { Text(stringResource(R.string.settings_emergency_phone_placeholder)) },
                                     modifier = Modifier.fillMaxWidth(),
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -1353,7 +1353,7 @@ private fun EmergencyContactsSection(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Adauga contact de urgenta")
+                Text(stringResource(R.string.settings_emergency_add))
             }
         }
     }
@@ -1379,11 +1379,11 @@ private fun ThemeSection(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Aspect vizual",
+                        text = stringResource(R.string.settings_visual_title),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Text(
-                        text = "Alege cum arata aplicatia",
+                        text = stringResource(R.string.settings_visual_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
@@ -1396,9 +1396,9 @@ private fun ThemeSection(
                     ) {
                         Text(
                             text = when (selectedTheme) {
-                                AppThemeMode.SYSTEM -> "Automat"
-                                AppThemeMode.LIGHT -> "Luminos"
-                                AppThemeMode.DARK -> "Intunecat"
+                                AppThemeMode.SYSTEM -> stringResource(R.string.settings_theme_auto_short)
+                                AppThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
+                                AppThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
                             }
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -1414,7 +1414,7 @@ private fun ThemeSection(
                     ) {
                         DropdownMenuItem(
                             text = {
-                                Text("Automat (dupa sistem)", style = MaterialTheme.typography.bodyLarge)
+                                Text(stringResource(R.string.settings_theme_auto), style = MaterialTheme.typography.bodyLarge)
                             },
                             onClick = {
                                 onThemeChange(AppThemeMode.SYSTEM)
@@ -1429,7 +1429,7 @@ private fun ThemeSection(
                         )
                         DropdownMenuItem(
                             text = {
-                                Text("Luminos", style = MaterialTheme.typography.bodyLarge)
+                                Text(stringResource(R.string.settings_theme_light), style = MaterialTheme.typography.bodyLarge)
                             },
                             onClick = {
                                 onThemeChange(AppThemeMode.LIGHT)
@@ -1444,7 +1444,7 @@ private fun ThemeSection(
                         )
                         DropdownMenuItem(
                             text = {
-                                Text("Intunecat", style = MaterialTheme.typography.bodyLarge)
+                                Text(stringResource(R.string.settings_theme_dark), style = MaterialTheme.typography.bodyLarge)
                             },
                             onClick = {
                                 onThemeChange(AppThemeMode.DARK)
@@ -1543,7 +1543,7 @@ private fun ContactCard(
                 OutlinedTextField(
                     value = editingName,
                     onValueChange = { editingName = it },
-                    label = { Text("Nume") },
+                    label = { Text(stringResource(R.string.settings_contact_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodyLarge
@@ -1552,7 +1552,7 @@ private fun ContactCard(
                 OutlinedTextField(
                     value = editingPhone,
                     onValueChange = { editingPhone = it },
-                    label = { Text("Numar telefon") },
+                    label = { Text(stringResource(R.string.settings_contact_phone)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     modifier = Modifier.fillMaxWidth(),
@@ -1574,7 +1574,7 @@ private fun ContactCard(
                         ) {
                             Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Salveaza")
+                            Text(stringResource(R.string.settings_contact_save))
                         }
                     }
 

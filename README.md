@@ -60,6 +60,8 @@ _Coming soon_
 - In-app settings with per-feature toggles
 - Advanced JSON config editor
 - Remote config import from URL (HTTP & HTTPS) with automatic re-sync on every home screen resume
+- Smart config versioning: `config_version` (integer) and `config_updated_at` (ISO 8601 timestamp) fields allow the app to skip re-applying unchanged remote configs and detect when new settings should override local edits
+- Quick contact photos via base64-encoded images in the JSON config, automatically decoded and stored locally on import
 - Theme selection (System / Light / Dark)
 - Language selection (Romanian / English) with runtime locale switching
 
@@ -139,11 +141,16 @@ Open these files directly in a browser for a styled, navigable reference.
 
 FreshBoomer supports remote configuration, allowing a caretaker to manage the device settings without physical access.
 
-1. **Host a JSON config file** on any web server, cloud storage, or even a GitHub Gist (raw URL). The file follows the schema documented in [`docs/config-feature.html`](docs/config-feature.html). Use the [`docs/config-editor.html`](docs/config-editor.html) tool to build the JSON visually.
+1. **Host a JSON config file** on any web server, cloud storage, or even a GitHub Gist (raw URL). The file follows the schema documented in [`docs/config-feature.html`](docs/config-feature.html). Use the [`docs/config-editor.html`](docs/config-editor.html) tool to build the JSON visually -- including adding contact photos with automatic resizing.
 2. **Import the URL** on the device via Settings > Advanced Config > "Importa configurare din URL".
 3. **Automatic sync** -- once a URL is set, the app automatically re-fetches the config every time the user returns to the home screen. The URL is stored independently in SharedPreferences and cannot be overwritten by the remote JSON itself.
+4. **Smart change detection** -- the config includes a `config_version` counter and `config_updated_at` timestamp. On auto-sync, the app only applies the remote config if its version is newer than the last applied version, avoiding unnecessary overwrites. Manual imports from Settings always apply regardless of version.
 
 Only the fields present in the remote JSON are applied; missing fields keep their current values. Both HTTP and HTTPS URLs are supported.
+
+### Contact Photos via Remote Config
+
+Quick contacts can include base64-encoded photos in the JSON config (`photo_base64` and `photo_mime` fields). The HTML config editor resizes images to max 200x200px JPEG before encoding. On import, the app decodes the base64 data into image files stored in internal storage, so the photos display on the launcher. Photos can also be set locally via the in-app photo picker -- both methods coexist.
 
 ## System Roles
 

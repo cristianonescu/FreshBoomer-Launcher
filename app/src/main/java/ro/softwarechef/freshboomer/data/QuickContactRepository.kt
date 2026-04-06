@@ -2,6 +2,7 @@ package ro.softwarechef.freshboomer.data
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import ro.softwarechef.freshboomer.models.QuickContact
 import org.json.JSONArray
 import org.json.JSONObject
@@ -115,6 +116,31 @@ object QuickContactRepository {
     private fun reindex(contacts: MutableList<QuickContact>) {
         contacts.forEachIndexed { index, contact ->
             contacts[index] = contact.copy(sortOrder = index)
+        }
+    }
+
+    /**
+     * Decodes a base64-encoded photo string and saves it to internal storage.
+     * Returns the absolute file path, or null if decoding fails.
+     */
+    fun saveBase64PhotoToInternal(context: Context, base64Data: String, mime: String?): String? {
+        return try {
+            val photoDir = File(context.filesDir, PHOTO_DIR)
+            if (!photoDir.exists()) photoDir.mkdirs()
+
+            val extension = when (mime) {
+                "image/png" -> "png"
+                else -> "jpg"
+            }
+            val fileName = "${UUID.randomUUID()}.$extension"
+            val destFile = File(photoDir, fileName)
+
+            val bytes = android.util.Base64.decode(base64Data, android.util.Base64.DEFAULT)
+            destFile.writeBytes(bytes)
+            destFile.absolutePath
+        } catch (e: Exception) {
+            Log.e("QuickContactRepo", "Failed to decode base64 photo", e)
+            null
         }
     }
 

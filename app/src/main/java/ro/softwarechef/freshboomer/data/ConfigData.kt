@@ -39,7 +39,11 @@ data class ConfigData(
     val inactivityMonitorThresholdHours: Int = 12,
 
     // Quick Contacts
-    val quickContacts: List<QuickContact> = DEFAULT_QUICK_CONTACTS
+    val quickContacts: List<QuickContact> = DEFAULT_QUICK_CONTACTS,
+
+    // Config versioning (for remote config change detection)
+    val configUpdatedAt: String? = null,
+    val configVersion: Int = 0
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
         put("user_nickname", userNickname)
@@ -73,9 +77,13 @@ data class ConfigData(
                 put(JSONObject().apply {
                     put("name", c.name)
                     put("phone", c.phoneNumber)
+                    if (c.photoBase64 != null) put("photo_base64", c.photoBase64)
+                    if (c.photoMime != null) put("photo_mime", c.photoMime)
                 })
             }
         })
+        if (configUpdatedAt != null) put("config_updated_at", configUpdatedAt)
+        put("config_version", configVersion)
     }
 
     companion object {
@@ -116,10 +124,14 @@ data class ConfigData(
                             id = (i + 1).toString(),
                             name = obj.optString("name", ""),
                             phoneNumber = obj.optString("phone", ""),
-                            sortOrder = i
+                            sortOrder = i,
+                            photoBase64 = obj.optString("photo_base64", "").takeIf { it.isNotEmpty() },
+                            photoMime = obj.optString("photo_mime", "").takeIf { it.isNotEmpty() }
                         )
                     }
-                } ?: defaults.quickContacts
+                } ?: defaults.quickContacts,
+                configUpdatedAt = json.optString("config_updated_at", "").takeIf { it.isNotEmpty() },
+                configVersion = json.optInt("config_version", defaults.configVersion)
             )
         }
     }

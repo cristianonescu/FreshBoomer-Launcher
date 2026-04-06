@@ -222,9 +222,10 @@ h2 {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-.contact-row input {
+.contact-row input[type="text"] {
   background: var(--bg3);
   color: var(--str);
   border: 1px solid var(--border);
@@ -233,9 +234,10 @@ h2 {
   font-family: 'Cascadia Code', 'Fira Code', monospace;
   font-size: 13px;
   flex: 1;
+  min-width: 120px;
 }
 
-.contact-row input:focus {
+.contact-row input[type="text"]:focus {
   outline: none;
   border-color: var(--accent);
 }
@@ -251,6 +253,69 @@ h2 {
 }
 
 .contact-row .remove-btn:hover { background: rgba(207, 102, 121, 0.15); }
+
+.contact-photo-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.contact-photo-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  background: var(--bg3);
+}
+
+.contact-photo-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--line);
+  font-size: 18px;
+  background: var(--bg3);
+  flex-shrink: 0;
+}
+
+.photo-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--key);
+  cursor: pointer;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.photo-btn:hover { border-color: var(--accent); }
+
+.photo-btn-remove {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--red);
+  cursor: pointer;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.photo-btn-remove:hover { border-color: var(--red); background: rgba(207, 102, 121, 0.1); }
+
+.photo-size-info {
+  font-size: 11px;
+  color: var(--line);
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+}
 
 .add-btn {
   background: none;
@@ -430,6 +495,16 @@ td code { color: var(--str); }
         </tbody>
       </table>
 
+      <h2>Versiune configurare</h2>
+      <p>Aceste campuri permit aplicatiei sa detecteze daca configurarea de la distanta s-a schimbat si trebuie aplicata.</p>
+      <table>
+        <thead><tr><th>Camp</th><th>Tip</th><th>Descriere</th></tr></thead>
+        <tbody>
+          <tr><td><code>config_version</code></td><td>Int</td><td>Numar de versiune, se incrementeaza automat la fiecare modificare in editor. Aplicatia compara acest numar cu cel stocat local si aplica configurarea doar daca versiunea e mai mare.</td></tr>
+          <tr><td><code>config_updated_at</code></td><td>String (ISO 8601)</td><td>Data/ora ultimei modificari (ex: <code>2026-04-06T14:30:00+00:00</code>). Folosit ca tiebreaker cand versiunile sunt egale.</td></tr>
+        </tbody>
+      </table>
+
       <h2>Contacte rapide (quick_contacts)</h2>
       <p>Contactele rapide sunt afisate ca butoane mari pe ecranul principal. Utilizatorul poate suna pe cineva cu o singura apasare. Daca un contact nu are poza setata, se afiseaza initialele numelui pe un fundal colorat.</p>
       <p>Campul <code>quick_contacts</code> este un array de obiecte, fiecare cu:</p>
@@ -438,6 +513,8 @@ td code { color: var(--str); }
         <tbody>
           <tr><td><code>name</code></td><td>String</td><td>Numele contactului afisat pe buton</td></tr>
           <tr><td><code>phone</code></td><td>String</td><td>Numarul de telefon (format international sau local)</td></tr>
+          <tr><td><code>photo_base64</code></td><td>String (optional)</td><td>Poza contactului codificata in base64 (JPEG). Editorul redimensioneaza automat la max 200x200px. La import, aplicatia decodifica si salveaza local.</td></tr>
+          <tr><td><code>photo_mime</code></td><td>String (optional)</td><td>Tipul MIME al pozei (ex: <code>image/jpeg</code>). Necesar daca <code>photo_base64</code> este prezent.</td></tr>
         </tbody>
       </table>
 
@@ -522,6 +599,8 @@ td code { color: var(--str); }
       <h2>Exemplu config.json complet</h2>
       <p>Un fisier JSON valid pentru FreshBoomer arata astfel:</p>
       <pre style="background:var(--bg);padding:12px;border-radius:6px;border:1px solid var(--border);font-size:13px;overflow-x:auto;color:var(--fg)">{
+  "config_version": 3,
+  "config_updated_at": "2026-04-06T14:30:00+00:00",
   "user_nickname": "Mamaie",
   "theme_mode": "SYSTEM",
   "tts_enabled": true,
@@ -544,7 +623,7 @@ td code { color: var(--str); }
     { "name": "Fiul", "phone": "0712345678" }
   ],
   "quick_contacts": [
-    { "name": "Maria", "phone": "0723456789" },
+    { "name": "Maria", "phone": "0723456789", "photo_base64": "...", "photo_mime": "image/jpeg" },
     { "name": "Ion", "phone": "0734567890" }
   ]
 }</pre>
@@ -602,14 +681,19 @@ const FIELDS = [
 const DEFAULT_CONTACTS = [];
 const DEFAULT_EMERGENCY_CONTACTS = [];
 
+const MAX_PHOTO_SIZE = 200; // max dimension in pixels
+const PHOTO_JPEG_QUALITY = 0.7;
+
 // ═══════════ STATE ═══════════
 let config = {};
-let contacts = [];
+let contacts = []; // each: { name, phone, photo_base64?, photo_mime? }
 let emergencyContacts = [];
 
 function initDefaults() {
   config = {};
   FIELDS.forEach(f => config[f.key] = f.default);
+  config.config_version = 0;
+  config.config_updated_at = null;
   contacts = DEFAULT_CONTACTS.map(c => ({...c}));
   emergencyContacts = DEFAULT_EMERGENCY_CONTACTS.map(c => ({...c}));
 }
@@ -649,6 +733,26 @@ function renderEditor() {
 
     html += '</div></div>';
   }
+
+  // Version info section
+  html += `<div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h3>// Versiune Configurare</h3>
+      <span class="arrow">&#9660;</span>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <span class="field-key">config_version</span>
+        <span id="field-config_version" style="font-family:'Cascadia Code','Fira Code',monospace;font-size:13px;color:var(--num)">${config.config_version || 0}</span>
+        <div class="tooltip">Se incrementeaza automat la fiecare modificare</div>
+      </div>
+      <div class="field">
+        <span class="field-key">config_updated_at</span>
+        <span id="field-config_updated_at" style="font-family:'Cascadia Code','Fira Code',monospace;font-size:13px;color:var(--str)">${config.config_updated_at || '(nesetat)'}</span>
+        <div class="tooltip">Data/ora ultimei modificari (se seteaza automat)</div>
+      </div>
+    </div>
+  </div>`;
 
   // Contacts section
   html += `<div class="section">
@@ -709,10 +813,22 @@ function renderField(f) {
 function renderContacts() {
   let html = '';
   contacts.forEach((c, i) => {
+    const hasPhoto = c.photo_base64 && c.photo_mime;
+    const photoPreview = hasPhoto
+      ? `<img class="contact-photo-thumb" src="data:${escHtml(c.photo_mime)};base64,${c.photo_base64}" alt="${escHtml(c.name)}">`
+      : `<div class="contact-photo-placeholder">&#128100;</div>`;
+    const photoSizeKb = hasPhoto ? Math.round((c.photo_base64.length * 3 / 4) / 1024) : 0;
+
     html += `<div class="contact-row">
-      <input type="text" value="${escHtml(c.name)}" placeholder="Nume" onchange="contacts[${i}].name=this.value; updatePreview()">
-      <input type="text" value="${escHtml(c.phone)}" placeholder="Telefon" onchange="contacts[${i}].phone=this.value; updatePreview()">
+      <input type="text" value="${escHtml(c.name)}" placeholder="Nume" onchange="contacts[${i}].name=this.value; bumpVersion(); updatePreview()">
+      <input type="text" value="${escHtml(c.phone)}" placeholder="Telefon" onchange="contacts[${i}].phone=this.value; bumpVersion(); updatePreview()">
       <button class="remove-btn" onclick="removeContact(${i})" title="Sterge">&times;</button>
+      <div class="contact-photo-area">
+        ${photoPreview}
+        <input type="file" accept="image/*" id="photo-input-${i}" style="display:none" onchange="handleContactPhoto(${i}, event)">
+        <button class="photo-btn" onclick="document.getElementById('photo-input-${i}').click()">&#128247; ${hasPhoto ? 'Schimba poza' : 'Adauga poza'}</button>
+        ${hasPhoto ? `<button class="photo-btn-remove" onclick="removeContactPhoto(${i})">&#10005; Sterge poza</button><span class="photo-size-info">${photoSizeKb} KB</span>` : ''}
+      </div>
     </div>`;
   });
   html += `<button class="add-btn" onclick="addContact()">+ Adauga contact</button>`;
@@ -724,6 +840,7 @@ function setVal(key, value) {
   config[key] = value;
   const boolLabel = document.getElementById(`bool-${key}`);
   if (boolLabel) boolLabel.textContent = value;
+  bumpVersion();
   updatePreview();
 }
 
@@ -738,23 +855,88 @@ function toggleSection(header) {
 }
 
 function addContact() {
-  contacts.push({ name: '', phone: '' });
+  contacts.push({ name: '', phone: '', photo_base64: null, photo_mime: null });
+  bumpVersion();
   document.getElementById('contacts-body').innerHTML = renderContacts();
   updatePreview();
 }
 
 function removeContact(i) {
   contacts.splice(i, 1);
+  bumpVersion();
   document.getElementById('contacts-body').innerHTML = renderContacts();
   updatePreview();
+}
+
+function removeContactPhoto(i) {
+  contacts[i].photo_base64 = null;
+  contacts[i].photo_mime = null;
+  bumpVersion();
+  document.getElementById('contacts-body').innerHTML = renderContacts();
+  updatePreview();
+}
+
+function handleContactPhoto(index, event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    alert('Fisierul selectat nu este o imagine.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      // Resize to max MAX_PHOTO_SIZE x MAX_PHOTO_SIZE
+      let w = img.width, h = img.height;
+      if (w > MAX_PHOTO_SIZE || h > MAX_PHOTO_SIZE) {
+        if (w > h) {
+          h = Math.round(h * MAX_PHOTO_SIZE / w);
+          w = MAX_PHOTO_SIZE;
+        } else {
+          w = Math.round(w * MAX_PHOTO_SIZE / h);
+          h = MAX_PHOTO_SIZE;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+
+      // Export as JPEG
+      const dataUrl = canvas.toDataURL('image/jpeg', PHOTO_JPEG_QUALITY);
+      const base64 = dataUrl.split(',')[1];
+
+      contacts[index].photo_base64 = base64;
+      contacts[index].photo_mime = 'image/jpeg';
+      bumpVersion();
+      document.getElementById('contacts-body').innerHTML = renderContacts();
+      updatePreview();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function bumpVersion() {
+  config.config_version = (config.config_version || 0) + 1;
+  config.config_updated_at = new Date().toISOString().replace(/\.\d{3}Z$/, '+00:00');
+  // Update the version display fields if they exist
+  const verEl = document.getElementById('field-config_version');
+  if (verEl) verEl.textContent = config.config_version;
+  const tsEl = document.getElementById('field-config_updated_at');
+  if (tsEl) tsEl.textContent = config.config_updated_at;
 }
 
 function renderEmergencyContacts() {
   let html = '';
   emergencyContacts.forEach((c, i) => {
     html += `<div class="contact-row">
-      <input type="text" value="${escHtml(c.name)}" placeholder="Nume" onchange="emergencyContacts[${i}].name=this.value; updatePreview()">
-      <input type="text" value="${escHtml(c.phone)}" placeholder="Telefon" onchange="emergencyContacts[${i}].phone=this.value; updatePreview()">
+      <input type="text" value="${escHtml(c.name)}" placeholder="Nume" onchange="emergencyContacts[${i}].name=this.value; bumpVersion(); updatePreview()">
+      <input type="text" value="${escHtml(c.phone)}" placeholder="Telefon" onchange="emergencyContacts[${i}].phone=this.value; bumpVersion(); updatePreview()">
       <button class="remove-btn" onclick="removeEmergencyContact(${i})" title="Sterge">&times;</button>
     </div>`;
   });
@@ -764,12 +946,14 @@ function renderEmergencyContacts() {
 
 function addEmergencyContact() {
   emergencyContacts.push({ name: '', phone: '' });
+  bumpVersion();
   document.getElementById('emergency-contacts-body').innerHTML = renderEmergencyContacts();
   updatePreview();
 }
 
 function removeEmergencyContact(i) {
   emergencyContacts.splice(i, 1);
+  bumpVersion();
   document.getElementById('emergency-contacts-body').innerHTML = renderEmergencyContacts();
   updatePreview();
 }
@@ -779,7 +963,14 @@ function buildJson() {
   const obj = {
     ...config,
     emergency_contacts: emergencyContacts.map(c => ({ name: c.name, phone: c.phone })),
-    quick_contacts: contacts.map(c => ({ name: c.name, phone: c.phone }))
+    quick_contacts: contacts.map(c => {
+      const entry = { name: c.name, phone: c.phone };
+      if (c.photo_base64) {
+        entry.photo_base64 = c.photo_base64;
+        entry.photo_mime = c.photo_mime || 'image/jpeg';
+      }
+      return entry;
+    })
   };
   return JSON.stringify(obj, null, 2);
 }
@@ -817,8 +1008,16 @@ function loadFromObj(obj) {
   FIELDS.forEach(f => {
     if (obj[f.key] !== undefined) config[f.key] = obj[f.key];
   });
+  // Load versioning fields
+  if (obj.config_version !== undefined) config.config_version = obj.config_version;
+  if (obj.config_updated_at !== undefined) config.config_updated_at = obj.config_updated_at;
   if (Array.isArray(obj.quick_contacts)) {
-    contacts = obj.quick_contacts.map(c => ({ name: c.name || '', phone: c.phone || '' }));
+    contacts = obj.quick_contacts.map(c => ({
+      name: c.name || '',
+      phone: c.phone || '',
+      photo_base64: c.photo_base64 || null,
+      photo_mime: c.photo_mime || null
+    }));
   }
   if (Array.isArray(obj.emergency_contacts)) {
     emergencyContacts = obj.emergency_contacts.map(c => ({ name: c.name || '', phone: c.phone || '' }));

@@ -1960,7 +1960,7 @@ private fun ImportUrlDialog(
                     error = null
                     scope.launch {
                         val result = withContext(Dispatchers.IO) {
-                            ro.softwarechef.freshboomer.data.AppConfig.importFromUrl(context, url.trim())
+                            ro.softwarechef.freshboomer.data.AppConfig.forceImportFromUrl(context, url.trim())
                         }
                         isLoading = false
                         if (result.isSuccess) {

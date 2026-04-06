@@ -452,13 +452,30 @@
       <td><code>quickContacts</code></td>
       <td><span class="badge badge-list">List&lt;QuickContact&gt;</span></td>
       <td><code>[]</code> (empty)</td>
-      <td>Quick-dial contacts shown as large buttons on home screen</td>
+      <td>Quick-dial contacts shown as large buttons on home screen. Each contact can include <code>photo_base64</code> (base64-encoded JPEG) and <code>photo_mime</code> (MIME type) for remote photo deployment.</td>
     </tr>
     <tr>
       <td><code>emergencyContacts</code></td>
       <td><span class="badge badge-list">List&lt;EmergencyContact&gt;</span></td>
       <td><code>[]</code> (empty)</td>
       <td>Contacts notified via SMS during inactivity alerts</td>
+    </tr>
+  </table>
+
+  <h3>Config Versioning</h3>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr>
+      <td><code>configUpdatedAt</code></td>
+      <td><span class="badge badge-string">String?</span></td>
+      <td><code>null</code></td>
+      <td>ISO 8601 timestamp of last config edit (e.g., <code>2026-04-06T14:30:00+00:00</code>). Used as a tiebreaker when <code>configVersion</code> values are equal.</td>
+    </tr>
+    <tr>
+      <td><code>configVersion</code></td>
+      <td><span class="badge badge-number">Int</span></td>
+      <td><code>0</code></td>
+      <td>Monotonically increasing version counter. The app compares this against the last applied version to decide whether a remote config should be applied.</td>
     </tr>
   </table>
 
@@ -514,7 +531,17 @@
     <tr>
       <td><code>importFromUrl(context, url)</code></td>
       <td><code>Result&lt;Unit&gt;</code></td>
-      <td>Fetches JSON from a URL and applies it. Must be called from a background thread.</td>
+      <td>Fetches JSON from a URL and applies it <strong>only if the remote config is newer</strong> (based on <code>config_version</code> and <code>config_updated_at</code>). Decodes any base64-encoded contact photos to internal storage. Must be called from a background thread.</td>
+    </tr>
+    <tr>
+      <td><code>forceImportFromUrl(context, url)</code></td>
+      <td><code>Result&lt;Unit&gt;</code></td>
+      <td>Same as <code>importFromUrl</code> but <strong>skips version checking</strong>. Used for manual imports from Settings where the user explicitly requests an update.</td>
+    </tr>
+    <tr>
+      <td><code>clearRemoteVersionTracking(context)</code></td>
+      <td><code>Unit</code></td>
+      <td>Clears the stored version/timestamp so the next remote fetch always applies. Called automatically inside <code>save()</code> when local edits are made.</td>
     </tr>
   </table>
 
@@ -535,7 +562,19 @@
     </tr>
     <tr>
       <td><code>syncContactsToRepo()</code></td>
-      <td>Merges quick contacts from config into <code>QuickContactRepository</code>, preserving photo URIs and drawable resource names from existing contacts.</td>
+      <td>Merges quick contacts from config into <code>QuickContactRepository</code>. Prefers incoming <code>photoUri</code> (from decoded base64) over existing, preserving drawable resource names from existing contacts.</td>
+    </tr>
+    <tr>
+      <td><code>isRemoteConfigNewer()</code></td>
+      <td>Compares <code>config_version</code> first (integer comparison), then <code>config_updated_at</code> as tiebreaker (ISO 8601 timestamp parsing). Returns <code>true</code> if the remote config should be applied.</td>
+    </tr>
+    <tr>
+      <td><code>saveLastAppliedVersion()</code></td>
+      <td>Stores the applied config's <code>config_version</code> and <code>config_updated_at</code> in SharedPreferences for future comparison.</td>
+    </tr>
+    <tr>
+      <td><code>decodeBase64Photos()</code></td>
+      <td>Iterates quick contacts, decodes any <code>photoBase64</code> fields to image files in internal storage via <code>QuickContactRepository.saveBase64PhotoToInternal()</code>, sets <code>photoUri</code> to the file path, and clears the base64 data.</td>
     </tr>
   </table>
 
@@ -651,6 +690,13 @@
     <span class="flow-box">4. syncContactsToRepo()</span>
     <span class="flow-arrow">&rarr;</span>
     <span class="flow-box green">QuickContactRepository merged</span>
+    <br><br>
+    <span class="flow-box">5. clearRemoteVersionTracking()</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box green">Next remote fetch will always apply</span>
+  </div>
+  <div class="callout">
+    <strong>Note:</strong> Step 5 ensures that local edits don't block future remote config updates. Import methods (<code>importFromUrl</code> / <code>forceImportFromUrl</code>) call <code>saveLastAppliedVersion()</code> after <code>save()</code>, which re-sets the tracking values that step 5 cleared.
   </div>
 </section>
 
@@ -722,7 +768,13 @@
   <p>
     The app supports importing configuration from a remote URL. This allows a caretaker to host a JSON config file
     (e.g., on a web server or cloud storage) and apply it to the device. Once a URL is set, the app
-    <strong>automatically re-fetches the config every time the user returns to the main screen</strong>.
+    <strong>automatically re-fetches the config every time the user returns to the main screen</strong>,
+    but <strong>only applies it if the remote config is newer</strong> than what was last applied (based on <code>config_version</code> and <code>config_updated_at</code>).
+  </p>
+  <p>
+    Remote config can also include <strong>base64-encoded contact photos</strong> (<code>photo_base64</code> + <code>photo_mime</code> per quick contact).
+    On import, these are decoded to image files in internal storage and linked via <code>photoUri</code>.
+    The base64 data is only a transport format &mdash; it is never stored locally in the app's config files.
   </p>
 
   <h3>URL Storage (ConfigUrlPreference)</h3>
@@ -742,7 +794,7 @@
   <div class="flow-diagram">
     <span class="flow-box">User enters URL in ImportUrlDialog</span>
     <span class="flow-arrow">&rarr;</span>
-    <span class="flow-box purple">AppConfig.importFromUrl()</span>
+    <span class="flow-box purple">AppConfig.forceImportFromUrl()</span>
     <br><br>
     <span class="flow-arrow">&darr;</span><br>
     <span class="flow-box">URL(url).readText()</span>
@@ -750,17 +802,24 @@
     <span class="flow-box">JSONObject(text)</span>
     <span class="flow-arrow">&rarr;</span>
     <span class="flow-box">ConfigData.fromJson(json)</span>
-    <span class="flow-arrow">&rarr;</span>
+    <br><br>
+    <span class="flow-arrow">&darr;</span><br>
+    <span class="flow-box orange">decodeBase64Photos()</span>
+    <span style="color:var(--text-muted)">&larr; base64 photos &rarr; internal files</span>
+    <br><br>
+    <span class="flow-arrow">&darr;</span><br>
     <span class="flow-box green">save(context, config)</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-box">saveLastAppliedVersion()</span>
     <br><br>
     <span class="flow-arrow">&darr;</span><br>
     <span class="flow-box orange">ConfigUrlPreference.setUrl(url)</span>
     <span style="color:var(--text-muted)">&larr; URL persisted for auto-sync</span>
   </div>
   <p>
-    When the user imports via the dialog, two things happen: (1) the fetched config is applied immediately,
-    and (2) the URL is saved via <code>ConfigUrlPreference.setUrl()</code> so it persists for auto-sync.
-    The dialog also <strong>pre-fills</strong> with the previously saved URL when re-opened.
+    When the user imports via the dialog, <code>forceImportFromUrl()</code> is used (skips version checking &mdash; always applies).
+    Any base64-encoded contact photos are decoded to image files. The URL is saved via <code>ConfigUrlPreference.setUrl()</code>
+    for auto-sync. The dialog <strong>pre-fills</strong> with the previously saved URL when re-opened.
   </p>
 
   <h3>Automatic Sync Flow (onResume)</h3>
@@ -780,13 +839,35 @@
     <span class="flow-box">CoroutineScope(IO).launch</span>
     <span class="flow-arrow">&rarr;</span>
     <span class="flow-box">AppConfig.importFromUrl()</span>
+    <br><br>
+    <span class="flow-arrow">&darr;</span><br>
+    <span class="flow-box purple">isRemoteConfigNewer()?</span>
+    <br>
+    <span style="color:var(--accent2)">YES &darr;</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span style="color:var(--red)">NO &rarr; skip (no-op)</span>
+    <br>
+    <span class="flow-box">decodeBase64Photos()</span>
     <span class="flow-arrow">&rarr;</span>
-    <span class="flow-box green">Config updated silently</span>
+    <span class="flow-box green">save() + saveLastAppliedVersion()</span>
   </div>
   <p>
     Every time <code>onResume()</code> fires in <code>MainActivity</code>, <code>fetchRemoteConfigIfNeeded()</code>
-    checks the stored URL. If non-blank, it launches a background coroutine to fetch and apply the remote config.
-    Errors are logged silently without disrupting the user.
+    checks the stored URL. If non-blank, it launches a background coroutine to fetch the remote config.
+    The app then <strong>compares <code>config_version</code></strong> (and <code>config_updated_at</code> as tiebreaker)
+    against the last applied values. If the remote config is not newer, the import is skipped entirely.
+    If newer, base64 photos are decoded and the config is applied. Errors are logged silently without disrupting the user.
+  </p>
+
+  <h3>Version Checking Logic</h3>
+  <div class="callout">
+    <strong>Priority:</strong> <code>config_version</code> (integer) is compared first. If equal, <code>config_updated_at</code> (ISO 8601 timestamp) is used as a tiebreaker. If neither field is present in the remote config, the import is skipped during auto-sync (but still applied via manual import which uses <code>forceImportFromUrl</code>).
+  </div>
+  <p>
+    <strong>Local edits clear tracking:</strong> Every call to <code>AppConfig.save()</code> clears the stored version/timestamp.
+    This ensures that after any local edit, the next remote fetch will always apply (since there's no stored version to compare against).
+    Import methods (<code>importFromUrl</code> / <code>forceImportFromUrl</code>) call <code>saveLastAppliedVersion()</code>
+    after <code>save()</code> to re-set the tracking values.
   </p>
 
   <h4>Implementation details:</h4>
@@ -892,6 +973,8 @@
   <h2>10. JSON File Schema</h2>
   <p>Example <code>config.json</code> with all fields and their default values:</p>
   <pre><code>{
+  <span class="string">"config_version"</span>: <span class="type">3</span>,
+  <span class="string">"config_updated_at"</span>: <span class="string">"2026-04-06T14:30:00+00:00"</span>,
   <span class="string">"user_nickname"</span>: <span class="string">"Mamaie"</span>,
   <span class="string">"theme_mode"</span>: <span class="string">"SYSTEM"</span>,
   <span class="string">"tts_enabled"</span>: <span class="keyword">true</span>,
@@ -914,10 +997,29 @@
   <span class="string">"inactivity_monitor_enabled"</span>: <span class="keyword">false</span>,
   <span class="string">"inactivity_monitor_threshold_hours"</span>: <span class="type">12</span>,
   <span class="string">"quick_contacts"</span>: [
-    { <span class="string">"name"</span>: <span class="string">"Gigi"</span>, <span class="string">"phone"</span>: <span class="string">"+40712345678"</span> },
+    { <span class="string">"name"</span>: <span class="string">"Gigi"</span>, <span class="string">"phone"</span>: <span class="string">"+40712345678"</span>, <span class="string">"photo_base64"</span>: <span class="string">"..."</span>, <span class="string">"photo_mime"</span>: <span class="string">"image/jpeg"</span> },
     { <span class="string">"name"</span>: <span class="string">"Lili"</span>, <span class="string">"phone"</span>: <span class="string">"+40798765432"</span> }
   ]
 }</code></pre>
+
+  <h3>Quick Contact Photo Fields</h3>
+  <p>Each object in the <code>quick_contacts</code> array can optionally include:</p>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+    <tr>
+      <td><code>photo_base64</code></td>
+      <td><span class="badge badge-string">String</span> (optional)</td>
+      <td>Base64-encoded image data (typically JPEG). The HTML config editor auto-resizes to max 200x200px at JPEG quality 0.7, keeping each image around 10-20 KB.</td>
+    </tr>
+    <tr>
+      <td><code>photo_mime</code></td>
+      <td><span class="badge badge-string">String</span> (optional)</td>
+      <td>MIME type of the photo (e.g., <code>image/jpeg</code>, <code>image/png</code>). Required if <code>photo_base64</code> is present.</td>
+    </tr>
+  </table>
+  <div class="callout">
+    <strong>Transport only:</strong> Base64 photo data is a <em>transport format</em> for the remote JSON config. On import, the app decodes each photo to an image file in internal storage (<code>contact_photos/</code> directory) and sets the contact's <code>photoUri</code>. The base64 data is never stored in the app's local <code>config.json</code> or <code>quick_contacts.json</code>.
+  </div>
 
   <div class="callout">
     <strong>Partial JSON is OK:</strong> When importing from a URL, you only need to include the fields you want to change. All missing fields will use their default values via <code>ConfigData.fromJson()</code>.
@@ -939,11 +1041,14 @@
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; _configFlow.value = config &nbsp;&nbsp;(UI recomposes)<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; writeFile(config.json) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(disk persist)<br>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; syncToSharedPrefs() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(legacy sync)<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; syncContactsToRepo() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(contacts merge)<br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; syncContactsToRepo() &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(contacts merge)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; clearRemoteVersionTracking() (so next fetch applies)<br><br>
 
     <strong style="color:var(--accent4)">REMOTE IMPORT (manual or auto-sync on every onResume):</strong><br>
-    &nbsp;&nbsp;ConfigUrlPreference.getUrl() &rarr; HTTP GET &rarr; JSON string &rarr; JSONObject &rarr; ConfigData.fromJson() &rarr; save()<br>
-    &nbsp;&nbsp;<em style="color:var(--text-muted)">(URL stored in SharedPreferences, independent of ConfigData &mdash; remote JSON cannot overwrite it)</em><br><br>
+    &nbsp;&nbsp;ConfigUrlPreference.getUrl() &rarr; HTTP GET &rarr; JSONObject &rarr; ConfigData.fromJson()<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&rarr; isRemoteConfigNewer()? &rarr; decodeBase64Photos() &rarr; save() &rarr; saveLastAppliedVersion()<br>
+    &nbsp;&nbsp;<em style="color:var(--text-muted)">(Auto-sync skips if config_version is not newer. Manual import via forceImportFromUrl() always applies.)</em><br>
+    &nbsp;&nbsp;<em style="color:var(--text-muted)">(Base64 contact photos decoded to internal files. URL stored in SharedPreferences, independent of ConfigData.)</em><br><br>
 
     <strong style="color:var(--accent3)">CONSUMING:</strong><br>
     &nbsp;&nbsp;Compose UI &nbsp;&nbsp;&nbsp;&nbsp;&larr;&nbsp; collectAsState(configFlow) &nbsp;&nbsp;&nbsp;&nbsp;&larr;&nbsp; _configFlow<br>
@@ -959,9 +1064,9 @@
     &nbsp;&nbsp;
     <span class="flow-box purple">JSON Editor</span>
     &nbsp;&nbsp;
-    <span class="flow-box">URL Import (manual)</span>
+    <span class="flow-box">URL Import (forceImport)</span>
     &nbsp;&nbsp;
-    <span class="flow-box" style="border-color:var(--accent2);color:var(--accent2)">Auto-Sync (onResume)</span>
+    <span class="flow-box" style="border-color:var(--accent2);color:var(--accent2)">Auto-Sync (version-checked)</span>
     <br><br>
     <span class="flow-arrow">&darr;</span>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

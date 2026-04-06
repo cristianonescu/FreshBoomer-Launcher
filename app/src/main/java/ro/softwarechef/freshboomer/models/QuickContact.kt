@@ -6,5 +6,7 @@ data class QuickContact(
     val phoneNumber: String,
     val photoUri: String? = null,
     val drawableResName: String? = null,
-    val sortOrder: Int = 0
+    val sortOrder: Int = 0,
+    val photoBase64: String? = null,
+    val photoMime: String? = null
 )

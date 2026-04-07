@@ -506,6 +506,10 @@ fun QuickContactSettingsScreen(
                 }
             }
 
+            item {
+                ConfigEditorHint()
+            }
+
             // ─── Group 8: Tips ───
             item {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -1807,7 +1811,7 @@ private fun AboutScreen(onBack: () -> Unit) {
         ) {
             Text(
                 text = "Licente si Multumiri",
-                fontSize = 28.sp,
+                style = MaterialTheme.typography.displaySmall,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -1816,7 +1820,7 @@ private fun AboutScreen(onBack: () -> Unit) {
             // Licenses
             Text(
                 text = "Licente Open Source",
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -1828,7 +1832,7 @@ private fun AboutScreen(onBack: () -> Unit) {
             // Credits
             Text(
                 text = "Multumiri",
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 8.dp)

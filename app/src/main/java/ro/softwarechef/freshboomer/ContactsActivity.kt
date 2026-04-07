@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -218,7 +217,7 @@ fun ContactsScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.contacts_add),
-                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -234,7 +233,7 @@ fun ContactsScreen(
             placeholder = {
                 Text(
                     stringResource(R.string.contacts_search_placeholder),
-                    fontSize = 22.sp,
+                    style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                 )
             },
@@ -274,7 +273,7 @@ fun ContactsScreen(
         // Contact count
         Text(
             text = "${filteredContacts.size} contacte",
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
         )
@@ -300,7 +299,7 @@ fun ContactsScreen(
                             "Nu s-a gasit nimeni cu \"$searchQuery\""
                         else
                             stringResource(R.string.contacts_empty),
-                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                 }
@@ -316,7 +315,7 @@ fun ContactsScreen(
                     item(key = "header_$letter") {
                         Text(
                             text = letter,
-                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(
@@ -388,7 +387,7 @@ fun ContactItem(
             ) {
                 Text(
                     text = initials,
-                    fontSize = 22.sp,
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
@@ -400,7 +399,7 @@ fun ContactItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = contact.name,
-                    fontSize = 26.sp,
+                    style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -409,7 +408,7 @@ fun ContactItem(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = contact.phoneNumber,
-                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -439,7 +438,7 @@ fun ContactItem(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = stringResource(R.string.contacts_call),
-                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
             }

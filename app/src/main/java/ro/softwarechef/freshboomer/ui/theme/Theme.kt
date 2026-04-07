@@ -9,13 +9,17 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 import ro.softwarechef.freshboomer.data.AppConfig
 import ro.softwarechef.freshboomer.data.AppThemeMode
@@ -82,9 +86,25 @@ fun LauncherTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
+    val currentDensity = LocalDensity.current
+    // Scale fonts down on phones (< 600dp width) to keep UI usable.
+    // Tablets keep the original large sizes.
+    val scaledDensity = if (screenWidthDp < 600) {
+        val fontScaleFactor = (screenWidthDp / 600f).coerceIn(0.55f, 1f)
+        Density(
+            density = currentDensity.density,
+            fontScale = currentDensity.fontScale * fontScaleFactor
+        )
+    } else {
+        currentDensity
+    }
+
+    CompositionLocalProvider(LocalDensity provides scaledDensity) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

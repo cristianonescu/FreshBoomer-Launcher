@@ -268,6 +268,8 @@
     <string name="settings_json_editor_desc">Edit all settings in one place</string>
     <string name="settings_import_config">Import Config from URL</string>
     <string name="settings_import_config_desc">Download and apply a configuration from the internet</string>
+    <string name="settings_config_editor_hint">You can create or edit the configuration visually using the online editor. The resulting JSON file must be self-hosted somewhere accessible on the internet (e.g. your own server, GitHub Gist) so it can be imported.</string>
+    <string name="settings_config_editor_link">Open online editor</string>
     <string name="settings_licenses">Licenses &amp; Credits</string>
     <string name="settings_licenses_desc">Open source licenses, credits, and information</string>
     <string name="settings_whatsapp_photos">WhatsApp photos in gallery</string>

@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import ro.softwarechef.freshboomer.models.Contact
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
@@ -244,7 +243,7 @@ fun SmsScreen(
             // Conversation count
             Text(
                 text = stringResource(R.string.sms_conversations_count, conversationsState.size),
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
             )
@@ -266,7 +265,7 @@ fun SmsScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = stringResource(R.string.sms_empty),
-                            fontSize = 24.sp,
+                            style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                     }
@@ -308,7 +307,7 @@ fun SmsScreen(
                     ) {
                         Text(
                             text = initials,
-                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
@@ -317,13 +316,13 @@ fun SmsScreen(
                     Column {
                         Text(
                             text = contact.name,
-                            fontSize = 28.sp,
+                            style = MaterialTheme.typography.displaySmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = contact.phoneNumber,
-                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                     }
@@ -421,7 +420,7 @@ fun ConversationItem(
             ) {
                 Text(
                     text = initials,
-                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
@@ -438,7 +437,7 @@ fun ConversationItem(
                 ) {
                     Text(
                         text = contact.name,
-                        fontSize = 24.sp,
+                        style = MaterialTheme.typography.headlineMedium,
                         fontWeight = if (contact.unreadCount > 0) FontWeight.Bold else FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -448,7 +447,7 @@ fun ConversationItem(
                     if (timeText.isNotEmpty()) {
                         Text(
                             text = timeText,
-                            fontSize = 15.sp,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = if (contact.unreadCount > 0)
                                 MaterialTheme.colorScheme.primary
                             else
@@ -464,7 +463,7 @@ fun ConversationItem(
                 ) {
                     Text(
                         text = contact.lastMessage,
-                        fontSize = 19.sp,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -478,7 +477,7 @@ fun ConversationItem(
                         ) {
                             Text(
                                 text = contact.unreadCount.toString(),
-                                fontSize = 14.sp,
+                                style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -577,7 +576,7 @@ fun ConversationScreen(
                     placeholder = {
                         Text(
                             "Scrie un mesaj...",
-                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                         )
                     },
@@ -611,7 +610,7 @@ fun ConversationScreen(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         "Trimite",
-                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -655,7 +654,7 @@ fun MessageItem(message: Message) {
                 if (!isFromMe && message.sender.isNotEmpty()) {
                     Text(
                         text = message.sender,
-                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -663,7 +662,7 @@ fun MessageItem(message: Message) {
                 }
                 Text(
                     text = message.content,
-                    fontSize = 22.sp,
+                    style = MaterialTheme.typography.headlineSmall,
                     color = if (isFromMe)
                         MaterialTheme.colorScheme.onPrimary
                     else
@@ -672,7 +671,7 @@ fun MessageItem(message: Message) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = timeText,
-                    fontSize = 13.sp,
+                    style = MaterialTheme.typography.labelMedium,
                     color = if (isFromMe)
                         MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
                     else

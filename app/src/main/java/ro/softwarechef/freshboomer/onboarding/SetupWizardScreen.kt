@@ -38,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ro.softwarechef.freshboomer.R
@@ -147,7 +146,7 @@ fun SetupWizardScreen(
         )
         Text(
             text = stringResource(R.string.wizard_step_progress, currentPage + 1, TOTAL_PAGES),
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
         )
@@ -209,7 +208,7 @@ fun SetupWizardScreen(
                 ) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.wizard_back), fontSize = 18.sp)
+                    Text(stringResource(R.string.wizard_back), style = MaterialTheme.typography.titleMedium)
                 }
             } else {
                 // Skip button on first page
@@ -217,7 +216,7 @@ fun SetupWizardScreen(
                     onClick = { saveAndFinish() },
                     modifier = Modifier.height(52.dp)
                 ) {
-                    Text(stringResource(R.string.wizard_skip), fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                    Text(stringResource(R.string.wizard_skip), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
                 }
             }
 
@@ -227,7 +226,7 @@ fun SetupWizardScreen(
                     modifier = Modifier.height(52.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(stringResource(R.string.wizard_next), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.wizard_next), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(20.dp))
                 }
@@ -237,7 +236,7 @@ fun SetupWizardScreen(
                     modifier = Modifier.height(52.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(stringResource(R.string.wizard_finish), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.wizard_finish), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(20.dp))
                 }
@@ -271,7 +270,7 @@ private fun WelcomePage(
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(R.string.wizard_welcome_title),
-            fontSize = 34.sp,
+            style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
@@ -279,7 +278,7 @@ private fun WelcomePage(
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.wizard_welcome_description),
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -287,7 +286,7 @@ private fun WelcomePage(
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(R.string.wizard_welcome_instructions),
-            fontSize = 17.sp,
+            style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -297,7 +296,7 @@ private fun WelcomePage(
         // Language selection
         Text(
             text = stringResource(R.string.wizard_language_title),
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
@@ -308,7 +307,7 @@ private fun WelcomePage(
             FilterChip(
                 selected = appLanguage == "ro",
                 onClick = { if (appLanguage != "ro") onLanguageChanged("ro") },
-                label = { Text("Romana", fontSize = 18.sp) },
+                label = { Text("Romana", style = MaterialTheme.typography.titleMedium) },
                 leadingIcon = if (appLanguage == "ro") {
                     { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
                 } else null
@@ -316,7 +315,7 @@ private fun WelcomePage(
             FilterChip(
                 selected = appLanguage == "en",
                 onClick = { if (appLanguage != "en") onLanguageChanged("en") },
-                label = { Text("English", fontSize = 18.sp) },
+                label = { Text("English", style = MaterialTheme.typography.titleMedium) },
                 leadingIcon = if (appLanguage == "en") {
                     { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
                 } else null
@@ -348,7 +347,7 @@ private fun NicknamePage(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.wizard_nickname_title),
-            fontSize = 28.sp,
+            style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
@@ -356,7 +355,7 @@ private fun NicknamePage(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.wizard_nickname_description),
-            fontSize = 17.sp,
+            style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -365,12 +364,12 @@ private fun NicknamePage(
         OutlinedTextField(
             value = nickname,
             onValueChange = onNicknameChanged,
-            label = { Text(stringResource(R.string.wizard_nickname_label), fontSize = 18.sp) },
+            label = { Text(stringResource(R.string.wizard_nickname_label), style = MaterialTheme.typography.titleMedium) },
             placeholder = { Text(stringResource(R.string.wizard_nickname_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            textStyle = LocalTextStyle.current.copy(fontSize = 24.sp),
+            textStyle = MaterialTheme.typography.headlineMedium,
             singleLine = true,
             shape = RoundedCornerShape(16.dp)
         )
@@ -407,14 +406,14 @@ private fun QuickContactsPage(
     ) {
         Text(
             text = stringResource(R.string.wizard_contacts_title),
-            fontSize = 28.sp,
+            style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = stringResource(R.string.wizard_contacts_description),
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -469,14 +468,14 @@ private fun QuickContactsPage(
             ) {
                 Icon(Icons.Default.Add, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.wizard_contacts_add), fontSize = 18.sp)
+                Text(stringResource(R.string.wizard_contacts_add), style = MaterialTheme.typography.titleMedium)
             }
 
             if (contacts.isEmpty()) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.wizard_contacts_empty),
-                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                     modifier = Modifier.fillMaxWidth()
@@ -544,7 +543,7 @@ private fun QuickContactRow(
                     placeholder = { Text(stringResource(R.string.wizard_contact_name_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    textStyle = MaterialTheme.typography.titleMedium,
                     shape = RoundedCornerShape(10.dp)
                 )
                 Spacer(modifier = Modifier.height(6.dp))
@@ -555,7 +554,7 @@ private fun QuickContactRow(
                     placeholder = { Text(stringResource(R.string.wizard_contact_phone_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                    textStyle = MaterialTheme.typography.titleMedium,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     shape = RoundedCornerShape(10.dp)
                 )
@@ -602,14 +601,14 @@ private fun LanguagePage(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.wizard_language_title),
-            fontSize = 28.sp,
+            style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = stringResource(R.string.wizard_language_description),
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -617,7 +616,7 @@ private fun LanguagePage(
         FilterChip(
             selected = appLanguage == "ro",
             onClick = { if (appLanguage != "ro") onLanguageChanged("ro") },
-            label = { Text("Romana", fontSize = 18.sp) },
+            label = { Text("Romana", style = MaterialTheme.typography.titleMedium) },
             leadingIcon = if (appLanguage == "ro") {
                 { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
             } else null,
@@ -627,7 +626,7 @@ private fun LanguagePage(
         FilterChip(
             selected = appLanguage == "en",
             onClick = { if (appLanguage != "en") onLanguageChanged("en") },
-            label = { Text("English", fontSize = 18.sp) },
+            label = { Text("English", style = MaterialTheme.typography.titleMedium) },
             leadingIcon = if (appLanguage == "en") {
                 { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(18.dp)) }
             } else null,
@@ -659,14 +658,14 @@ private fun EmergencyContactsPage(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.wizard_emergency_title),
-            fontSize = 28.sp,
+            style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = stringResource(R.string.wizard_emergency_description),
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -744,14 +743,14 @@ private fun EmergencyContactsPage(
         ) {
             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.wizard_emergency_add), fontSize = 16.sp)
+            Text(stringResource(R.string.wizard_emergency_add), style = MaterialTheme.typography.bodyLarge)
         }
 
         if (emergencyContacts.isEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.wizard_emergency_empty),
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -779,14 +778,14 @@ private fun FeaturesPage(
     ) {
         Text(
             text = stringResource(R.string.wizard_customize_title),
-            fontSize = 28.sp,
+            style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = stringResource(R.string.wizard_customize_description),
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -794,7 +793,7 @@ private fun FeaturesPage(
         // Theme
         Text(
             text = stringResource(R.string.wizard_section_theme),
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -812,7 +811,7 @@ private fun FeaturesPage(
         // Feature toggles
         Text(
             text = stringResource(R.string.wizard_section_features),
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -841,7 +840,7 @@ private fun FeaturesPage(
         // Behavior
         Text(
             text = stringResource(R.string.wizard_section_behavior),
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -867,7 +866,7 @@ private fun FeaturesPage(
             if (!hasEmergencyContacts) {
                 Text(
                     text = stringResource(R.string.wizard_feature_inactivity_no_contacts),
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(start = 40.dp, top = 4.dp, end = 8.dp)
                 )
@@ -879,7 +878,7 @@ private fun FeaturesPage(
             ) {
                 Text(
                     text = stringResource(R.string.wizard_feature_alert_after),
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 OutlinedTextField(
@@ -894,13 +893,13 @@ private fun FeaturesPage(
                     },
                     modifier = Modifier.width(80.dp),
                     singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(fontSize = 18.sp, textAlign = TextAlign.Center),
+                    textStyle = MaterialTheme.typography.titleMedium.copy(textAlign = TextAlign.Center),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     shape = RoundedCornerShape(10.dp)
                 )
                 Text(
                     text = stringResource(R.string.wizard_feature_hours),
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
@@ -928,7 +927,7 @@ private fun SettingsInfoPage() {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.wizard_before_start_title),
-            fontSize = 28.sp,
+            style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
@@ -941,13 +940,13 @@ private fun SettingsInfoPage() {
         ) {
             Text(
                 text = stringResource(R.string.wizard_settings_info_lock),
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.wizard_settings_info_note),
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
             )
@@ -970,10 +969,10 @@ private fun SettingsInfoPage() {
             )
             items.forEach { item ->
                 Row(modifier = Modifier.padding(vertical = 2.dp)) {
-                    Text("•", fontSize = 16.sp, modifier = Modifier.padding(end = 8.dp))
+                    Text("•", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(end = 8.dp))
                     Text(
                         text = item,
-                        fontSize = 15.sp,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                     )
                 }
@@ -989,13 +988,13 @@ private fun SettingsInfoPage() {
         ) {
             Text(
                 text = stringResource(R.string.wizard_settings_info_config_editor),
-                fontSize = 15.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.wizard_settings_info_how),
-                fontSize = 15.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold
             )
             val steps = listOf(
@@ -1008,7 +1007,7 @@ private fun SettingsInfoPage() {
             steps.forEach { step ->
                 Text(
                     text = step,
-                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                     modifier = Modifier.padding(vertical = 2.dp)
                 )
@@ -1016,7 +1015,7 @@ private fun SettingsInfoPage() {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.wizard_settings_info_remote_note),
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
             )
@@ -1050,7 +1049,7 @@ private fun InfoCard(
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
                     text = title,
-                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -1076,7 +1075,7 @@ private fun ThemeChip(
         label = {
             Text(
                 text = label,
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -1123,12 +1122,12 @@ private fun FeatureToggleRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = description,
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }

@@ -23,7 +23,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.sp
 import ro.softwarechef.freshboomer.R
 import ro.softwarechef.freshboomer.MainActivity
 
@@ -60,7 +59,7 @@ fun Inapoi(modifier: Modifier = Modifier, onClicked: () -> Unit = {}) {
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = stringResource(R.string.back),
-                fontSize = 28.sp,
+                style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold
             )
         }

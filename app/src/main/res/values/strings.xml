@@ -268,6 +268,8 @@
     <string name="settings_json_editor_desc">Editeaza toate setarile intr-un singur loc</string>
     <string name="settings_import_config">Importa Configurare din URL</string>
     <string name="settings_import_config_desc">Descarca si aplica o configurare de pe internet</string>
+    <string name="settings_config_editor_hint">Poti crea sau edita configurarea vizual folosind editorul online. Fisierul JSON rezultat trebuie gazduit undeva accesibil pe internet (de ex. server propriu, GitHub Gist) pentru a putea fi importat.</string>
+    <string name="settings_config_editor_link">Deschide editorul online</string>
     <string name="settings_licenses">Licente si Multumiri</string>
     <string name="settings_licenses_desc">Licente open source, credite si informatii</string>
     <string name="settings_whatsapp_photos">Poze WhatsApp in galerie</string>

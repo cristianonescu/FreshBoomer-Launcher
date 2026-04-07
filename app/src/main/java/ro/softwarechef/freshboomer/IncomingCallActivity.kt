@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ro.softwarechef.freshboomer.call.CallManager
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
@@ -182,7 +181,7 @@ fun IncomingCallScreen(
                 if (callerName != null) {
                     Text(
                         text = callerName,
-                        fontSize = 48.sp,
+                        style = MaterialTheme.typography.displayLarge,
                         color = Color.White,
                         textAlign = TextAlign.Center
                     )
@@ -195,7 +194,7 @@ fun IncomingCallScreen(
                 } else {
                     Text(
                         text = callerNumber,
-                        fontSize = 48.sp,
+                        style = MaterialTheme.typography.displayLarge,
                         color = Color.White,
                         textAlign = TextAlign.Center
                     )

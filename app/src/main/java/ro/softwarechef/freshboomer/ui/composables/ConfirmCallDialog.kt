@@ -14,6 +14,7 @@ import ro.softwarechef.freshboomer.data.NicknamePreference
 import ro.softwarechef.freshboomer.tts.PiperTtsEngine
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -116,14 +117,14 @@ fun ConfirmCallDialog(
                             .crossfade(true)
                             .build(),
                         contentDescription = name,
-                        modifier = Modifier.size(200.dp),
+                        modifier = Modifier.size(140.dp),
                         contentScale = ContentScale.Crop
                     )
                 } else if (profile != null) {
                     Image(
                         painter = painterResource(profile),
                         contentDescription = name,
-                        modifier = Modifier.size(200.dp),
+                        modifier = Modifier.size(140.dp),
                         contentScale = ContentScale.Crop
                     )
                 } else if (icon != null) {
@@ -131,7 +132,7 @@ fun ConfirmCallDialog(
                         imageVector = icon,
                         contentDescription = name,
                         tint = Color.White,
-                        modifier = Modifier.size(200.dp)
+                        modifier = Modifier.size(140.dp)
                     )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
@@ -145,54 +146,41 @@ fun ConfirmCallDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Phone call button
                 OutlinedButton(
                     onClick = onPhoneCall,
                     modifier = Modifier
-                        .height(56.dp)
-                        .weight(1.0F, true)
+                        .height(48.dp)
+                        .weight(1.0F, true),
+                    contentPadding = PaddingValues(horizontal = 12.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Call,
                         contentDescription = null,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(22.dp)
                     )
-                    Spacer(Modifier.width(12.dp))
-                    Text("Da", style = MaterialTheme.typography.titleLarge)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Da", style = MaterialTheme.typography.titleMedium)
                 }
-
-                // WhatsApp video call button
-                /*Button(
-                    onClick = {
-                        startWhatsAppVideoCall(context, number)
-                        onDismiss()
-                    },
-                    modifier = Modifier
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF075E54)
-                    )
-                ) {
-                    Text("WhatsApp Video", style = MaterialTheme.typography.titleLarge)
-                }*/
 
                 // Cancel button
                 OutlinedButton(
                     onClick = onDismiss,
                     modifier = Modifier
-                        .height(56.dp)
-                        .weight(1.0F, true)
+                        .height(48.dp)
+                        .weight(1.0F, true),
+                    contentPadding = PaddingValues(horizontal = 12.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = null,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(22.dp)
                     )
-                    Spacer(Modifier.width(12.dp))
-                    Text("Nu", style = MaterialTheme.typography.titleLarge)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Nu", style = MaterialTheme.typography.titleMedium)
                 }
             }
         }

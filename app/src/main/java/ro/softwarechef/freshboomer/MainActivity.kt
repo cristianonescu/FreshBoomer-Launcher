@@ -998,8 +998,7 @@ fun SystemClock(
         Spacer(Modifier.width(50.dp))
         Text(
             text = "\uD83D\uDDD3\uFE0F " + currentDate,
-            style = MaterialTheme.typography.titleLarge,
-            fontSize = 26.sp,
+            style = MaterialTheme.typography.headlineLarge,
             color = clockColor,
             lineHeight = clockSize.value.sp
         )

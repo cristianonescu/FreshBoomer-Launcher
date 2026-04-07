@@ -24,7 +24,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ro.softwarechef.freshboomer.R
 
 @Composable
@@ -92,16 +91,16 @@ fun OnboardingScreen(
                 Column {
                     Text(
                         stringResource(R.string.sms_default_dialog_text),
-                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    Text(stringResource(R.string.sms_default_step1), fontSize = 17.sp)
+                    Text(stringResource(R.string.sms_default_step1), style = MaterialTheme.typography.titleSmall)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(stringResource(R.string.sms_default_step2), fontSize = 17.sp)
+                    Text(stringResource(R.string.sms_default_step2), style = MaterialTheme.typography.titleSmall)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(stringResource(R.string.sms_default_step3, stringResource(R.string.app_name)), fontSize = 17.sp)
+                    Text(stringResource(R.string.sms_default_step3, stringResource(R.string.app_name)), style = MaterialTheme.typography.titleSmall)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(stringResource(R.string.sms_default_step4), fontSize = 17.sp)
+                    Text(stringResource(R.string.sms_default_step4), style = MaterialTheme.typography.titleSmall)
                 }
             },
             confirmButton = {
@@ -131,14 +130,14 @@ fun OnboardingScreen(
         // Header
         Text(
             text = stringResource(R.string.onboarding_header),
-            fontSize = 34.sp,
+            style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
             text = stringResource(R.string.onboarding_description),
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -163,7 +162,7 @@ fun OnboardingScreen(
         )
         Text(
             text = stringResource(R.string.onboarding_progress, completedSteps, totalSteps),
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
         )
@@ -361,7 +360,7 @@ fun OnboardingScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text(stringResource(R.string.onboarding_continue), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.onboarding_continue), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -371,7 +370,7 @@ fun OnboardingScreen(
 private fun SectionLabel(text: String) {
     Text(
         text = text,
-        fontSize = 16.sp,
+        style = MaterialTheme.typography.bodyLarge,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
@@ -419,7 +418,7 @@ private fun OnboardingStep(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                     color = if (granted)
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
@@ -428,7 +427,7 @@ private fun OnboardingStep(
                 )
                 Text(
                     text = description,
-                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
             }
@@ -438,7 +437,7 @@ private fun OnboardingStep(
             if (granted) {
                 Text(
                     text = stringResource(R.string.enabled),
-                    fontSize = 15.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = Color(0xFF4CAF50),
                     fontWeight = FontWeight.SemiBold
                 )
@@ -448,7 +447,7 @@ private fun OnboardingStep(
                     shape = RoundedCornerShape(10.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                 ) {
-                    Text(buttonLabel, fontSize = 16.sp)
+                    Text(buttonLabel, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }

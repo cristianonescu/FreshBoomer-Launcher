@@ -60,7 +60,7 @@ fun JsonConfigEditorScreen(onBack: () -> Unit) {
 
         Text(
             text = "Configurare JSON",
-            fontSize = 24.sp,
+            style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 12.dp)
@@ -451,6 +451,11 @@ fun JsonConfigEditorScreen(onBack: () -> Unit) {
             }
         }
 
+        // Online editor hint
+        ConfigEditorHint(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+        )
+
         // Bottom buttons
         Row(
             modifier = Modifier
@@ -468,7 +473,7 @@ fun JsonConfigEditorScreen(onBack: () -> Unit) {
             ) {
                 Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Reseteaza", fontSize = 16.sp)
+                Text("Reseteaza", style = MaterialTheme.typography.bodyLarge)
             }
             Button(
                 onClick = {
@@ -479,7 +484,7 @@ fun JsonConfigEditorScreen(onBack: () -> Unit) {
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Salveaza", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("Salveaza", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
             }
         }
     }

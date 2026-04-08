@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-extraction-rules>
+<data-extraction-rules xmlns:tools="http://schemas.android.com/tools">
     <cloud-backup>
         <!-- Only back up non-sensitive preferences -->
         <include domain="sharedpref" path="piper_tts_prefs.xml" />
 
         <!-- Exclude sensitive user data -->
-        <exclude domain="sharedpref" path="LauncherPrefs.xml" />
-        <exclude domain="sharedpref" path="InactivityTrackerPrefs.xml" />
-        <exclude domain="sharedpref" path="MedicationSnoozePrefs.xml" />
-        <exclude domain="file" path="config.json" />
-        <exclude domain="file" path="quick_contacts.json" />
-        <exclude domain="file" path="contact_photos" />
+        <exclude domain="sharedpref" path="LauncherPrefs.xml"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="sharedpref" path="InactivityTrackerPrefs.xml"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="sharedpref" path="MedicationSnoozePrefs.xml"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="file" path="config.json"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="file" path="quick_contacts.json"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="file" path="contact_photos"
+            tools:ignore="FullBackupContent" />
 
         <!-- Exclude large TTS model binaries -->
-        <exclude domain="file" path="piper_models" />
+        <exclude domain="file" path="piper_models"
+            tools:ignore="FullBackupContent" />
     </cloud-backup>
 
     <device-transfer>
@@ -21,14 +28,21 @@
         <include domain="sharedpref" path="piper_tts_prefs.xml" />
 
         <!-- Still exclude sensitive data from device-to-device transfer -->
-        <exclude domain="sharedpref" path="LauncherPrefs.xml" />
-        <exclude domain="sharedpref" path="InactivityTrackerPrefs.xml" />
-        <exclude domain="sharedpref" path="MedicationSnoozePrefs.xml" />
-        <exclude domain="file" path="config.json" />
-        <exclude domain="file" path="quick_contacts.json" />
-        <exclude domain="file" path="contact_photos" />
+        <exclude domain="sharedpref" path="LauncherPrefs.xml"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="sharedpref" path="InactivityTrackerPrefs.xml"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="sharedpref" path="MedicationSnoozePrefs.xml"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="file" path="config.json"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="file" path="quick_contacts.json"
+            tools:ignore="FullBackupContent" />
+        <exclude domain="file" path="contact_photos"
+            tools:ignore="FullBackupContent" />
 
         <!-- Exclude large TTS model binaries -->
-        <exclude domain="file" path="piper_models" />
+        <exclude domain="file" path="piper_models"
+            tools:ignore="FullBackupContent" />
     </device-transfer>
 </data-extraction-rules>

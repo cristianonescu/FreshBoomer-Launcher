@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Note: This file is ignored for devices older than API 31 -->
-<full-backup-content>
+<full-backup-content xmlns:tools="http://schemas.android.com/tools">
     <!-- Only back up non-sensitive preferences (TTS model state, setup completion) -->
     <include domain="sharedpref" path="piper_tts_prefs.xml" />
 
     <!-- Exclude sensitive data -->
-    <exclude domain="sharedpref" path="LauncherPrefs.xml" />
-    <exclude domain="sharedpref" path="InactivityTrackerPrefs.xml" />
-    <exclude domain="sharedpref" path="MedicationSnoozePrefs.xml" />
-    <exclude domain="file" path="config.json" />
-    <exclude domain="file" path="quick_contacts.json" />
-    <exclude domain="file" path="contact_photos" />
+    <exclude domain="sharedpref" path="LauncherPrefs.xml"
+        tools:ignore="FullBackupContent" />
+    <exclude domain="sharedpref" path="InactivityTrackerPrefs.xml"
+        tools:ignore="FullBackupContent" />
+    <exclude domain="sharedpref" path="MedicationSnoozePrefs.xml"
+        tools:ignore="FullBackupContent" />
+    <exclude domain="file" path="config.json"
+        tools:ignore="FullBackupContent" />
+    <exclude domain="file" path="quick_contacts.json"
+        tools:ignore="FullBackupContent" />
+    <exclude domain="file" path="contact_photos"
+        tools:ignore="FullBackupContent" />
 
     <!-- Exclude large TTS model binaries (not sensitive, but wasteful to back up) -->
-    <exclude domain="file" path="piper_models" />
+    <exclude domain="file" path="piper_models"
+        tools:ignore="FullBackupContent" />
 </full-backup-content>

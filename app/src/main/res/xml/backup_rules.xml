@@ -1,13 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older than API 31
-   See https://developer.android.com/about/versions/12/backup-restore
--->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note: This file is ignored for devices older than API 31 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <!-- Only back up non-sensitive preferences (TTS model state, setup completion) -->
+    <include domain="sharedpref" path="piper_tts_prefs.xml" />
+
+    <!-- Exclude sensitive data -->
+    <exclude domain="sharedpref" path="LauncherPrefs.xml" />
+    <exclude domain="sharedpref" path="InactivityTrackerPrefs.xml" />
+    <exclude domain="file" path="config.json" />
+    <exclude domain="file" path="quick_contacts.json" />
+    <exclude domain="file" path="contact_photos" />
+
+    <!-- Exclude large TTS model binaries (not sensitive, but wasteful to back up) -->
+    <exclude domain="file" path="piper_models" />
 </full-backup-content>

@@ -272,6 +272,8 @@
     <string name="settings_config_editor_link">Deschide editorul online</string>
     <string name="settings_licenses">Licente si Multumiri</string>
     <string name="settings_licenses_desc">Licente open source, credite si informatii</string>
+    <string name="settings_privacy_policy">Politica de confidentialitate</string>
+    <string name="settings_privacy_policy_desc">Cum sunt folosite datele tale</string>
     <string name="settings_whatsapp_photos">Poze WhatsApp in galerie</string>
     <string name="settings_whatsapp_photos_desc">Cum sa configurezi WhatsApp sa descarce automat poze si filme</string>
 

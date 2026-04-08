@@ -19,12 +19,38 @@
         ul { padding-left: 1.5em; }
         li { margin-bottom: 0.4em; }
         .contact { background: #f5f5f5; padding: 16px; border-radius: 8px; margin-top: 2em; }
+        .lang-switch {
+            text-align: right;
+            margin-bottom: 1em;
+        }
+        .lang-switch button {
+            padding: 6px 16px;
+            margin-left: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+        .lang-switch button.active {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
     </style>
 </head>
 <body>
 
+<div class="lang-switch">
+    <button id="btn-en" class="active" onclick="setLang('en')">English</button>
+    <button id="btn-ro" onclick="setLang('ro')">Romana</button>
+</div>
+
+<!-- English -->
+<div id="lang-en">
+
 <h1>Privacy Policy</h1>
-<p class="updated">Last updated: April 7, 2026</p>
+<p class="updated">Last updated: April 8, 2026</p>
 
 <p><strong>FreshBoomer</strong> ("the App") is an Android home launcher designed for elderly users. It is developed by Cristian Onescu ("we", "us", "our"). This policy describes what data the App accesses, how it is used, and your rights.</p>
 
@@ -40,9 +66,12 @@
     <li><strong>Audio Settings</strong> &mdash; to route calls to speaker and adjust volume for accessibility.</li>
     <li><strong>Photos / Storage</strong> (read media images, read external storage) &mdash; to display contact photos.</li>
     <li><strong>Internet</strong> &mdash; to download text-to-speech voice models and to fetch optional remote configuration files.</li>
-    <li><strong>Notifications</strong> &mdash; to show foreground service notifications as required by Android.</li>
+    <li><strong>Notifications</strong> &mdash; to show foreground service notifications as required by Android. The App also uses a Notification Listener to detect incoming WhatsApp calls and display a simplified call screen.</li>
     <li><strong>Boot Completed</strong> &mdash; to automatically start the launcher after the device restarts.</li>
 </ul>
+
+<h2>2a. Inactivity Monitor &amp; SMS Alerts</h2>
+<p>The App includes an optional inactivity monitoring feature (disabled by default). When enabled by the user or caretaker, the App will send an SMS alert to pre-configured emergency contacts if the device has not been used for a configurable number of hours. This SMS is sent directly from the device using the device's own phone number and SMS plan. No data is transmitted to any external server as part of this feature.</p>
 
 <h2>3. Local Storage</h2>
 <p>The App stores preferences and configuration locally on your device using Android SharedPreferences and internal storage files. This includes:</p>
@@ -93,6 +122,100 @@
         Email: <a href="mailto:cristian@softwarechef.ro">cristian@softwarechef.ro</a>
     </p>
 </div>
+
+</div>
+
+<!-- Romanian -->
+<div id="lang-ro" style="display: none;">
+
+<h1>Politica de confidentialitate</h1>
+<p class="updated">Ultima actualizare: 8 aprilie 2026</p>
+
+<p><strong>FreshBoomer</strong> ("Aplicatia") este un launcher Android pentru ecranul principal, conceput pentru persoanele varstnice. Este dezvoltata de Cristian Onescu ("noi"). Aceasta politica descrie ce date sunt accesate de Aplicatie, cum sunt utilizate si care sunt drepturile dumneavoastra.</p>
+
+<h2>1. Date pe care le colectam</h2>
+<p><strong>Nu colectam, transmitem sau stocam date personale pe servere externe.</strong> Toate datele folosite de Aplicatie raman pe dispozitivul dumneavoastra.</p>
+
+<h2>2. Date accesate pe dispozitiv</h2>
+<p>Aplicatia necesita anumite permisiuni pentru a functiona ca launcher, aplicatie de telefon si aplicatie de mesaje SMS. Datele accesate prin aceste permisiuni sunt utilizate <em>exclusiv</em> pe dispozitivul dumneavoastra si nu sunt <em>niciodata</em> trimise catre noi sau terti.</p>
+<ul>
+    <li><strong>Contacte</strong> (citire si scriere) &mdash; pentru a afisa si gestiona lista de contacte si a arata numele apelantilor/expeditorilor.</li>
+    <li><strong>Telefon si jurnal apeluri</strong> (efectuare apeluri, stare telefon, citire/scriere jurnal, preluare apeluri) &mdash; pentru a functiona ca aplicatie de telefon implicita, a initia apeluri, a detecta apelurile pierdute si a le anunta prin text-to-speech.</li>
+    <li><strong>SMS si MMS</strong> (citire, trimitere, primire, scriere) &mdash; pentru a functiona ca aplicatie implicita de mesagerie, astfel incat sa puteti vizualiza si trimite mesaje text.</li>
+    <li><strong>Setari audio</strong> &mdash; pentru a directiona apelurile pe difuzor si a regla volumul pentru accesibilitate.</li>
+    <li><strong>Fotografii / Stocare</strong> (citire imagini, stocare externa) &mdash; pentru a afisa fotografiile contactelor.</li>
+    <li><strong>Internet</strong> &mdash; pentru a descarca modelele vocale text-to-speech si pentru a prelua fisierele de configurare de la distanta (optional).</li>
+    <li><strong>Notificari</strong> &mdash; pentru a afisa notificarile serviciilor in prim-plan, conform cerintelor Android. Aplicatia foloseste si un Notification Listener pentru a detecta apelurile WhatsApp primite si a afisa un ecran de apel simplificat.</li>
+    <li><strong>Pornire automata</strong> &mdash; pentru a porni automat launcher-ul dupa repornirea dispozitivului.</li>
+</ul>
+
+<h2>2a. Monitorizare inactivitate si alerte SMS</h2>
+<p>Aplicatia include o functie optionala de monitorizare a inactivitatii (dezactivata implicit). Cand este activata de utilizator sau de ingrijitor, Aplicatia va trimite un SMS de alerta catre contactele de urgenta pre-configurate daca dispozitivul nu a fost folosit un numar configurabil de ore. Acest SMS este trimis direct de pe dispozitiv, folosind numarul de telefon si abonamentul propriu. Nicio data nu este transmisa catre un server extern ca parte a acestei functionalitati.</p>
+
+<h2>3. Stocare locala</h2>
+<p>Aplicatia stocheaza preferintele si configurarea local pe dispozitiv, folosind Android SharedPreferences si fisiere de stocare interna. Acestea includ:</p>
+<ul>
+    <li>Setarile si configurarea aplicatiei (contacte, preferinte de afisare)</li>
+    <li>Urmarirea anunturilor de apeluri pierdute (pentru a evita repetarea anunturilor)</li>
+    <li>Starea descarcarii modelului text-to-speech</li>
+    <li>Starea de completare a asistentului de configurare</li>
+</ul>
+<p>Aceste date sunt private pentru Aplicatie si sunt sterse la dezinstalare.</p>
+
+<h2>4. Utilizarea retelei</h2>
+<p>Aplicatia se conecteaza la internet exclusiv pentru:</p>
+<ul>
+    <li>Descarcarea modelelor vocale text-to-speech pentru limba romana.</li>
+    <li>Preluarea fisierelor de configurare de la distanta, daca a fost configurat un URL de configurare.</li>
+</ul>
+<p>Nu sunt transmise date personale, analize de utilizare, rapoarte de erori sau identificatori ai dispozitivului.</p>
+
+<h2>5. Servicii terte</h2>
+<p>Aplicatia nu integreaza servicii terte de analiza, publicitate sau urmarire. Nu exista SDK-uri care sa colecteze date despre dumneavoastra sau utilizarea aplicatiei.</p>
+
+<h2>6. Confidentialitatea copiilor</h2>
+<p>Aplicatia nu este destinata copiilor sub 13 ani. Nu colecteaza in mod intentionat date de la nimeni, inclusiv copii.</p>
+
+<h2>7. Partajarea datelor</h2>
+<p>Nu partajam, vindem, inchiriem sau comercializam date ale utilizatorilor cu terti. Deoarece nicio data personala nu paraseste dispozitivul, nu exista nimic de partajat.</p>
+
+<h2>8. Securitatea datelor</h2>
+<p>Toate datele raman pe dispozitiv si sunt protejate de mecanismul de izolare al aplicatiilor Android (sandboxing). Nu operam servere care sa stocheze informatiile dumneavoastra.</p>
+
+<h2>9. Drepturile dumneavoastra</h2>
+<p>Deoarece toate datele sunt stocate local pe dispozitiv, aveti control deplin asupra lor:</p>
+<ul>
+    <li>Puteti sterge datele Aplicatiei oricand din Setari Android &gt; Aplicatii &gt; FreshBoomer &gt; Stocare &gt; Stergere date.</li>
+    <li>Dezinstalarea Aplicatiei elimina toate datele stocate local.</li>
+    <li>Puteti revoca orice permisiune oricand din Setari Android &gt; Aplicatii &gt; FreshBoomer &gt; Permisiuni.</li>
+</ul>
+
+<h2>10. Modificari ale acestei politici</h2>
+<p>Putem actualiza aceasta politica de confidentialitate din cand in cand. Orice modificare va fi reflectata prin actualizarea datei "Ultima actualizare" din partea de sus a acestei pagini. Continuarea utilizarii Aplicatiei dupa modificari constituie acceptarea politicii actualizate.</p>
+
+<div class="contact">
+    <h2 style="margin-top: 0;">11. Contact</h2>
+    <p>Daca aveti intrebari despre aceasta politica de confidentialitate, va rugam sa ne contactati:</p>
+    <p>
+        Cristian Onescu<br>
+        Email: <a href="mailto:cristian@softwarechef.ro">cristian@softwarechef.ro</a>
+    </p>
+</div>
+
+</div>
+
+<script>
+function setLang(lang) {
+    document.getElementById('lang-en').style.display = lang === 'en' ? '' : 'none';
+    document.getElementById('lang-ro').style.display = lang === 'ro' ? '' : 'none';
+    document.getElementById('btn-en').className = lang === 'en' ? 'active' : '';
+    document.getElementById('btn-ro').className = lang === 'ro' ? 'active' : '';
+}
+// Auto-detect browser language
+if (navigator.language && navigator.language.startsWith('ro')) {
+    setLang('ro');
+}
+</script>
 
 </body>
 </html>

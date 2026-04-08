@@ -272,6 +272,8 @@
     <string name="settings_config_editor_link">Open online editor</string>
     <string name="settings_licenses">Licenses &amp; Credits</string>
     <string name="settings_licenses_desc">Open source licenses, credits, and information</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_privacy_policy_desc">How your data is used</string>
     <string name="settings_whatsapp_photos">WhatsApp photos in gallery</string>
     <string name="settings_whatsapp_photos_desc">How to set up WhatsApp to automatically download photos and videos</string>
 

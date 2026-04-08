@@ -573,6 +573,11 @@ td code { color: var(--str); }
           <tr><td><code>call_speaker_delay_ms</code></td><td>Intarziere (ms) inainte de activarea automata a difuzorului la apel. Implicit: 3000 (3 secunde).</td></tr>
           <tr><td><code>inactivity_monitor_enabled</code></td><td>Activeaza monitorizarea inactivitatii si alertele SMS. Implicit: dezactivat.</td></tr>
           <tr><td><code>inactivity_monitor_threshold_hours</code></td><td>Dupa cate ore de inactivitate se trimite alerta SMS. Implicit: 12 ore.</td></tr>
+          <tr><td><code>feature_medication_reminders</code></td><td>Activeaza memento-urile pentru medicamente. Implicit: dezactivat.</td></tr>
+          <tr><td><code>medication_reminders</code></td><td>Lista de memento-uri: fiecare cu id, name, time (HH:mm), days_of_week (1=Luni..7=Duminica), enabled, snooze_duration_minutes.</td></tr>
+          <tr><td><code>feature_tts_sms</code></td><td>Activeaza citirea cu voce tare a mesajelor SMS speciale. Implicit: dezactivat.</td></tr>
+          <tr><td><code>tts_sms_prefix</code></td><td>Prefixul care declanseaza citirea. Implicit: "CITESTE:". Aplicatia recunoaste si "READ:".</td></tr>
+          <tr><td><code>feature_tts_sms_trusted_only</code></td><td>Doar mesajele de la contactele de urgenta sunt citite. Implicit: activat.</td></tr>
         </tbody>
       </table>
 
@@ -619,6 +624,11 @@ td code { color: var(--str); }
   "call_speaker_delay_ms": 3000,
   "inactivity_monitor_enabled": false,
   "inactivity_monitor_threshold_hours": 12,
+  "feature_medication_reminders": false,
+  "medication_reminders": [],
+  "feature_tts_sms": false,
+  "tts_sms_prefix": "CITESTE:",
+  "feature_tts_sms_trusted_only": true,
   "emergency_contacts": [
     { "name": "Fiul", "phone": "0712345678" }
   ],
@@ -676,6 +686,10 @@ const FIELDS = [
   { key: "call_speaker_delay_ms", type: "long", default: 3000, group: "Comportament", tooltip: "Intarziere (ms) inainte de activarea difuzorului", min: 0, step: 500 },
   { key: "inactivity_monitor_enabled", type: "boolean", default: false, group: "Comportament", tooltip: "Trimite SMS contactelor de urgenta daca utilizatorul nu interactioneaza cu telefonul pentru o perioada lunga" },
   { key: "inactivity_monitor_threshold_hours", type: "int", default: 12, group: "Comportament", tooltip: "Ore de inactivitate dupa care se trimite alerta SMS. Implicit: 12", min: 1, max: 72 },
+  { key: "feature_medication_reminders", type: "boolean", default: false, group: "Functionalitati", tooltip: "Activeaza memento-urile pentru medicamente" },
+  { key: "feature_tts_sms", type: "boolean", default: false, group: "Functionalitati", tooltip: "Citeste cu voce tare mesajele SMS care incep cu un prefix special" },
+  { key: "tts_sms_prefix", type: "string", default: "CITESTE:", group: "Comportament", tooltip: "Prefixul care declanseaza citirea cu voce tare. Aplicatia recunoaste si READ:" },
+  { key: "feature_tts_sms_trusted_only", type: "boolean", default: true, group: "Comportament", tooltip: "Doar mesajele de la contactele de urgenta sunt citite cu voce tare" },
 ];
 
 const DEFAULT_CONTACTS = [];

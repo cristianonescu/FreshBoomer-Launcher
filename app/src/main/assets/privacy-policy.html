@@ -59,7 +59,7 @@
 <div id="lang-en">
 
 <h1>Privacy Policy</h1>
-<p class="updated">Last updated: April 8, 2026</p>
+<p class="updated">Last updated: April 9, 2026</p>
 
 <p><strong>FreshBoomer</strong> ("the App") is an Android home launcher designed for elderly users. It is developed by Cristian Onescu ("we", "us", "our"). This policy describes what data the App accesses, how it is used, and your rights.</p>
 
@@ -82,6 +82,12 @@
 <h2>2a. Inactivity Monitor &amp; SMS Alerts</h2>
 <p>The App includes an optional inactivity monitoring feature (disabled by default). When enabled by the user or caretaker, the App will send an SMS alert to pre-configured emergency contacts if the device has not been used for a configurable number of hours. This SMS is sent directly from the device using the device's own phone number and SMS plan. No data is transmitted to any external server as part of this feature.</p>
 
+<h2>2b. Medication Reminders</h2>
+<p>The App can display timed reminders for medication (disabled by default). Medication names and schedules are stored locally in the device configuration file. The App uses Android's alarm system to trigger reminders at the configured times. No medication data is transmitted externally.</p>
+
+<h2>2c. Voice SMS Messages</h2>
+<p>The App can read certain incoming SMS messages aloud using text-to-speech (disabled by default). Only messages starting with a specific keyword (e.g., "CITESTE:" or "READ:") are read aloud, and optionally only from pre-configured emergency contacts. The SMS content is processed entirely on-device and is not transmitted to any external server.</p>
+
 <h2>3. Local Storage</h2>
 <p>The App stores preferences and configuration locally on your device using Android SharedPreferences and internal storage files. This includes:</p>
 <ul>
@@ -89,6 +95,7 @@
     <li>Missed call announcement tracking (to avoid repeating announcements)</li>
     <li>Text-to-speech model download state</li>
     <li>Setup wizard completion status</li>
+    <li>Medication reminder schedules and snooze state</li>
 </ul>
 <p>This data is private to the App and is removed when you uninstall it.</p>
 
@@ -138,7 +145,7 @@
 <div id="lang-ro" style="display: none;">
 
 <h1>Politica de confidentialitate</h1>
-<p class="updated">Ultima actualizare: 8 aprilie 2026</p>
+<p class="updated">Ultima actualizare: 9 aprilie 2026</p>
 
 <p><strong>FreshBoomer</strong> ("Aplicatia") este un launcher Android pentru ecranul principal, conceput pentru persoanele varstnice. Este dezvoltata de Cristian Onescu ("noi"). Aceasta politica descrie ce date sunt accesate de Aplicatie, cum sunt utilizate si care sunt drepturile dumneavoastra.</p>
 
@@ -161,6 +168,12 @@
 <h2>2a. Monitorizare inactivitate si alerte SMS</h2>
 <p>Aplicatia include o functie optionala de monitorizare a inactivitatii (dezactivata implicit). Cand este activata de utilizator sau de ingrijitor, Aplicatia va trimite un SMS de alerta catre contactele de urgenta pre-configurate daca dispozitivul nu a fost folosit un numar configurabil de ore. Acest SMS este trimis direct de pe dispozitiv, folosind numarul de telefon si abonamentul propriu. Nicio data nu este transmisa catre un server extern ca parte a acestei functionalitati.</p>
 
+<h2>2b. Memento medicamente</h2>
+<p>Aplicatia poate afisa memento-uri programate pentru medicamente (dezactivate implicit). Numele medicamentelor si programele sunt stocate local in fisierul de configurare al dispozitivului. Aplicatia foloseste sistemul de alarme Android pentru a declansa memento-urile la orele configurate. Nicio data despre medicamente nu este transmisa in exterior.</p>
+
+<h2>2c. Mesaje vocale SMS</h2>
+<p>Aplicatia poate citi cu voce tare anumite mesaje SMS primite, folosind text-to-speech (dezactivat implicit). Doar mesajele care incep cu un cuvant cheie specific (de ex. "CITESTE:" sau "READ:") sunt citite cu voce tare, si optional doar de la contactele de urgenta pre-configurate. Continutul SMS-ului este procesat integral pe dispozitiv si nu este transmis catre niciun server extern.</p>
+
 <h2>3. Stocare locala</h2>
 <p>Aplicatia stocheaza preferintele si configurarea local pe dispozitiv, folosind Android SharedPreferences si fisiere de stocare interna. Acestea includ:</p>
 <ul>
@@ -168,6 +181,7 @@
     <li>Urmarirea anunturilor de apeluri pierdute (pentru a evita repetarea anunturilor)</li>
     <li>Starea descarcarii modelului text-to-speech</li>
     <li>Starea de completare a asistentului de configurare</li>
+    <li>Programele memento-urilor pentru medicamente si starea de amanare</li>
 </ul>
 <p>Aceste date sunt private pentru Aplicatie si sunt sterse la dezinstalare.</p>
 

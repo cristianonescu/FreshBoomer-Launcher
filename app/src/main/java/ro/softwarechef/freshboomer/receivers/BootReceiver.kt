@@ -6,6 +6,7 @@ import android.content.Intent
 import ro.softwarechef.freshboomer.MainActivity
 import ro.softwarechef.freshboomer.data.AppConfig
 import ro.softwarechef.freshboomer.services.InactivityMonitorWorker
+import ro.softwarechef.freshboomer.services.MedicationReminderScheduler
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -15,6 +16,9 @@ class BootReceiver : BroadcastReceiver() {
 
             // Schedule inactivity monitor if enabled
             InactivityMonitorWorker.schedule(context)
+
+            // Reschedule medication reminders
+            MedicationReminderScheduler.scheduleAll(context)
 
             val launchIntent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK

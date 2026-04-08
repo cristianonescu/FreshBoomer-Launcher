@@ -65,6 +65,20 @@ Get the latest APK from the [Releases](https://github.com/cristianonescu/FreshBo
 - Voice announcements for navigation, calls, missed calls, battery status
 - Configurable speech rate (0.5x - 2.0x)
 
+### Medication Reminders
+- Configurable medication reminders with name, time, and days of week
+- Full-screen alert with TTS announcement (e.g., "Mamaie, ia pastilele de tensiune")
+- Snooze option (configurable duration, max 3 snoozes per reminder)
+- Survives device reboots via AlarmManager + boot receiver
+- Configurable in-app and via remote config
+
+### Voice SMS Messages (Remote TTS)
+- Caretaker can send an SMS starting with "CITESTE:" or "READ:" to have it read aloud
+- Full-screen overlay displays the message with replay and dismiss buttons
+- Auto-dismiss after 30 seconds
+- Configurable trusted-sender whitelist (emergency contacts only by default)
+- Both prefixes are always recognized regardless of app language setting
+
 ### Safety & Monitoring
 - Inactivity timeout (auto-return to home screen, default 20s)
 - Inactivity monitor with SMS alerts to emergency contacts after configurable hours of no interaction

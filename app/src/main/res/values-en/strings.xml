@@ -348,6 +348,55 @@
     <string name="settings_inactivity_alert_after">Alert after</string>
     <string name="settings_inactivity_hours">hours</string>
 
+    <!-- Medication Reminders -->
+    <string name="settings_section_medication">Medication Reminders</string>
+    <string name="settings_medication_enabled">Medication reminders</string>
+    <string name="settings_medication_enabled_desc">The phone reminds you to take your medication</string>
+    <string name="settings_medication_add">Add reminder</string>
+    <string name="settings_medication_name_hint">Medication name</string>
+    <string name="settings_medication_time">Time</string>
+    <string name="settings_medication_days">Days</string>
+    <string name="settings_medication_delete">Delete</string>
+    <string name="settings_medication_none">No reminders configured. Tap the button below to add one.</string>
+    <string name="medication_alert_title">Medication Reminder</string>
+    <string name="medication_alert_dismiss">I took it</string>
+    <string name="medication_alert_snooze">Later</string>
+    <string name="medication_alert_snooze_info">(%1$d min)</string>
+    <string name="tts_medication_reminder">%1$s, take your %2$s</string>
+    <string name="medication_notification_channel">Medication reminders</string>
+    <string name="medication_notification_title">Time for medication</string>
+    <string name="medication_notification_text">Take your %1$s</string>
+    <string name="medication_exact_alarm_needed">The app needs permission to set exact alarms for medication reminders.</string>
+    <string name="medication_exact_alarm_grant">Grant permission</string>
+    <string name="day_mon">M</string>
+    <string name="day_tue">Tu</string>
+    <string name="day_wed">W</string>
+    <string name="day_thu">Th</string>
+    <string name="day_fri">F</string>
+    <string name="day_sat">Sa</string>
+    <string name="day_sun">Su</string>
+
+    <!-- TTS SMS -->
+    <string name="settings_section_tts_sms">Voice SMS Messages</string>
+    <string name="settings_tts_sms_enabled">Read special messages aloud</string>
+    <string name="settings_tts_sms_enabled_desc">The phone reads SMS messages that start with a special keyword out loud</string>
+    <string name="settings_tts_sms_trusted_only">Only from emergency contacts</string>
+    <string name="settings_tts_sms_trusted_only_desc">Ignore messages from unknown numbers</string>
+    <string name="settings_tts_sms_prefix">Trigger keyword</string>
+    <string name="settings_tts_sms_prefix_desc">The SMS must start with this text to be read aloud</string>
+    <string name="settings_tts_sms_info">A caretaker can send an SMS starting with \"%1$s\" and the phone will read it out loud. For example: \"%1$s Don\'t forget to take your pills!\"</string>
+    <string name="tts_sms_alert_title">Voice Message</string>
+    <string name="tts_sms_alert_from">From: %1$s</string>
+    <string name="tts_sms_alert_dismiss">Got it</string>
+    <string name="tts_sms_alert_replay">Listen again</string>
+    <string name="tts_sms_announcement">%1$s, you received a message. %2$s</string>
+
+    <!-- Wizard: Medication & TTS SMS -->
+    <string name="wizard_feature_medication_reminders">Medication reminders</string>
+    <string name="wizard_feature_medication_reminders_desc">Get reminded to take your medication at set times</string>
+    <string name="wizard_feature_tts_sms">Voice SMS messages</string>
+    <string name="wizard_feature_tts_sms_desc">Caretaker can send messages that are read out loud</string>
+
     <!-- WhatsApp guide -->
     <string name="settings_whatsapp_guide_title">WhatsApp Auto-Download</string>
     <string name="settings_whatsapp_guide_intro">For photos and videos received on WhatsApp to appear in the gallery, you need to enable auto-download:</string>

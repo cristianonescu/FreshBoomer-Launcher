@@ -24,6 +24,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <queries>
         <package android:name="com.whatsapp" />
@@ -106,6 +108,32 @@
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
+
+        <!-- Medication Alert -->
+        <activity
+            android:name=".MedicationAlertActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.Deka_launcher" />
+
+        <!-- Medication Reminder Receiver -->
+        <receiver
+            android:name=".receivers.MedicationReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- TTS SMS Alert -->
+        <activity
+            android:name=".TtsSmsAlertActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.Deka_launcher" />
 
         <!-- MODIFIED: Listens for the default app SMS deliver action -->
         <receiver

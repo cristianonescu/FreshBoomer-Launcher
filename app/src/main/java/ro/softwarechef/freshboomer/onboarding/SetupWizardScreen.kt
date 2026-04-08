@@ -110,6 +110,8 @@ fun SetupWizardScreen(
             autoMaxVolume = featureToggles.autoMaxVolume,
             inactivityMonitorEnabled = featureToggles.inactivityMonitor,
             inactivityMonitorThresholdHours = inactivityThresholdHours,
+            featureMedicationReminders = featureToggles.medicationReminders,
+            featureTtsSms = featureToggles.ttsSms,
             themeMode = themeMode.name,
             appLanguage = appLanguage,
             emergencyContacts = emergencyContacts,
@@ -119,6 +121,9 @@ fun SetupWizardScreen(
 
         // Schedule or cancel inactivity monitor based on new config
         InactivityMonitorWorker.reschedule(baseContext)
+
+        // Schedule medication reminders if enabled
+        ro.softwarechef.freshboomer.services.MedicationReminderScheduler.scheduleAll(baseContext)
 
         // Mark setup as completed
         SetupWizardPreference.setCompleted(baseContext, true)
@@ -1017,6 +1022,23 @@ private fun FeaturesPage(
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
+        }
+
+        FeatureToggleRow(
+            stringResource(R.string.wizard_feature_medication_reminders),
+            stringResource(R.string.wizard_feature_medication_reminders_desc),
+            Icons.Default.Notifications,
+            toggles.medicationReminders
+        ) {
+            onTogglesChanged(toggles.copy(medicationReminders = it))
+        }
+        FeatureToggleRow(
+            stringResource(R.string.wizard_feature_tts_sms),
+            stringResource(R.string.wizard_feature_tts_sms_desc),
+            Icons.Default.Email,
+            toggles.ttsSms
+        ) {
+            onTogglesChanged(toggles.copy(ttsSms = it))
         }
     }
 }

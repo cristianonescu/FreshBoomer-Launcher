@@ -348,6 +348,55 @@
     <string name="settings_inactivity_alert_after">Alerta dupa</string>
     <string name="settings_inactivity_hours">ore</string>
 
+    <!-- Medication Reminders -->
+    <string name="settings_section_medication">Memento medicamente</string>
+    <string name="settings_medication_enabled">Memento-uri pentru medicamente</string>
+    <string name="settings_medication_enabled_desc">Telefonul iti aminteste sa iei medicamentele</string>
+    <string name="settings_medication_add">Adauga memento</string>
+    <string name="settings_medication_name_hint">Numele medicamentului</string>
+    <string name="settings_medication_time">Ora</string>
+    <string name="settings_medication_days">Zile</string>
+    <string name="settings_medication_delete">Sterge</string>
+    <string name="settings_medication_none">Niciun memento configurat. Apasa butonul de mai jos pentru a adauga unul.</string>
+    <string name="medication_alert_title">Memento medicamente</string>
+    <string name="medication_alert_dismiss">Am luat</string>
+    <string name="medication_alert_snooze">Mai tarziu</string>
+    <string name="medication_alert_snooze_info">(%1$d min)</string>
+    <string name="tts_medication_reminder">%1$s, ia %2$s</string>
+    <string name="medication_notification_channel">Memento medicamente</string>
+    <string name="medication_notification_title">E timpul pentru medicamente</string>
+    <string name="medication_notification_text">Ia %1$s</string>
+    <string name="medication_exact_alarm_needed">Aplicatia are nevoie de permisiunea de a seta alarme exacte pentru memento-uri.</string>
+    <string name="medication_exact_alarm_grant">Acorda permisiunea</string>
+    <string name="day_mon">L</string>
+    <string name="day_tue">Ma</string>
+    <string name="day_wed">Mi</string>
+    <string name="day_thu">J</string>
+    <string name="day_fri">V</string>
+    <string name="day_sat">S</string>
+    <string name="day_sun">D</string>
+
+    <!-- TTS SMS -->
+    <string name="settings_section_tts_sms">Mesaje vocale SMS</string>
+    <string name="settings_tts_sms_enabled">Citeste mesaje speciale</string>
+    <string name="settings_tts_sms_enabled_desc">Telefonul citeste cu voce tare mesajele SMS care incep cu un cuvant special</string>
+    <string name="settings_tts_sms_trusted_only">Doar de la contactele de urgenta</string>
+    <string name="settings_tts_sms_trusted_only_desc">Ignora mesajele de la numere necunoscute</string>
+    <string name="settings_tts_sms_prefix">Cuvantul declansator</string>
+    <string name="settings_tts_sms_prefix_desc">SMS-ul trebuie sa inceapa cu acest text pentru a fi citit cu voce tare</string>
+    <string name="settings_tts_sms_info">Un ingrijitor poate trimite un SMS care incepe cu \"%1$s\" si telefonul il va citi cu voce tare. De exemplu: \"%1$s Mamaie, sa nu uiti sa iei pastilele!\"</string>
+    <string name="tts_sms_alert_title">Mesaj vocal</string>
+    <string name="tts_sms_alert_from">De la: %1$s</string>
+    <string name="tts_sms_alert_dismiss">Am inteles</string>
+    <string name="tts_sms_alert_replay">Asculta din nou</string>
+    <string name="tts_sms_announcement">%1$s, ai primit un mesaj. %2$s</string>
+
+    <!-- Wizard: Medication & TTS SMS -->
+    <string name="wizard_feature_medication_reminders">Memento medicamente</string>
+    <string name="wizard_feature_medication_reminders_desc">Aminteste-ti sa iei medicamentele la ore fixe</string>
+    <string name="wizard_feature_tts_sms">Mesaje vocale SMS</string>
+    <string name="wizard_feature_tts_sms_desc">Ingrijitorul poate trimite mesaje care sunt citite cu voce tare</string>
+
     <!-- WhatsApp guide -->
     <string name="settings_whatsapp_guide_title">Descarcarea automata in WhatsApp</string>
     <string name="settings_whatsapp_guide_intro">Pentru ca pozele si filmele primite pe WhatsApp sa apara in galerie, trebuie sa activezi descarcarea automata:</string>

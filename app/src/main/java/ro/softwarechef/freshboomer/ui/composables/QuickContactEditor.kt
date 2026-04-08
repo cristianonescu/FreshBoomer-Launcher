@@ -77,6 +77,11 @@ fun QuickContactSettingsScreen(
     var appLanguage by remember { mutableStateOf(AppConfig.current.appLanguage) }
     var emergencyContacts by remember { mutableStateOf(AppConfig.current.emergencyContacts) }
     var inactivityThresholdHours by remember { mutableIntStateOf(AppConfig.current.inactivityMonitorThresholdHours) }
+    var featureTtsSms by remember { mutableStateOf(AppConfig.current.featureTtsSms) }
+    var featureTtsSmsTrustedOnly by remember { mutableStateOf(AppConfig.current.featureTtsSmsTrustedOnly) }
+    var ttsSmsPrefix by remember { mutableStateOf(AppConfig.current.ttsSmsPrefix) }
+    var featureMedicationReminders by remember { mutableStateOf(AppConfig.current.featureMedicationReminders) }
+    var medicationReminders by remember { mutableStateOf(AppConfig.current.medicationReminders) }
 
     // Photo picker state
     var pickingPhotoForId by remember { mutableStateOf<String?>(null) }
@@ -283,6 +288,35 @@ fun QuickContactSettingsScreen(
                 )
             }
 
+            // ─── Group: TTS SMS ───
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                SectionHeader(
+                    title = stringResource(R.string.settings_section_tts_sms),
+                    icon = Icons.Default.Email
+                )
+            }
+
+            item {
+                TtsSmsSection(
+                    enabled = featureTtsSms,
+                    onEnabledChange = { enabled ->
+                        featureTtsSms = enabled
+                        FeatureTogglePreference.setToggle(context, FeatureTogglePreference.TTS_SMS, enabled)
+                    },
+                    trustedOnly = featureTtsSmsTrustedOnly,
+                    onTrustedOnlyChange = { enabled ->
+                        featureTtsSmsTrustedOnly = enabled
+                        AppConfig.save(context, AppConfig.current.copy(featureTtsSmsTrustedOnly = enabled))
+                    },
+                    prefix = ttsSmsPrefix,
+                    onPrefixChange = { prefix ->
+                        ttsSmsPrefix = prefix
+                        AppConfig.save(context, AppConfig.current.copy(ttsSmsPrefix = prefix))
+                    }
+                )
+            }
+
             // ─── Group: Nickname ───
             item {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -336,6 +370,37 @@ fun QuickContactSettingsScreen(
                     onContactsChanged = { updated ->
                         emergencyContacts = updated
                         AppConfig.save(context, AppConfig.current.copy(emergencyContacts = updated))
+                    }
+                )
+            }
+
+            // ─── Group: Medication Reminders ───
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                SectionHeader(
+                    title = stringResource(R.string.settings_section_medication),
+                    icon = Icons.Default.Notifications
+                )
+            }
+
+            item {
+                MedicationRemindersSection(
+                    enabled = featureMedicationReminders,
+                    onEnabledChange = { enabled ->
+                        featureMedicationReminders = enabled
+                        FeatureTogglePreference.setToggle(context, FeatureTogglePreference.MEDICATION_REMINDERS, enabled)
+                        if (!enabled) {
+                            ro.softwarechef.freshboomer.services.MedicationReminderScheduler.cancelAll(context)
+                        } else {
+                            ro.softwarechef.freshboomer.services.MedicationReminderScheduler.scheduleAll(context)
+                        }
+                    },
+                    reminders = medicationReminders,
+                    onRemindersChanged = { updated ->
+                        medicationReminders = updated
+                        val config = AppConfig.current.copy(medicationReminders = updated)
+                        AppConfig.save(context, config)
+                        ro.softwarechef.freshboomer.services.MedicationReminderScheduler.scheduleAll(context)
                     }
                 )
             }
@@ -1061,6 +1126,308 @@ private fun TtsUpdateRow() {
                     && checkState != UpdateCheckState.NoModel
         ) {
             Text(stringResource(R.string.settings_tts_update_check))
+        }
+    }
+}
+
+@Composable
+private fun TtsSmsSection(
+    enabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    trustedOnly: Boolean,
+    onTrustedOnlyChange: (Boolean) -> Unit,
+    prefix: String,
+    onPrefixChange: (String) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            FeatureToggleRow(
+                label = stringResource(R.string.settings_tts_sms_enabled),
+                description = stringResource(R.string.settings_tts_sms_enabled_desc),
+                checked = enabled,
+                onCheckedChange = onEnabledChange
+            )
+
+            if (enabled) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                FeatureToggleRow(
+                    label = stringResource(R.string.settings_tts_sms_trusted_only),
+                    description = stringResource(R.string.settings_tts_sms_trusted_only_desc),
+                    checked = trustedOnly,
+                    onCheckedChange = onTrustedOnlyChange
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                Text(
+                    text = stringResource(R.string.settings_tts_sms_prefix),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Text(
+                    text = stringResource(R.string.settings_tts_sms_prefix_desc),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+                OutlinedTextField(
+                    value = prefix,
+                    onValueChange = { if (it.length <= 20) onPrefixChange(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    singleLine = true,
+                    shape = RoundedCornerShape(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.settings_tts_sms_info, prefix.ifEmpty { "CITESTE:" }),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MedicationRemindersSection(
+    enabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    reminders: List<ro.softwarechef.freshboomer.data.MedicationReminder>,
+    onRemindersChanged: (List<ro.softwarechef.freshboomer.data.MedicationReminder>) -> Unit
+) {
+    val context = LocalContext.current
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            FeatureToggleRow(
+                label = stringResource(R.string.settings_medication_enabled),
+                description = stringResource(R.string.settings_medication_enabled_desc),
+                checked = enabled,
+                onCheckedChange = onEnabledChange
+            )
+
+            if (enabled) {
+                // Exact alarm permission check (Android 12+)
+                if (!ro.softwarechef.freshboomer.services.MedicationReminderScheduler.canScheduleExactAlarms(context)) {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                    Text(
+                        text = stringResource(R.string.medication_exact_alarm_needed),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                    Button(
+                        onClick = {
+                            context.startActivity(
+                                ro.softwarechef.freshboomer.services.MedicationReminderScheduler.getExactAlarmSettingsIntent()
+                            )
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.padding(top = 4.dp)
+                    ) {
+                        Text(stringResource(R.string.medication_exact_alarm_grant))
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                if (reminders.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.settings_medication_none),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+                reminders.forEachIndexed { index, reminder ->
+                    if (index > 0) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+                    MedicationReminderItem(
+                        reminder = reminder,
+                        onChanged = { updated ->
+                            val list = reminders.toMutableList()
+                            list[index] = updated
+                            onRemindersChanged(list)
+                        },
+                        onDelete = {
+                            val list = reminders.toMutableList()
+                            list.removeAt(index)
+                            onRemindersChanged(list)
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        val updated = reminders + ro.softwarechef.freshboomer.data.MedicationReminder()
+                        onRemindersChanged(updated)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.settings_medication_add))
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MedicationReminderItem(
+    reminder: ro.softwarechef.freshboomer.data.MedicationReminder,
+    onChanged: (ro.softwarechef.freshboomer.data.MedicationReminder) -> Unit,
+    onDelete: () -> Unit
+) {
+    val dayLabels = listOf(
+        stringResource(R.string.day_mon),
+        stringResource(R.string.day_tue),
+        stringResource(R.string.day_wed),
+        stringResource(R.string.day_thu),
+        stringResource(R.string.day_fri),
+        stringResource(R.string.day_sat),
+        stringResource(R.string.day_sun)
+    )
+
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    if (showTimePicker) {
+        val parts = reminder.time.split(":")
+        val initialHour = parts.getOrNull(0)?.toIntOrNull() ?: 8
+        val initialMinute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        val timePickerState = rememberTimePickerState(
+            initialHour = initialHour,
+            initialMinute = initialMinute,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            title = { Text(stringResource(R.string.settings_medication_time)) },
+            text = {
+                TimePicker(state = timePickerState)
+            },
+            confirmButton = {
+                Button(onClick = {
+                    val newTime = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
+                    onChanged(reminder.copy(time = newTime))
+                    showTimePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showTimePicker = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    Column {
+        // Name field + enabled toggle
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = reminder.name,
+                onValueChange = { onChanged(reminder.copy(name = it)) },
+                modifier = Modifier.weight(1f),
+                singleLine = true,
+                placeholder = { Text(stringResource(R.string.settings_medication_name_hint)) },
+                shape = RoundedCornerShape(8.dp),
+                textStyle = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Switch(
+                checked = reminder.enabled,
+                onCheckedChange = { onChanged(reminder.copy(enabled = it)) }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Time selector
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.settings_medication_time),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            OutlinedButton(
+                onClick = { showTimePicker = true },
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = reminder.time,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Day of week selector
+        Text(
+            text = stringResource(R.string.settings_medication_days),
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            (1..7).forEach { day ->
+                val isSelected = day in reminder.daysOfWeek
+                FilterChip(
+                    selected = isSelected,
+                    onClick = {
+                        val newDays = if (isSelected) {
+                            reminder.daysOfWeek - day
+                        } else {
+                            reminder.daysOfWeek + day
+                        }
+                        onChanged(reminder.copy(daysOfWeek = newDays.sorted()))
+                    },
+                    label = {
+                        Text(
+                            text = dayLabels[day - 1],
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // Delete button
+        TextButton(
+            onClick = onDelete,
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.error
+            )
+        ) {
+            Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(stringResource(R.string.settings_medication_delete))
         }
     }
 }

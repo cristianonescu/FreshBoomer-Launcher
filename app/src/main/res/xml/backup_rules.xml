@@ -7,6 +7,7 @@
     <!-- Exclude sensitive data -->
     <exclude domain="sharedpref" path="LauncherPrefs.xml" />
     <exclude domain="sharedpref" path="InactivityTrackerPrefs.xml" />
+    <exclude domain="sharedpref" path="MedicationSnoozePrefs.xml" />
     <exclude domain="file" path="config.json" />
     <exclude domain="file" path="quick_contacts.json" />
     <exclude domain="file" path="contact_photos" />

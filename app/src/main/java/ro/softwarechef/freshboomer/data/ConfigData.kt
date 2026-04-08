@@ -3,6 +3,7 @@ package ro.softwarechef.freshboomer.data
 import org.json.JSONArray
 import org.json.JSONObject
 import ro.softwarechef.freshboomer.models.QuickContact
+import java.util.UUID
 
 data class ConfigData(
     // General
@@ -38,6 +39,15 @@ data class ConfigData(
     val inactivityMonitorEnabled: Boolean = false,
     val inactivityMonitorThresholdHours: Int = 12,
 
+    // Medication Reminders
+    val featureMedicationReminders: Boolean = false,
+    val medicationReminders: List<MedicationReminder> = emptyList(),
+
+    // Remote TTS SMS
+    val featureTtsSms: Boolean = false,
+    val ttsSmsPrefix: String = "CITESTE:",
+    val featureTtsSmsTrustedOnly: Boolean = true,
+
     // Quick Contacts
     val quickContacts: List<QuickContact> = DEFAULT_QUICK_CONTACTS,
 
@@ -72,6 +82,22 @@ data class ConfigData(
         put("call_speaker_delay_ms", callSpeakerDelayMs)
         put("inactivity_monitor_enabled", inactivityMonitorEnabled)
         put("inactivity_monitor_threshold_hours", inactivityMonitorThresholdHours)
+        put("feature_medication_reminders", featureMedicationReminders)
+        put("medication_reminders", JSONArray().apply {
+            medicationReminders.forEach { r ->
+                put(JSONObject().apply {
+                    put("id", r.id)
+                    put("name", r.name)
+                    put("time", r.time)
+                    put("days_of_week", JSONArray(r.daysOfWeek))
+                    put("enabled", r.enabled)
+                    put("snooze_duration_minutes", r.snoozeDurationMinutes)
+                })
+            }
+        })
+        put("feature_tts_sms", featureTtsSms)
+        put("tts_sms_prefix", ttsSmsPrefix)
+        put("feature_tts_sms_trusted_only", featureTtsSmsTrustedOnly)
         put("quick_contacts", JSONArray().apply {
             quickContacts.forEach { c ->
                 put(JSONObject().apply {
@@ -117,6 +143,25 @@ data class ConfigData(
                 callSpeakerDelayMs = json.optLong("call_speaker_delay_ms", defaults.callSpeakerDelayMs),
                 inactivityMonitorEnabled = json.optBoolean("inactivity_monitor_enabled", defaults.inactivityMonitorEnabled),
                 inactivityMonitorThresholdHours = json.optInt("inactivity_monitor_threshold_hours", defaults.inactivityMonitorThresholdHours),
+                featureMedicationReminders = json.optBoolean("feature_medication_reminders", defaults.featureMedicationReminders),
+                medicationReminders = json.optJSONArray("medication_reminders")?.let { arr ->
+                    (0 until arr.length()).map { i ->
+                        val obj = arr.getJSONObject(i)
+                        MedicationReminder(
+                            id = obj.optString("id", UUID.randomUUID().toString()),
+                            name = obj.optString("name", ""),
+                            time = obj.optString("time", "08:00"),
+                            daysOfWeek = obj.optJSONArray("days_of_week")?.let { da ->
+                                (0 until da.length()).map { da.getInt(it) }
+                            } ?: listOf(1, 2, 3, 4, 5, 6, 7),
+                            enabled = obj.optBoolean("enabled", true),
+                            snoozeDurationMinutes = obj.optInt("snooze_duration_minutes", 5)
+                        )
+                    }
+                } ?: defaults.medicationReminders,
+                featureTtsSms = json.optBoolean("feature_tts_sms", defaults.featureTtsSms),
+                ttsSmsPrefix = json.optString("tts_sms_prefix", defaults.ttsSmsPrefix),
+                featureTtsSmsTrustedOnly = json.optBoolean("feature_tts_sms_trusted_only", defaults.featureTtsSmsTrustedOnly),
                 quickContacts = json.optJSONArray("quick_contacts")?.let { arr ->
                     (0 until arr.length()).map { i ->
                         val obj = arr.getJSONObject(i)
@@ -140,6 +185,15 @@ data class ConfigData(
 data class EmergencyContact(
     val name: String = "",
     val phoneNumber: String = ""
+)
+
+data class MedicationReminder(
+    val id: String = UUID.randomUUID().toString(),
+    val name: String = "",
+    val time: String = "08:00",
+    val daysOfWeek: List<Int> = listOf(1, 2, 3, 4, 5, 6, 7),
+    val enabled: Boolean = true,
+    val snoozeDurationMinutes: Int = 5
 )
 
 val DEFAULT_QUICK_CONTACTS = emptyList<QuickContact>()
@@ -187,5 +241,13 @@ val ALL_CONFIG_FIELDS: List<ConfigFieldMeta> = listOf(
     ConfigFieldMeta("max_missed_call_announcements", "max_missed_call_announcements", "De cate ori se anunta un apel pierdut. Implicit: 3", ConfigGroup.BEHAVIOR, FieldType.INT),
     ConfigFieldMeta("call_speaker_delay_ms", "call_speaker_delay_ms", "Intarziere (ms) inainte de activarea difuzorului. Implicit: 3000", ConfigGroup.BEHAVIOR, FieldType.LONG),
     ConfigFieldMeta("inactivity_monitor_enabled", "inactivity_monitor_enabled", "Trimite SMS contactelor de urgenta daca utilizatorul nu interactioneaza cu telefonul pentru o perioada lunga", ConfigGroup.BEHAVIOR, FieldType.BOOLEAN),
-    ConfigFieldMeta("inactivity_monitor_threshold_hours", "inactivity_monitor_threshold_hours", "Ore de inactivitate dupa care se trimite alerta SMS. Implicit: 12", ConfigGroup.BEHAVIOR, FieldType.INT)
+    ConfigFieldMeta("inactivity_monitor_threshold_hours", "inactivity_monitor_threshold_hours", "Ore de inactivitate dupa care se trimite alerta SMS. Implicit: 12", ConfigGroup.BEHAVIOR, FieldType.INT),
+
+    // Medication Reminders
+    ConfigFieldMeta("feature_medication_reminders", "feature_medication_reminders", "Activeaza memento-urile pentru medicamente", ConfigGroup.FEATURES, FieldType.BOOLEAN),
+
+    // Remote TTS SMS
+    ConfigFieldMeta("feature_tts_sms", "feature_tts_sms", "Citeste cu voce tare mesajele SMS care incep cu un prefix special", ConfigGroup.FEATURES, FieldType.BOOLEAN),
+    ConfigFieldMeta("tts_sms_prefix", "tts_sms_prefix", "Prefixul care declanseaza citirea cu voce tare. Implicit: CITESTE:", ConfigGroup.TTS, FieldType.STRING),
+    ConfigFieldMeta("feature_tts_sms_trusted_only", "feature_tts_sms_trusted_only", "Doar mesajele de la contactele de urgenta sunt citite cu voce tare", ConfigGroup.FEATURES, FieldType.BOOLEAN)
 )

@@ -53,6 +53,8 @@ object AppConfig {
         writeFile(context, config)
         syncToSharedPrefs(context, config)
         syncContactsToRepo(context, config)
+        // Reschedule medication reminders when config changes
+        ro.softwarechef.freshboomer.services.MedicationReminderScheduler.scheduleAll(context)
         // Clear remote version tracking so the next remote fetch always applies.
         // Import methods call saveLastAppliedVersion() after save() to restore it.
         clearRemoteVersionTracking(context)

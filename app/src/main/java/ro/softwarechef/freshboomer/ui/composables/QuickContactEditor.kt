@@ -586,7 +586,7 @@ fun QuickContactSettingsScreen(
                                 factory = { ctx ->
                                     android.webkit.WebView(ctx).apply {
                                         settings.javaScriptEnabled = true
-                                        setBackgroundColor(android.graphics.Color.TRANSPARENT)
+
                                         loadUrl("file:///android_asset/privacy-policy.html")
                                     }
                                 },

@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ro.softwarechef.freshboomer.R
@@ -81,6 +82,7 @@ fun SetupWizardScreen(
     var themeMode by remember { mutableStateOf(ThemePreference.getThemeMode(baseContext)) }
     var appLanguage by remember { mutableStateOf(AppConfig.current.appLanguage) }
     var emergencyContacts by remember { mutableStateOf(AppConfig.current.emergencyContacts) }
+    var privacyAccepted by remember { mutableStateOf(false) }
     var inactivityThresholdHours by remember { mutableIntStateOf(AppConfig.current.inactivityMonitorThresholdHours) }
 
     // Create a locale-aware context so stringResource() resolves to the selected language.
@@ -161,6 +163,12 @@ fun SetupWizardScreen(
                     onLanguageChanged = {
                         appLanguage = it
                         AppConfig.save(baseContext, AppConfig.current.copy(appLanguage = it))
+                    },
+                    privacyAccepted = privacyAccepted,
+                    onPrivacyAccepted = { privacyAccepted = true },
+                    onPrivacyDeclined = {
+                        // Exit the app if user declines the privacy policy
+                        (baseContext as? android.app.Activity)?.finishAffinity()
                     }
                 )
                 1 -> NicknamePage(
@@ -214,9 +222,10 @@ fun SetupWizardScreen(
                 // Skip button on first page
                 TextButton(
                     onClick = { saveAndFinish() },
-                    modifier = Modifier.height(52.dp)
+                    modifier = Modifier.height(52.dp),
+                    enabled = privacyAccepted
                 ) {
-                    Text(stringResource(R.string.wizard_skip), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                    Text(stringResource(R.string.wizard_skip), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (privacyAccepted) 0.5f else 0.2f))
                 }
             }
 
@@ -224,7 +233,8 @@ fun SetupWizardScreen(
                 Button(
                     onClick = { currentPage++ },
                     modifier = Modifier.height(52.dp),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    enabled = currentPage != 0 || privacyAccepted
                 ) {
                     Text(stringResource(R.string.wizard_next), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(8.dp))
@@ -251,9 +261,27 @@ fun SetupWizardScreen(
 @Composable
 private fun WelcomePage(
     appLanguage: String,
-    onLanguageChanged: (String) -> Unit
+    onLanguageChanged: (String) -> Unit,
+    privacyAccepted: Boolean,
+    onPrivacyAccepted: () -> Unit,
+    onPrivacyDeclined: () -> Unit
 ) {
     val context = LocalContext.current
+    var showPrivacyDialog by remember { mutableStateOf(false) }
+
+    if (showPrivacyDialog) {
+        PrivacyPolicyDialog(
+            onAccept = {
+                showPrivacyDialog = false
+                onPrivacyAccepted()
+            },
+            onDecline = {
+                showPrivacyDialog = false
+                onPrivacyDeclined()
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -321,7 +349,93 @@ private fun WelcomePage(
                 } else null
             )
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Privacy policy
+        if (privacyAccepted) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                    tint = Color(0xFF4CAF50),
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = stringResource(R.string.privacy_policy_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF4CAF50)
+                )
+            }
+        } else {
+            Button(
+                onClick = { showPrivacyDialog = true },
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.privacy_policy_link),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
     }
+}
+
+@Composable
+private fun PrivacyPolicyDialog(
+    onAccept: () -> Unit,
+    onDecline: () -> Unit
+) {
+    val context = LocalContext.current
+
+    AlertDialog(
+        onDismissRequest = { /* prevent dismiss without choice */ },
+        modifier = Modifier.fillMaxSize(),
+        title = {
+            Text(
+                text = stringResource(R.string.privacy_policy_title),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            AndroidView(
+                factory = { ctx ->
+                    android.webkit.WebView(ctx).apply {
+                        settings.javaScriptEnabled = true
+                        setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                        loadUrl("file:///android_asset/privacy-policy.html")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 400.dp)
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = onAccept,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.privacy_policy_accept), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = onDecline,
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.privacy_policy_decline), style = MaterialTheme.typography.titleMedium)
+            }
+        }
+    )
 }
 
 // ─── Page 2: Nickname ───

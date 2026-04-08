@@ -206,6 +206,11 @@
     <string name="wizard_welcome_description">FreshBoomer is a simple launcher that makes the phone easier to use.</string>
     <string name="wizard_welcome_instructions">In the following steps you can configure the app. If you don\'t want to make changes, press \"Skip\" to use the default settings.</string>
 
+    <string name="privacy_policy_link">Read the privacy policy</string>
+    <string name="privacy_policy_accept">Accept</string>
+    <string name="privacy_policy_decline">Decline</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+
     <!-- Page 2: Nickname -->
     <string name="wizard_nickname_title">What do you call the user?</string>
     <string name="wizard_nickname_description">This name will be used in voice announcements, for example: \"Grandma, you have a missed call\"</string>

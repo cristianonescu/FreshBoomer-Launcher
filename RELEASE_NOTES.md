@@ -6,7 +6,7 @@
 - Fixed confirm call dialog buttons overflowing on small screens: reduced button height, icon size, spacing, and contact photo size.
 
 ## Privacy Policy
-- Added a privacy policy page at `docs/privacy-policy.html` covering permissions, local data storage, and network usage.
+- Added a privacy policy page at `app/src/main/assets/privacy-policy.html` covering permissions, local data storage, and network usage. Displayed in-app via WebView (works offline).
 
 ## Config Editor Hints
 - Added an informational hint card in both the Settings screen and the JSON Config Editor, pointing users to the online config editor and explaining that the config JSON must be self-hosted for remote import.

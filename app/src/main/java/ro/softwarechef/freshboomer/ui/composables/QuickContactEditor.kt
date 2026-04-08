@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ro.softwarechef.freshboomer.data.AppConfig
@@ -567,7 +568,42 @@ fun QuickContactSettingsScreen(
 
             // Privacy Policy
             item {
-                val context = LocalContext.current
+                var showPrivacyPolicy by remember { mutableStateOf(false) }
+
+                if (showPrivacyPolicy) {
+                    AlertDialog(
+                        onDismissRequest = { showPrivacyPolicy = false },
+                        modifier = Modifier.fillMaxSize(),
+                        title = {
+                            Text(
+                                text = stringResource(R.string.settings_privacy_policy),
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                            )
+                        },
+                        text = {
+                            AndroidView(
+                                factory = { ctx ->
+                                    android.webkit.WebView(ctx).apply {
+                                        settings.javaScriptEnabled = true
+                                        setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                                        loadUrl("file:///android_asset/privacy-policy.html")
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth().heightIn(min = 400.dp)
+                            )
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = { showPrivacyPolicy = false },
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(stringResource(R.string.settings_understood))
+                            }
+                        }
+                    )
+                }
+
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
@@ -591,11 +627,7 @@ fun QuickContactSettingsScreen(
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Button(
-                            onClick = {
-                                context.startActivity(
-                                    Intent(Intent.ACTION_VIEW, Uri.parse("https://softwarechef.ro/privacy/apps/freshboomer/privacy-policy.html"))
-                                )
-                            },
+                            onClick = { showPrivacyPolicy = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(stringResource(R.string.settings_open))

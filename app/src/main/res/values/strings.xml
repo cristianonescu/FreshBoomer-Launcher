@@ -206,6 +206,11 @@
     <string name="wizard_welcome_description">FreshBoomer este un launcher simplu care face telefonul mai usor de folosit.</string>
     <string name="wizard_welcome_instructions">In pasii urmatori poti configura aplicatia. Daca nu doresti sa faci modificari, apasa \"Sari peste\" pentru a folosi valorile implicite.</string>
 
+    <string name="privacy_policy_link">Citeste politica de confidentialitate</string>
+    <string name="privacy_policy_accept">Accept</string>
+    <string name="privacy_policy_decline">Nu accept</string>
+    <string name="privacy_policy_title">Politica de confidentialitate</string>
+
     <!-- Page 2: Nickname -->
     <string name="wizard_nickname_title">Cum ii spui utilizatorului?</string>
     <string name="wizard_nickname_description">Acest nume va fi folosit in anunturile vocale, de exemplu: \"Mamaie, ai un apel pierdut\"</string>

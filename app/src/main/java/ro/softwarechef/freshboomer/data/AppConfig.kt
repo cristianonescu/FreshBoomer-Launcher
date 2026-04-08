@@ -31,7 +31,7 @@ object AppConfig {
             try {
                 val json = JSONObject(file.readText())
                 _configFlow.value = ConfigData.fromJson(json)
-                Log.d(TAG, "Loaded config from $FILE_NAME")
+                Log.d(TAG, "Loaded config from $FILE_NAME — medicationReminders=${_configFlow.value.featureMedicationReminders}, count=${_configFlow.value.medicationReminders.size}")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to load config, using defaults", e)
                 _configFlow.value = ConfigData()
@@ -49,15 +49,13 @@ object AppConfig {
 
     @Synchronized
     fun save(context: Context, config: ConfigData) {
+        Log.d(TAG, "save() — medicationReminders=${config.featureMedicationReminders}, count=${config.medicationReminders.size}")
         _configFlow.value = config
         writeFile(context, config)
         syncToSharedPrefs(context, config)
         syncContactsToRepo(context, config)
         // Reschedule medication reminders when config changes
         ro.softwarechef.freshboomer.services.MedicationReminderScheduler.scheduleAll(context)
-        // Clear remote version tracking so the next remote fetch always applies.
-        // Import methods call saveLastAppliedVersion() after save() to restore it.
-        clearRemoteVersionTracking(context)
     }
 
     @Synchronized
@@ -80,7 +78,8 @@ object AppConfig {
         return try {
             val text = URL(url).readText()
             val json = JSONObject(text)
-            val config = ConfigData.fromJson(json)
+            // Merge with current config so missing fields keep their local values
+            val config = ConfigData.fromJson(json, current)
 
             // Check if remote config is newer than what we last applied
             if (!isRemoteConfigNewer(context, config)) {
@@ -109,7 +108,8 @@ object AppConfig {
         return try {
             val text = URL(url).readText()
             val json = JSONObject(text)
-            val config = ConfigData.fromJson(json)
+            // Merge with current config so missing fields keep their local values
+            val config = ConfigData.fromJson(json, current)
             val configWithPhotos = decodeBase64Photos(context, config)
             save(context, configWithPhotos)
             saveLastAppliedVersion(context, configWithPhotos)
@@ -157,18 +157,6 @@ object AppConfig {
         prefs.edit()
             .putInt(KEY_LAST_CONFIG_VERSION, config.configVersion)
             .putString(KEY_LAST_CONFIG_UPDATED_AT, config.configUpdatedAt ?: "")
-            .apply()
-    }
-
-    /**
-     * Clears stored version info so the next remote fetch always applies.
-     * Call this when the user makes local edits.
-     */
-    fun clearRemoteVersionTracking(context: Context) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit()
-            .remove(KEY_LAST_CONFIG_VERSION)
-            .remove(KEY_LAST_CONFIG_UPDATED_AT)
             .apply()
     }
 

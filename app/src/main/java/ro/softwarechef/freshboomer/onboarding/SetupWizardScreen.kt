@@ -272,7 +272,9 @@ private fun WelcomePage(
     onPrivacyDeclined: () -> Unit
 ) {
     val context = LocalContext.current
-    var showPrivacyDialog by remember { mutableStateOf(false) }
+
+    // Show privacy policy dialog automatically on first display
+    var showPrivacyDialog by remember { mutableStateOf(!privacyAccepted) }
 
     if (showPrivacyDialog) {
         PrivacyPolicyDialog(
@@ -357,11 +359,12 @@ private fun WelcomePage(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Privacy policy
+        // Privacy policy status + re-read option
         if (privacyAccepted) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.clickable { showPrivacyDialog = true }
             ) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
@@ -373,22 +376,6 @@ private fun WelcomePage(
                     text = stringResource(R.string.privacy_policy_title),
                     style = MaterialTheme.typography.titleMedium,
                     color = Color(0xFF4CAF50)
-                )
-            }
-        } else {
-            Button(
-                onClick = { showPrivacyDialog = true },
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.privacy_policy_link),
-                    style = MaterialTheme.typography.titleMedium
                 )
             }
         }

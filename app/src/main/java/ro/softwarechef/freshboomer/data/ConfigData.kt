@@ -113,70 +113,88 @@ data class ConfigData(
     }
 
     companion object {
-        fun fromJson(json: JSONObject): ConfigData {
-            val defaults = ConfigData()
+        // Helper: only use JSON value if the key is present, otherwise keep fallback
+        private fun JSONObject.boolOrFallback(key: String, fallback: Boolean): Boolean =
+            if (has(key)) optBoolean(key) else fallback
+        private fun JSONObject.stringOrFallback(key: String, fallback: String): String =
+            if (has(key)) optString(key) else fallback
+        private fun JSONObject.intOrFallback(key: String, fallback: Int): Int =
+            if (has(key)) optInt(key) else fallback
+        private fun JSONObject.longOrFallback(key: String, fallback: Long): Long =
+            if (has(key)) optLong(key) else fallback
+        private fun JSONObject.doubleOrFallback(key: String, fallback: Double): Double =
+            if (has(key)) optDouble(key) else fallback
+
+        fun fromJson(json: JSONObject, fallback: ConfigData = ConfigData()): ConfigData {
+            val d = fallback
             return ConfigData(
-                userNickname = json.optString("user_nickname", defaults.userNickname),
-                themeMode = json.optString("theme_mode", defaults.themeMode),
-                ttsEnabled = json.optBoolean("tts_enabled", defaults.ttsEnabled),
-                ttsEngine = json.optString("tts_engine", defaults.ttsEngine),
-                ttsSpeechRate = json.optDouble("tts_speech_rate", defaults.ttsSpeechRate.toDouble()).toFloat(),
-                featureQuickContacts = json.optBoolean("feature_quick_contacts", defaults.featureQuickContacts),
-                featureDialPad = json.optBoolean("feature_dial_pad", defaults.featureDialPad),
-                featureContacts = json.optBoolean("feature_contacts", defaults.featureContacts),
-                featureMessages = json.optBoolean("feature_messages", defaults.featureMessages),
-                featureGallery = json.optBoolean("feature_gallery", defaults.featureGallery),
-                featureWhatsapp = json.optBoolean("feature_whatsapp", defaults.featureWhatsapp),
-                appLanguage = json.optString("app_language", defaults.appLanguage),
-                emergencyContacts = json.optJSONArray("emergency_contacts")?.let { arr ->
-                    (0 until arr.length()).map { i ->
-                        val obj = arr.getJSONObject(i)
-                        EmergencyContact(
-                            name = obj.optString("name", ""),
-                            phoneNumber = obj.optString("phone", "")
-                        )
-                    }
-                } ?: defaults.emergencyContacts,
-                autoMaxVolume = json.optBoolean("auto_max_volume", defaults.autoMaxVolume),
-                inactivityTimeoutMs = json.optLong("inactivity_timeout_ms", defaults.inactivityTimeoutMs),
-                maxMissedCallAnnouncements = json.optInt("max_missed_call_announcements", defaults.maxMissedCallAnnouncements),
-                callSpeakerDelayMs = json.optLong("call_speaker_delay_ms", defaults.callSpeakerDelayMs),
-                inactivityMonitorEnabled = json.optBoolean("inactivity_monitor_enabled", defaults.inactivityMonitorEnabled),
-                inactivityMonitorThresholdHours = json.optInt("inactivity_monitor_threshold_hours", defaults.inactivityMonitorThresholdHours),
-                featureMedicationReminders = json.optBoolean("feature_medication_reminders", defaults.featureMedicationReminders),
-                medicationReminders = json.optJSONArray("medication_reminders")?.let { arr ->
-                    (0 until arr.length()).map { i ->
-                        val obj = arr.getJSONObject(i)
-                        MedicationReminder(
-                            id = obj.optString("id", UUID.randomUUID().toString()),
-                            name = obj.optString("name", ""),
-                            time = obj.optString("time", "08:00"),
-                            daysOfWeek = obj.optJSONArray("days_of_week")?.let { da ->
-                                (0 until da.length()).map { da.getInt(it) }
-                            } ?: listOf(1, 2, 3, 4, 5, 6, 7),
-                            enabled = obj.optBoolean("enabled", true),
-                            snoozeDurationMinutes = obj.optInt("snooze_duration_minutes", 5)
-                        )
-                    }
-                } ?: defaults.medicationReminders,
-                featureTtsSms = json.optBoolean("feature_tts_sms", defaults.featureTtsSms),
-                ttsSmsPrefix = json.optString("tts_sms_prefix", defaults.ttsSmsPrefix),
-                featureTtsSmsTrustedOnly = json.optBoolean("feature_tts_sms_trusted_only", defaults.featureTtsSmsTrustedOnly),
-                quickContacts = json.optJSONArray("quick_contacts")?.let { arr ->
-                    (0 until arr.length()).map { i ->
-                        val obj = arr.getJSONObject(i)
-                        QuickContact(
-                            id = (i + 1).toString(),
-                            name = obj.optString("name", ""),
-                            phoneNumber = obj.optString("phone", ""),
-                            sortOrder = i,
-                            photoBase64 = obj.optString("photo_base64", "").takeIf { it.isNotEmpty() },
-                            photoMime = obj.optString("photo_mime", "").takeIf { it.isNotEmpty() }
-                        )
-                    }
-                } ?: defaults.quickContacts,
-                configUpdatedAt = json.optString("config_updated_at", "").takeIf { it.isNotEmpty() },
-                configVersion = json.optInt("config_version", defaults.configVersion)
+                userNickname = json.stringOrFallback("user_nickname", d.userNickname),
+                themeMode = json.stringOrFallback("theme_mode", d.themeMode),
+                ttsEnabled = json.boolOrFallback("tts_enabled", d.ttsEnabled),
+                ttsEngine = json.stringOrFallback("tts_engine", d.ttsEngine),
+                ttsSpeechRate = json.doubleOrFallback("tts_speech_rate", d.ttsSpeechRate.toDouble()).toFloat(),
+                featureQuickContacts = json.boolOrFallback("feature_quick_contacts", d.featureQuickContacts),
+                featureDialPad = json.boolOrFallback("feature_dial_pad", d.featureDialPad),
+                featureContacts = json.boolOrFallback("feature_contacts", d.featureContacts),
+                featureMessages = json.boolOrFallback("feature_messages", d.featureMessages),
+                featureGallery = json.boolOrFallback("feature_gallery", d.featureGallery),
+                featureWhatsapp = json.boolOrFallback("feature_whatsapp", d.featureWhatsapp),
+                appLanguage = json.stringOrFallback("app_language", d.appLanguage),
+                emergencyContacts = if (json.has("emergency_contacts")) {
+                    json.optJSONArray("emergency_contacts")?.let { arr ->
+                        (0 until arr.length()).map { i ->
+                            val obj = arr.getJSONObject(i)
+                            EmergencyContact(
+                                name = obj.optString("name", ""),
+                                phoneNumber = obj.optString("phone", "")
+                            )
+                        }
+                    } ?: d.emergencyContacts
+                } else d.emergencyContacts,
+                autoMaxVolume = json.boolOrFallback("auto_max_volume", d.autoMaxVolume),
+                inactivityTimeoutMs = json.longOrFallback("inactivity_timeout_ms", d.inactivityTimeoutMs),
+                maxMissedCallAnnouncements = json.intOrFallback("max_missed_call_announcements", d.maxMissedCallAnnouncements),
+                callSpeakerDelayMs = json.longOrFallback("call_speaker_delay_ms", d.callSpeakerDelayMs),
+                inactivityMonitorEnabled = json.boolOrFallback("inactivity_monitor_enabled", d.inactivityMonitorEnabled),
+                inactivityMonitorThresholdHours = json.intOrFallback("inactivity_monitor_threshold_hours", d.inactivityMonitorThresholdHours),
+                featureMedicationReminders = json.boolOrFallback("feature_medication_reminders", d.featureMedicationReminders),
+                medicationReminders = if (json.has("medication_reminders")) {
+                    json.optJSONArray("medication_reminders")?.let { arr ->
+                        (0 until arr.length()).map { i ->
+                            val obj = arr.getJSONObject(i)
+                            MedicationReminder(
+                                id = obj.optString("id", UUID.randomUUID().toString()),
+                                name = obj.optString("name", ""),
+                                time = obj.optString("time", "08:00"),
+                                daysOfWeek = obj.optJSONArray("days_of_week")?.let { da ->
+                                    (0 until da.length()).map { da.getInt(it) }
+                                } ?: listOf(1, 2, 3, 4, 5, 6, 7),
+                                enabled = obj.optBoolean("enabled", true),
+                                snoozeDurationMinutes = obj.optInt("snooze_duration_minutes", 5)
+                            )
+                        }
+                    } ?: d.medicationReminders
+                } else d.medicationReminders,
+                featureTtsSms = json.boolOrFallback("feature_tts_sms", d.featureTtsSms),
+                ttsSmsPrefix = json.stringOrFallback("tts_sms_prefix", d.ttsSmsPrefix),
+                featureTtsSmsTrustedOnly = json.boolOrFallback("feature_tts_sms_trusted_only", d.featureTtsSmsTrustedOnly),
+                quickContacts = if (json.has("quick_contacts")) {
+                    json.optJSONArray("quick_contacts")?.let { arr ->
+                        (0 until arr.length()).map { i ->
+                            val obj = arr.getJSONObject(i)
+                            QuickContact(
+                                id = (i + 1).toString(),
+                                name = obj.optString("name", ""),
+                                phoneNumber = obj.optString("phone", ""),
+                                sortOrder = i,
+                                photoBase64 = obj.optString("photo_base64", "").takeIf { it.isNotEmpty() },
+                                photoMime = obj.optString("photo_mime", "").takeIf { it.isNotEmpty() }
+                            )
+                        }
+                    } ?: d.quickContacts
+                } else d.quickContacts,
+                configUpdatedAt = if (json.has("config_updated_at")) json.optString("config_updated_at", "").takeIf { it.isNotEmpty() } else d.configUpdatedAt,
+                configVersion = json.intOrFallback("config_version", d.configVersion)
             )
         }
     }

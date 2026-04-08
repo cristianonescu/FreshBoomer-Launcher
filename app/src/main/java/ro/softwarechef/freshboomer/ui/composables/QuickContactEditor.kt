@@ -77,11 +77,14 @@ fun QuickContactSettingsScreen(
     var appLanguage by remember { mutableStateOf(AppConfig.current.appLanguage) }
     var emergencyContacts by remember { mutableStateOf(AppConfig.current.emergencyContacts) }
     var inactivityThresholdHours by remember { mutableIntStateOf(AppConfig.current.inactivityMonitorThresholdHours) }
-    var featureTtsSms by remember { mutableStateOf(AppConfig.current.featureTtsSms) }
-    var featureTtsSmsTrustedOnly by remember { mutableStateOf(AppConfig.current.featureTtsSmsTrustedOnly) }
-    var ttsSmsPrefix by remember { mutableStateOf(AppConfig.current.ttsSmsPrefix) }
-    var featureMedicationReminders by remember { mutableStateOf(AppConfig.current.featureMedicationReminders) }
-    var medicationReminders by remember { mutableStateOf(AppConfig.current.medicationReminders) }
+    // Reactively derive state from config flow — always reflects latest saved config
+    val currentConfig by AppConfig.configFlow.collectAsState()
+    val featureTtsSms = currentConfig.featureTtsSms
+    val featureTtsSmsTrustedOnly = currentConfig.featureTtsSmsTrustedOnly
+    val featureMedicationReminders = currentConfig.featureMedicationReminders
+    val medicationReminders = currentConfig.medicationReminders
+    // Text fields need local state for responsive typing
+    var ttsSmsPrefix by remember(currentConfig.ttsSmsPrefix) { mutableStateOf(currentConfig.ttsSmsPrefix) }
 
     // Photo picker state
     var pickingPhotoForId by remember { mutableStateOf<String?>(null) }
@@ -301,12 +304,10 @@ fun QuickContactSettingsScreen(
                 TtsSmsSection(
                     enabled = featureTtsSms,
                     onEnabledChange = { enabled ->
-                        featureTtsSms = enabled
                         FeatureTogglePreference.setToggle(context, FeatureTogglePreference.TTS_SMS, enabled)
                     },
                     trustedOnly = featureTtsSmsTrustedOnly,
                     onTrustedOnlyChange = { enabled ->
-                        featureTtsSmsTrustedOnly = enabled
                         AppConfig.save(context, AppConfig.current.copy(featureTtsSmsTrustedOnly = enabled))
                     },
                     prefix = ttsSmsPrefix,
@@ -387,20 +388,14 @@ fun QuickContactSettingsScreen(
                 MedicationRemindersSection(
                     enabled = featureMedicationReminders,
                     onEnabledChange = { enabled ->
-                        featureMedicationReminders = enabled
                         FeatureTogglePreference.setToggle(context, FeatureTogglePreference.MEDICATION_REMINDERS, enabled)
                         if (!enabled) {
                             ro.softwarechef.freshboomer.services.MedicationReminderScheduler.cancelAll(context)
-                        } else {
-                            ro.softwarechef.freshboomer.services.MedicationReminderScheduler.scheduleAll(context)
                         }
                     },
                     reminders = medicationReminders,
                     onRemindersChanged = { updated ->
-                        medicationReminders = updated
-                        val config = AppConfig.current.copy(medicationReminders = updated)
-                        AppConfig.save(context, config)
-                        ro.softwarechef.freshboomer.services.MedicationReminderScheduler.scheduleAll(context)
+                        AppConfig.save(context, AppConfig.current.copy(medicationReminders = updated))
                     }
                 )
             }

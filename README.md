@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="FreshBoomer app icon" width="120">
+</p>
+
 # FreshBoomer
 
 A simplified Android home launcher designed for elderly users. Replaces the default launcher, phone, and SMS apps with a large-button, accessible interface in Romanian and English featuring text-to-speech accessibility.
@@ -10,7 +14,18 @@ Get the latest APK from the [Releases](https://github.com/cristianonescu/FreshBo
 
 ## Screenshots
 
-_Coming soon_
+<p align="center">
+  <img src="screenshots/Screenshot_20260407_210521_FreshBoomer.jpg" width="200" alt="Home screen with quick contacts and call confirmation">
+  <img src="screenshots/Screenshot_20260407_210445_FreshBoomer.jpg" width="200" alt="Dial pad">
+  <img src="screenshots/Screenshot_20260407_210535_FreshBoomer.jpg" width="200" alt="SMS conversations">
+  <img src="screenshots/Screenshot_20260407_205511_FreshBoomer.jpg" width="200" alt="Setup wizard — welcome and language selection">
+</p>
+<p align="center">
+  <img src="screenshots/Screenshot_20260407_205536_FreshBoomer.jpg" width="200" alt="Setup wizard — feature customization">
+  <img src="screenshots/Screenshot_20260407_210603_FreshBoomer.jpg" width="200" alt="Settings — theme, features, and TTS">
+  <img src="screenshots/Screenshot_20260407_210610_FreshBoomer.jpg" width="200" alt="Settings — permissions and advanced config">
+  <img src="screenshots/Screenshot_20260407_210624_FreshBoomer.jpg" width="200" alt="JSON config editor">
+</p>
 
 ## Features
 

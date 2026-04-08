@@ -444,6 +444,147 @@ fun JsonConfigEditorScreen(onBack: () -> Unit) {
                     }
                 }
 
+                // ── Medication Reminders array ──
+                JsonLine(lineNum++, buildAnnotatedString {
+                    withStyle(SpanStyle(color = CommentColor, fontStyle = FontStyle.Italic)) {
+                        append("  // Memento Medicamente")
+                    }
+                })
+
+                // "medication_reminders": [
+                JsonLine(lineNum++, buildAnnotatedString {
+                    withStyle(SpanStyle(color = PunctuationColor)) { append("  ") }
+                    withStyle(SpanStyle(color = KeyColor)) { append("\"medication_reminders\"") }
+                    withStyle(SpanStyle(color = PunctuationColor)) { append(": [") }
+                })
+
+                editedConfig.medicationReminders.forEachIndexed { idx, reminder ->
+                    val isLastReminder = idx == editedConfig.medicationReminders.lastIndex
+
+                    // {
+                    JsonLine(lineNum++, buildAnnotatedString {
+                        withStyle(SpanStyle(color = PunctuationColor)) { append("    {") }
+                    })
+
+                    // "id": "..."
+                    ContactFieldRow(
+                        lineNum = lineNum++,
+                        key = "id",
+                        value = reminder.id,
+                        onValueChange = { newId ->
+                            val updated = editedConfig.medicationReminders.toMutableList()
+                            updated[idx] = reminder.copy(id = newId)
+                            editedConfig = editedConfig.copy(medicationReminders = updated)
+                        }
+                    )
+
+                    // "name": "..."
+                    ContactFieldRow(
+                        lineNum = lineNum++,
+                        key = "name",
+                        value = reminder.name,
+                        onValueChange = { newName ->
+                            val updated = editedConfig.medicationReminders.toMutableList()
+                            updated[idx] = reminder.copy(name = newName)
+                            editedConfig = editedConfig.copy(medicationReminders = updated)
+                        }
+                    )
+
+                    // "time": "..."
+                    ContactFieldRow(
+                        lineNum = lineNum++,
+                        key = "time",
+                        value = reminder.time,
+                        onValueChange = { newTime ->
+                            val updated = editedConfig.medicationReminders.toMutableList()
+                            updated[idx] = reminder.copy(time = newTime)
+                            editedConfig = editedConfig.copy(medicationReminders = updated)
+                        }
+                    )
+
+                    // "enabled": true/false
+                    JsonLine(lineNum++, buildAnnotatedString {
+                        withStyle(SpanStyle(color = PunctuationColor)) { append("      ") }
+                        withStyle(SpanStyle(color = KeyColor)) { append("\"enabled\"") }
+                        withStyle(SpanStyle(color = PunctuationColor)) { append(": ") }
+                        withStyle(SpanStyle(color = BooleanColor)) {
+                            append(reminder.enabled.toString())
+                        }
+                    })
+
+                    // "snooze_duration_minutes": N
+                    JsonLine(lineNum++, buildAnnotatedString {
+                        withStyle(SpanStyle(color = PunctuationColor)) { append("      ") }
+                        withStyle(SpanStyle(color = KeyColor)) { append("\"snooze_duration_minutes\"") }
+                        withStyle(SpanStyle(color = PunctuationColor)) { append(": ") }
+                        withStyle(SpanStyle(color = NumberColor)) { append(reminder.snoozeDurationMinutes.toString()) }
+                    })
+
+                    // } or },
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 1.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "%3d".format(lineNum++),
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 12.sp,
+                            color = LineNumColor,
+                            modifier = Modifier.width(30.dp)
+                        )
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(SpanStyle(color = PunctuationColor)) {
+                                    append(if (isLastReminder) "    }" else "    },")
+                                }
+                            },
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 14.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        IconButton(
+                            onClick = {
+                                val updated = editedConfig.medicationReminders.toMutableList()
+                                updated.removeAt(idx)
+                                editedConfig = editedConfig.copy(medicationReminders = updated)
+                            },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Sterge",
+                                tint = Color(0xFFCF6679),
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+
+                // ]
+                JsonLine(lineNum++, buildAnnotatedString {
+                    withStyle(SpanStyle(color = PunctuationColor)) { append("  ]") }
+                })
+
+                // Add medication reminder button
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 30.dp, top = 4.dp, bottom = 4.dp)
+                ) {
+                    TextButton(
+                        onClick = {
+                            val updated = editedConfig.medicationReminders.toMutableList()
+                            updated.add(ro.softwarechef.freshboomer.data.MedicationReminder())
+                            editedConfig = editedConfig.copy(medicationReminders = updated)
+                        },
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null, tint = KeyColor, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Adauga memento", color = KeyColor, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+                    }
+                }
+
                 // Closing brace
                 JsonLine(lineNum, buildAnnotatedString {
                     withStyle(SpanStyle(color = PunctuationColor)) { append("}") }
@@ -749,6 +890,10 @@ private fun getFieldValue(config: ConfigData, key: String): Any? = when (key) {
     "call_speaker_delay_ms" -> config.callSpeakerDelayMs
     "inactivity_monitor_enabled" -> config.inactivityMonitorEnabled
     "inactivity_monitor_threshold_hours" -> config.inactivityMonitorThresholdHours
+    "feature_medication_reminders" -> config.featureMedicationReminders
+    "feature_tts_sms" -> config.featureTtsSms
+    "tts_sms_prefix" -> config.ttsSmsPrefix
+    "feature_tts_sms_trusted_only" -> config.featureTtsSmsTrustedOnly
     else -> null
 }
 
@@ -771,6 +916,10 @@ private fun setFieldValue(config: ConfigData, key: String, value: Any): ConfigDa
     "call_speaker_delay_ms" -> config.copy(callSpeakerDelayMs = (value as Number).toLong())
     "inactivity_monitor_enabled" -> config.copy(inactivityMonitorEnabled = value as Boolean)
     "inactivity_monitor_threshold_hours" -> config.copy(inactivityMonitorThresholdHours = (value as Number).toInt())
+    "feature_medication_reminders" -> config.copy(featureMedicationReminders = value as Boolean)
+    "feature_tts_sms" -> config.copy(featureTtsSms = value as Boolean)
+    "tts_sms_prefix" -> config.copy(ttsSmsPrefix = value as String)
+    "feature_tts_sms_trusted_only" -> config.copy(featureTtsSmsTrustedOnly = value as Boolean)
     else -> config
 }
 

@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 data class OnboardingState(
     val phonePermission: Boolean = false,
     val contactsPermission: Boolean = false,
-    val callLogPermission: Boolean = false,
     val phoneStatePermission: Boolean = false,
     val smsPermissions: Boolean = false,
     val notificationPermission: Boolean = false,
@@ -30,7 +29,7 @@ data class OnboardingState(
     val screenLockDisabled: Boolean = false,
 ) {
     val allGranted: Boolean
-        get() = phonePermission && contactsPermission && callLogPermission &&
+        get() = phonePermission && contactsPermission &&
                 phoneStatePermission && smsPermissions && notificationPermission &&
                 mediaPermission && answerCallsPermission && audioPermission &&
                 notificationListenerAccess && dndAccess &&
@@ -44,7 +43,6 @@ object OnboardingChecker {
         return OnboardingState(
             phonePermission = hasPermission(context, Manifest.permission.CALL_PHONE),
             contactsPermission = hasPermission(context, Manifest.permission.READ_CONTACTS),
-            callLogPermission = hasPermission(context, Manifest.permission.READ_CALL_LOG),
             phoneStatePermission = hasPermission(context, Manifest.permission.READ_PHONE_STATE),
             smsPermissions = hasPermission(context, Manifest.permission.READ_SMS) &&
                     hasPermission(context, Manifest.permission.SEND_SMS) &&

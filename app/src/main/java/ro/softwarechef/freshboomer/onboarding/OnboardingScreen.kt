@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,10 +40,6 @@ fun OnboardingScreen(
     ) { onStateChanged() }
 
     val contactsPermLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { onStateChanged() }
-
-    val callLogPermLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { onStateChanged() }
 
@@ -143,13 +138,13 @@ fun OnboardingScreen(
         )
 
         // Progress indicator
-        val totalSteps = 15
+        val totalSteps = 14
         val completedSteps = listOf(
-            state.phonePermission, state.contactsPermission, state.callLogPermission,
+            state.isDefaultDialer, state.isDefaultSms, state.isDefaultLauncher,
+            state.phonePermission, state.contactsPermission,
             state.phoneStatePermission, state.smsPermissions, state.notificationPermission,
             state.mediaPermission, state.answerCallsPermission, state.audioPermission,
             state.notificationListenerAccess, state.dndAccess,
-            state.isDefaultDialer, state.isDefaultSms, state.isDefaultLauncher,
             state.screenLockDisabled
         ).count { it }
 
@@ -174,14 +169,63 @@ fun OnboardingScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // ── Section: Default Apps ──
+            // Per Google Play policy: the default-handler role prompt MUST appear before
+            // any SMS/Call Log/Phone runtime permission prompt. So this section comes first,
+            // and the phone/SMS runtime permissions below are gated until the roles are held.
+            SectionLabel(stringResource(R.string.onboarding_section_default_app))
+
+            OnboardingStep(
+                title = stringResource(R.string.default_phone_app),
+                description = stringResource(R.string.default_phone_app_desc),
+                icon = Icons.Default.Phone,
+                granted = state.isDefaultDialer,
+                buttonLabel = stringResource(R.string.onboarding_set),
+                onRequest = {
+                    val roleManager = context.getSystemService(android.app.role.RoleManager::class.java)
+                    val intent = roleManager.createRequestRoleIntent(android.app.role.RoleManager.ROLE_DIALER)
+                    settingsLauncher.launch(intent)
+                }
+            )
+
+            OnboardingStep(
+                title = stringResource(R.string.default_sms_app),
+                description = stringResource(R.string.default_sms_app_desc),
+                icon = Icons.Default.Email,
+                granted = state.isDefaultSms,
+                buttonLabel = stringResource(R.string.onboarding_set),
+                onRequest = { showSmsGuideDialog = true }
+            )
+
+            OnboardingStep(
+                title = stringResource(R.string.default_launcher),
+                description = stringResource(R.string.default_launcher_desc),
+                icon = Icons.Default.Home,
+                granted = state.isDefaultLauncher,
+                buttonLabel = stringResource(R.string.onboarding_set),
+                onRequest = {
+                    val intent = Intent(Settings.ACTION_HOME_SETTINGS)
+                    settingsLauncher.launch(intent)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             // ── Section: Permissions ──
             SectionLabel(stringResource(R.string.onboarding_section_permissions))
+
+            // Phone/SMS runtime permissions are gated behind the dialer/SMS roles above.
+            // Once those roles are granted, several of these permissions are auto-granted
+            // by Android and the cards will simply show as completed.
+            val phoneRoleReady = state.isDefaultDialer
+            val smsRoleReady = state.isDefaultSms
 
             OnboardingStep(
                 title = stringResource(R.string.perm_phone_calls),
                 description = stringResource(R.string.perm_phone_calls_desc),
                 icon = Icons.Default.Call,
                 granted = state.phonePermission,
+                enabled = phoneRoleReady,
                 onRequest = { phonePermLauncher.launch(Manifest.permission.CALL_PHONE) }
             )
 
@@ -194,18 +238,11 @@ fun OnboardingScreen(
             )
 
             OnboardingStep(
-                title = stringResource(R.string.perm_call_log),
-                description = stringResource(R.string.perm_call_log_desc),
-                icon = Icons.AutoMirrored.Filled.List,
-                granted = state.callLogPermission,
-                onRequest = { callLogPermLauncher.launch(Manifest.permission.READ_CALL_LOG) }
-            )
-
-            OnboardingStep(
                 title = stringResource(R.string.perm_phone_state),
                 description = stringResource(R.string.perm_phone_state_desc),
                 icon = Icons.Default.Phone,
                 granted = state.phoneStatePermission,
+                enabled = phoneRoleReady,
                 onRequest = { phoneStatePermLauncher.launch(Manifest.permission.READ_PHONE_STATE) }
             )
 
@@ -214,6 +251,7 @@ fun OnboardingScreen(
                 description = stringResource(R.string.perm_sms_desc),
                 icon = Icons.Default.Email,
                 granted = state.smsPermissions,
+                enabled = smsRoleReady,
                 onRequest = {
                     smsPermLauncher.launch(arrayOf(
                         Manifest.permission.READ_SMS,
@@ -252,6 +290,7 @@ fun OnboardingScreen(
                 description = stringResource(R.string.perm_answer_calls_desc),
                 icon = Icons.Default.Call,
                 granted = state.answerCallsPermission,
+                enabled = phoneRoleReady,
                 onRequest = { answerCallsPermLauncher.launch(Manifest.permission.ANSWER_PHONE_CALLS) }
             )
 
@@ -288,45 +327,6 @@ fun OnboardingScreen(
                 buttonLabel = stringResource(R.string.onboarding_open_settings),
                 onRequest = {
                     val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                    settingsLauncher.launch(intent)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // ── Section: Default Apps ──
-            SectionLabel(stringResource(R.string.onboarding_section_default_app))
-
-            OnboardingStep(
-                title = stringResource(R.string.default_phone_app),
-                description = stringResource(R.string.default_phone_app_desc),
-                icon = Icons.Default.Phone,
-                granted = state.isDefaultDialer,
-                buttonLabel = stringResource(R.string.onboarding_set),
-                onRequest = {
-                    val roleManager = context.getSystemService(android.app.role.RoleManager::class.java)
-                    val intent = roleManager.createRequestRoleIntent(android.app.role.RoleManager.ROLE_DIALER)
-                    settingsLauncher.launch(intent)
-                }
-            )
-
-            OnboardingStep(
-                title = stringResource(R.string.default_sms_app),
-                description = stringResource(R.string.default_sms_app_desc),
-                icon = Icons.Default.Email,
-                granted = state.isDefaultSms,
-                buttonLabel = stringResource(R.string.onboarding_set),
-                onRequest = { showSmsGuideDialog = true }
-            )
-
-            OnboardingStep(
-                title = stringResource(R.string.default_launcher),
-                description = stringResource(R.string.default_launcher_desc),
-                icon = Icons.Default.Home,
-                granted = state.isDefaultLauncher,
-                buttonLabel = stringResource(R.string.onboarding_set),
-                onRequest = {
-                    val intent = Intent(Settings.ACTION_HOME_SETTINGS)
                     settingsLauncher.launch(intent)
                 }
             )
@@ -384,6 +384,7 @@ private fun OnboardingStep(
     icon: ImageVector,
     granted: Boolean,
     buttonLabel: String = stringResource(R.string.onboarding_allow),
+    enabled: Boolean = true,
     onRequest: () -> Unit
 ) {
     Card(
@@ -444,6 +445,7 @@ private fun OnboardingStep(
             } else {
                 Button(
                     onClick = onRequest,
+                    enabled = enabled,
                     shape = RoundedCornerShape(10.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
                 ) {

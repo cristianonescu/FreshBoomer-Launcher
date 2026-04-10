@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.net.Uri
@@ -21,7 +20,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import ro.softwarechef.freshboomer.MainActivity
 import ro.softwarechef.freshboomer.R
 import android.media.AudioAttributes
-import android.provider.CallLog
 import android.provider.ContactsContract
 import android.speech.tts.TextToSpeech
 import androidx.compose.runtime.getValue
@@ -35,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import ro.softwarechef.freshboomer.data.MissedCallStore
 import java.util.Locale
 
 abstract class ImmersiveActivity : ComponentActivity() {
@@ -207,83 +206,55 @@ abstract class ImmersiveActivity : ComponentActivity() {
             .hide(WindowInsetsCompat.Type.systemBars())
     }
 
-//    fun getLastCall(): LastCaller? {
-//        return LastCaller(number = CallLog.Calls.getLastOutgoingCall(this), name = "", time = "")
-//    }
-
+    /**
+     * Returns the most recent missed call.
+     *
+     * Source: [MissedCallStore], populated by [ro.softwarechef.freshboomer.services.CallService]
+     * (InCallService — primary path when this app is the default dialer) and
+     * [ro.softwarechef.freshboomer.receivers.PhoneCallReceiver] (PHONE_STATE fallback).
+     * This replaces the previous CallLog query so the app no longer needs the
+     * READ_CALL_LOG permission.
+     */
     fun getLastCall(): LastCaller? {
         return try {
-            // Check permissions first
-            if (checkSelfPermission(android.Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED ||
-                checkSelfPermission(android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                return null
-            }
+            val record = MissedCallStore.getLast(this) ?: return null
 
-            // Query the last MISSED call from CallLog
-            val projection = arrayOf(
-                CallLog.Calls.NUMBER,
-                CallLog.Calls.DATE,
-                CallLog.Calls.TYPE,
-                CallLog.Calls.DURATION
-            )
-
-            val cursor = contentResolver.query(
-                CallLog.Calls.CONTENT_URI,
-                projection,
-                "${CallLog.Calls.TYPE} = ?",  // Only missed calls
-                arrayOf(CallLog.Calls.MISSED_TYPE.toString()),
-                "${CallLog.Calls.DATE} DESC"  // Sort by date DESCENDING (newest first)
-            ) ?: return null
-
-            var lastNumber: String? = null
-            var lastDate: Long? = null
-
-            cursor.use {
-                if (it.moveToFirst()) { // This should now be the most recent missed call
-                    lastNumber = it.getString(it.getColumnIndexOrThrow(CallLog.Calls.NUMBER))
-                    lastDate = it.getLong(it.getColumnIndexOrThrow(CallLog.Calls.DATE))
-
-                    // Log for debugging
-                    Log.d("LAST_CALL", "Found missed call: $lastNumber at $lastDate")
-                }
-            }
-
-            if (lastNumber == null) {
-                Log.d("LAST_CALL", "No missed calls found")
-                return null
-            }
-
-            // Lookup contact name from phone number
+            // Look up the contact name from READ_CONTACTS (still permitted).
             var contactName: String? = null
-            val uri = Uri.withAppendedPath(
-                ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(lastNumber)
-            )
-
-            contentResolver.query(
-                uri,
-                arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME),
-                null,
-                null,
-                null
-            )?.use { contactCursor ->
-                if (contactCursor.moveToFirst()) {
-                    contactName = contactCursor.getString(
-                        contactCursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)
-                    )
+            try {
+                val uri = Uri.withAppendedPath(
+                    ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                    Uri.encode(record.number)
+                )
+                contentResolver.query(
+                    uri,
+                    arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME),
+                    null,
+                    null,
+                    null
+                )?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        contactName = cursor.getString(
+                            cursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup.DISPLAY_NAME)
+                        )
+                    }
                 }
+            } catch (e: Exception) {
+                Log.w("ELDER_APP", "Contact name lookup failed: ${e.localizedMessage}")
             }
 
-            // Format time as HH:mm
-            val timeStr = lastDate?.let {
-                java.text.SimpleDateFormat("HH:mm", Locale.getDefault()).format(it)
-            }
+            val timeStr = if (record.timestamp > 0L) {
+                java.text.SimpleDateFormat("HH:mm", Locale.getDefault()).format(record.timestamp)
+            } else null
 
-            val result = LastCaller(number = lastNumber!!, name = contactName, time = timeStr, timestamp = lastDate ?: 0L)
-            Log.d("LAST_CALL", "Returning: $result")
-            result
+            LastCaller(
+                number = record.number,
+                name = contactName,
+                time = timeStr,
+                timestamp = record.timestamp
+            )
         } catch (e: Exception) {
-            Log.e("ELDER_APP", "Failed to get last call", e)
+            Log.e("ELDER_APP", "Failed to get last missed call", e)
             null
         }
     }

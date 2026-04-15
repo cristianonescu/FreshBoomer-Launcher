@@ -10,7 +10,13 @@ A simplified Android home launcher designed for elderly users. Replaces the defa
 
 ## Download
 
-Get the latest APK from the [Releases](https://github.com/cristianonescu/FreshBoomer-Launcher/releases) page.
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=ro.softwarechef.freshboomer">
+    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80">
+  </a>
+</p>
+
+Or grab the latest APK from the [Releases](https://github.com/cristianonescu/FreshBoomer-Launcher/releases) page.
 
 ## Screenshots
 

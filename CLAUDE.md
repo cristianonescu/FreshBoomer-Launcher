@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Additional Instructions & Context
+
+Before starting work, also consult these files at the repository root:
+
+- **`AI-INSTRUCTIONS.md`** — AI-assisted workflow rules and conventions that must be followed.
+- **`AGENTS.md`** — guidance for AI agents working in this repo.
+- **`TODO.md`** — current outstanding tasks and priorities.
+- **`README.md`** — user-facing project description and setup.
+- **`RELEASE_NOTES.md`** — version history and notable changes.
+
+Treat `AI-INSTRUCTIONS.md` and `AGENTS.md` as authoritative alongside this file. If guidance conflicts, ask the user to clarify rather than guessing.
+
 ## Project Overview
 
 FreshBoomer is a single-module Android app that acts as a simplified home launcher for elderly users. It replaces the default launcher, phone, and SMS apps with a large-button, Romanian-language interface featuring text-to-speech accessibility.

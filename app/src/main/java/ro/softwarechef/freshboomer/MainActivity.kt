@@ -8,9 +8,13 @@ import android.os.BatteryManager
 import android.os.Bundle
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -55,6 +59,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ro.softwarechef.freshboomer.ui.composables.ConfirmCallDialog
+import androidx.compose.ui.text.font.FontWeight
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassBackground
+import ro.softwarechef.freshboomer.ui.composables.GlassButton
+import ro.softwarechef.freshboomer.ui.composables.GradientAvatar
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.composables.QuickContactSettingsScreen
@@ -106,10 +115,8 @@ class MainActivity : ImmersiveActivity() {
             HideSystemBars()
             if (!setupCompleted) {
                 LauncherTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize()
-                            .windowInsetsPadding(WindowInsets.systemBars),
-                        color = MaterialTheme.colorScheme.background
+                    GlassBackground(
+                        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
                     ) {
                         SetupWizardScreen(
                             onThemeChanged = { /* theme applied via configFlow */ },
@@ -127,10 +134,8 @@ class MainActivity : ImmersiveActivity() {
             } else {
             key(themeVersion) {
             LauncherTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                        .windowInsetsPadding(WindowInsets.systemBars),
-                    color = MaterialTheme.colorScheme.background
+                GlassBackground(
+                    modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 ) {
                     if (!onboardingState.allGranted || showOnboarding) {
                         OnboardingScreen(
@@ -603,46 +608,51 @@ fun GridLayout(
 
         // Gallery and WhatsApp are fixed-height action bars, not weighted
         if (hasGallery) {
-            Button(
-                modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp),
+            AccentGlowButton(
                 onClick = onGalleryClick,
-                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Face,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(32.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = stringResource(R.string.main_gallery),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = colorResource(id = R.color.white)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Face,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = stringResource(R.string.main_gallery),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
             }
         }
 
         if (toggles.whatsapp) {
             val activity = LocalActivity.current as? ImmersiveActivity
-            Button(
-                modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp),
+            AccentGlowButton(
                 onClick = { activity?.launchWhatsApp() },
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366))
+                modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 48.dp),
+                color = Color(0xFF25D366),
+                shape = RoundedCornerShape(20.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Call,
-                    contentDescription = "WhatsApp",
-                    tint = Color.White,
-                    modifier = Modifier.size(32.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "WhatsApp",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.White
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Call,
+                        contentDescription = "WhatsApp",
+                        tint = Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "WhatsApp",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -700,176 +710,182 @@ fun GridButton(
     val resolvedTextStyle = textStyle ?: MaterialTheme.typography.titleLarge
     val hasImage = profile != null || photoUri != null
 
-    if (visible) {
-        Button(
+    if (!visible) {
+        Box(modifier = modifier.aspectRatio(1f)) {}
+        return
+    }
+
+    if (roundedSquare) {
+        // Utility-row button — use the shared GlassButton primitive so it
+        // matches the v2 prototype's glass treatment everywhere else in the
+        // app.
+        GlassButton(
             onClick = onClick,
-            modifier = if (roundedSquare) modifier.fillMaxHeight()
-                else modifier.fillMaxHeight().aspectRatio(1f),
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 6.dp,
-                pressedElevation = 12.dp,
-                focusedElevation = 8.dp,
-                hoveredElevation = 8.dp
-            ),
-            shape = if (roundedSquare) RoundedCornerShape(20.dp) else RoundedCornerShape(200.dp),
-            colors = if (roundedSquare) {
-                ButtonDefaults.buttonColors(containerColor = Color(0xFF2E3A4D))
-            } else if (!hasImage) {
-                ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.gray))
-            } else {
-                ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-            },
-            contentPadding = PaddingValues(0.dp)
+            modifier = modifier.fillMaxHeight(),
+            shape = RoundedCornerShape(18.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 14.dp)
         ) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .then(
-                    if (roundedSquare) Modifier.background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFF3A4A60),
-                                Color(0xFF2E3A4D)
-                            )
-                        )
-                    ) else Modifier.background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Black.copy(alpha = 0.25f),
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.35f)
-                            )
-                        )
-                    )
-                ),
-                contentAlignment = Alignment.Center
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                if (!hasImage && icon != null) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = text,
-                            tint = if (roundedSquare) Color(0xFF90CAF9) else Color.White,
-                            modifier = Modifier.size(if (roundedSquare) 36.dp else 48.dp)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = text,
-                            style = if (roundedSquare) MaterialTheme.typography.bodyLarge else resolvedTextStyle,
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                            maxLines = 2
-                        )
-                    }
-                } else if (!hasImage && icon == null) {
-                    // Quick contact without photo — show initials + name
-                    val initials = text.trim().split("\\s+".toRegex())
-                        .take(2)
-                        .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-                        .joinToString("")
-                        .ifEmpty { "?" }
-                    val bgColors = listOf(
-                        Color(0xFF5C6BC0), Color(0xFF26A69A), Color(0xFFEF5350),
-                        Color(0xFFAB47BC), Color(0xFF42A5F5), Color(0xFFFF7043)
-                    )
-                    val bgColor = bgColors[text.hashCode().and(0x7FFFFFFF) % bgColors.size]
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.radialGradient(
-                                    colors = listOf(
-                                        bgColor.copy(alpha = 0.9f),
-                                        bgColor.copy(alpha = 0.6f)
-                                    )
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            Text(
-                                text = initials,
-                                style = resolvedTextStyle.copy(
-                                    fontSize = resolvedTextStyle.fontSize * 1.6,
-                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                                    color = Color.White
-                                ),
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = text,
-                                style = resolvedTextStyle.copy(
-                                    fontSize = resolvedTextStyle.fontSize * 0.7,
-                                    color = Color.White.copy(alpha = 0.9f),
-                                    shadow = Shadow(
-                                        color = Color.Black.copy(alpha = 0.5f),
-                                        offset = Offset(1f, 1f),
-                                        blurRadius = 3f
-                                    )
-                                ),
-                                textAlign = TextAlign.Center,
-                                maxLines = 2,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                } else if (photoUri != null) {
-                    // Load from internal file via Coil
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(File(photoUri))
-                            .crossfade(true)
-                            .build(),
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
                         contentDescription = text,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
                     )
-                    Text(
-                        text = text,
-                        style = resolvedTextStyle.copy(
-                            color = Color.White,
-                            shadow = Shadow(
-                                color = Color.Black.copy(alpha = 0.8f),
-                                offset = Offset(2f, 2f),
-                                blurRadius = 6f
-                            )
-                        ),
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                            .padding(bottom = 16.dp)
-                    )
-                } else if (profile != null) {
-                    Image(
-                        painter = painterResource(profile),
-                        contentDescription = text,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                    Text(
-                        text = text,
-                        style = resolvedTextStyle.copy(
-                            color = Color.White,
-                            shadow = Shadow(
-                                color = Color.Black.copy(alpha = 0.8f),
-                                offset = Offset(2f, 2f),
-                                blurRadius = 6f
-                            )
-                        ),
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                            .padding(bottom = 16.dp)
-                    )
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2
+                )
             }
         }
-    } else {
-        Box(modifier = modifier.aspectRatio(1f)) {}
+        return
+    }
+
+    // Quick-contact button path (circular avatar, supports real photos / gradient fallback).
+    Button(
+        onClick = onClick,
+        modifier = modifier.fillMaxHeight().aspectRatio(1f),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 6.dp,
+            pressedElevation = 12.dp,
+            focusedElevation = 8.dp,
+            hoveredElevation = 8.dp
+        ),
+        shape = RoundedCornerShape(200.dp),
+        colors = if (!hasImage) {
+            ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.gray))
+        } else {
+            ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+        },
+        contentPadding = PaddingValues(0.dp)
+    ) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Black.copy(alpha = 0.25f),
+                        Color.Transparent,
+                        Color.Black.copy(alpha = 0.35f)
+                    )
+                )
+            ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (!hasImage && icon != null) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = text,
+                        tint = Color.White,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = text,
+                        style = resolvedTextStyle,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        maxLines = 2
+                    )
+                }
+            } else if (!hasImage && icon == null) {
+                // Quick contact without photo — theme-accented gradient avatar + name.
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    GradientAvatar(
+                        name = text,
+                        size = 100.dp,
+                        textStyle = resolvedTextStyle.copy(
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        )
+                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 8.dp, start = 6.dp, end = 6.dp)
+                    ) {
+                        Text(
+                            text = text,
+                            style = resolvedTextStyle.copy(
+                                fontSize = resolvedTextStyle.fontSize * 0.7,
+                                color = Color.White.copy(alpha = 0.95f),
+                                shadow = Shadow(
+                                    color = Color.Black.copy(alpha = 0.6f),
+                                    offset = Offset(1f, 1f),
+                                    blurRadius = 3f
+                                )
+                            ),
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            } else if (photoUri != null) {
+                // Load from internal file via Coil
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(File(photoUri))
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = text,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = text,
+                    style = resolvedTextStyle.copy(
+                        color = Color.White,
+                        shadow = Shadow(
+                            color = Color.Black.copy(alpha = 0.8f),
+                            offset = Offset(2f, 2f),
+                            blurRadius = 6f
+                        )
+                    ),
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp)
+                )
+            } else if (profile != null) {
+                Image(
+                    painter = painterResource(profile),
+                    contentDescription = text,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = text,
+                    style = resolvedTextStyle.copy(
+                        color = Color.White,
+                        shadow = Shadow(
+                            color = Color.Black.copy(alpha = 0.8f),
+                            offset = Offset(2f, 2f),
+                            blurRadius = 6f
+                        )
+                    ),
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp)
+                )
+            }
+        }
     }
 }
 
@@ -886,58 +902,99 @@ fun LastCallerBanner(
 
         val displayName = caller.name ?: caller.number
 
-        Card(
-            modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF2E3A4D)
-            )
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Call,
-                    contentDescription = null,
-                    tint = Color(0xFF90CAF9),
-                    modifier = Modifier.size(32.dp)
-                )
-                Spacer(Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Apel pierdut",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White.copy(alpha = 0.7f)
+        // Glass banner with a red-dot indicator. No shadows/blur — uses
+        // gradient + border to draw the "glass" edge so it renders the
+        // same on every device.
+        val red = Color(0xFFD32F2F)
+        val bannerShape = RoundedCornerShape(16.dp)
+        val bannerBg = MaterialTheme.colorScheme.background
+        val isDark = (0.299f * bannerBg.red + 0.587f * bannerBg.green + 0.114f * bannerBg.blue) < 0.5f
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(bannerShape)
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = if (isDark) 0.35f else 0.85f))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = if (isDark) 0.08f else 0.30f),
+                            Color.Transparent
+                        )
                     )
-                    Text(
-                        text = "$displayName la ora ${caller.time}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
+                )
+                .border(
+                    androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                    ),
+                    bannerShape
+                )
+                .clickable {
+                    onQuickCall(
+                        displayName,
+                        caller.number,
+                        null,
+                        Icons.Default.Call
                     )
                 }
-                Spacer(Modifier.width(12.dp))
-                Button(
-                    onClick = {
-                        onQuickCall(
-                            displayName,
-                            caller.number,
-                            null,
-                            Icons.Default.Call
-                        )
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.height(48.dp)
-                ) {
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Red dot indicator — solid red with a subtle outer ring for
+            // emphasis. No `Modifier.shadow` (unreliable colored glow on
+            // some OEM skins).
+            Box(
+                modifier = Modifier
+                    .size(14.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(red.copy(alpha = 0.25f))
+                    .padding(3.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(red)
+            )
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Apel pierdut de la $displayName",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = stringResource(R.string.missed_call_tap_to_return, caller.time ?: ""),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            AccentGlowButton(
+                onClick = {
+                    onQuickCall(
+                        displayName,
+                        caller.number,
+                        null,
+                        Icons.Default.Call
+                    )
+                },
+                color = Color(0xFF4CAF50),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.height(44.dp),
+                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Call,
                         contentDescription = null,
-                        modifier = Modifier.size(20.dp)
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
                     )
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.call), style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        stringResource(R.string.call),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
                 }
             }
         }
@@ -996,8 +1053,15 @@ fun SystemClock(
             lineHeight = clockSize.value.sp
         )
         Spacer(Modifier.width(50.dp))
+        Icon(
+            imageVector = Icons.Default.DateRange,
+            contentDescription = null,
+            tint = clockColor,
+            modifier = Modifier.size(28.dp)
+        )
+        Spacer(Modifier.width(6.dp))
         Text(
-            text = "\uD83D\uDDD3\uFE0F " + currentDate,
+            text = currentDate,
             style = MaterialTheme.typography.headlineLarge,
             color = clockColor,
             lineHeight = clockSize.value.sp
@@ -1018,34 +1082,49 @@ private fun AnalogClock(
     val minuteAngle = Math.toRadians((minutes * 6.0 + seconds * 0.1) - 90.0).toFloat()
     val secondAngle = Math.toRadians((seconds * 6.0) - 90.0).toFloat()
 
+    val accent = MaterialTheme.colorScheme.primary
+    val darkMode = androidx.compose.foundation.isSystemInDarkTheme()
+
     androidx.compose.foundation.Canvas(modifier = modifier) {
         val cx = size.width / 2f
         val cy = size.height / 2f
         val radius = size.minDimension / 2f
 
-        // Clock face circle
+        // Dark-mode glow: wider dim accent halo behind the face
+        if (darkMode) {
+            drawCircle(
+                color = accent.copy(alpha = 0.12f),
+                radius = radius * 1.1f,
+                center = Offset(cx, cy)
+            )
+        }
+
+        // Clock face (glass fill)
         drawCircle(
-            color = color.copy(alpha = 0.15f),
+            color = color.copy(alpha = 0.25f),
             radius = radius,
             center = Offset(cx, cy)
         )
+        // Accent outer ring
         drawCircle(
-            color = color.copy(alpha = 0.6f),
+            color = accent.copy(alpha = 0.6f),
             radius = radius,
             center = Offset(cx, cy),
             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5f)
         )
 
-        // Hour tick marks
+        // Hour tick marks — 12/3/6/9 thicker + accent, others subtle
         for (i in 0 until 12) {
             val angle = Math.toRadians(i * 30.0 - 90.0).toFloat()
-            val innerR = radius * 0.82f
+            val isMajor = i % 3 == 0
+            val innerR = radius * (if (isMajor) 0.78f else 0.82f)
             val outerR = radius * 0.95f
             drawLine(
-                color = color.copy(alpha = 0.5f),
+                color = if (isMajor) accent else color.copy(alpha = 0.5f),
                 start = Offset(cx + innerR * kotlin.math.cos(angle), cy + innerR * kotlin.math.sin(angle)),
                 end = Offset(cx + outerR * kotlin.math.cos(angle), cy + outerR * kotlin.math.sin(angle)),
-                strokeWidth = 1.5f
+                strokeWidth = if (isMajor) 2.5f else 1.5f,
+                cap = androidx.compose.ui.graphics.StrokeCap.Round
             )
         }
 
@@ -1069,20 +1148,26 @@ private fun AnalogClock(
             cap = androidx.compose.ui.graphics.StrokeCap.Round
         )
 
-        // Second hand
+        // Second hand (accent)
         val secondLen = radius * 0.8f
         drawLine(
-            color = Color.Red.copy(alpha = 0.8f),
+            color = accent.copy(alpha = 0.85f),
             start = Offset(cx, cy),
             end = Offset(cx + secondLen * kotlin.math.cos(secondAngle), cy + secondLen * kotlin.math.sin(secondAngle)),
             strokeWidth = 1f,
             cap = androidx.compose.ui.graphics.StrokeCap.Round
         )
 
-        // Center dot
+        // Center pin — accent ring + white dot
         drawCircle(
-            color = color,
-            radius = 2f,
+            color = accent,
+            radius = 3f,
+            center = Offset(cx, cy),
+            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5f)
+        )
+        drawCircle(
+            color = Color.White,
+            radius = 1.5f,
             center = Offset(cx, cy)
         )
     }
@@ -1099,12 +1184,21 @@ fun LowBatteryOverlay(batteryLevel: Int) {
             .padding(vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "⚠️ Puneți telefonul la încărcat. Baterie scăzută ($batteryLevel%)",
-            color = Color.White,
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = "Puneți telefonul la încărcat. Baterie scăzută ($batteryLevel%)",
+                color = Color.White,
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -1117,12 +1211,21 @@ fun ChargingOverlay(level: Int) {
             .padding(vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "🔌 Se încarcă… ($level%)",
-            color = Color.White,
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.BatteryChargingFull,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = "Se încarcă… ($level%)",
+                color = Color.White,
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -1135,12 +1238,21 @@ fun FullyChargedOverlay() {
             .padding(vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = "✅ Bateria este complet încărcată",
-            color = Color.White,
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = "Bateria este complet încărcată",
+                color = Color.White,
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

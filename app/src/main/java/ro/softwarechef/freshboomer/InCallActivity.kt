@@ -38,6 +38,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ro.softwarechef.freshboomer.call.CallManager
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassBackground
+import ro.softwarechef.freshboomer.ui.composables.GradientAvatar
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
@@ -152,12 +155,7 @@ fun InCallScreen(
         else -> ""
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF1A1A2E)),
-        contentAlignment = Alignment.Center
-    ) {
+    GlassBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -169,24 +167,31 @@ fun InCallScreen(
 
             // Caller info
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                val primaryText = MaterialTheme.colorScheme.onBackground
+                val secondaryText = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                GradientAvatar(
+                    name = callerName ?: callerNumber,
+                    size = 180.dp
+                )
+                Spacer(modifier = Modifier.height(24.dp))
                 if (callerName != null) {
                     Text(
                         text = callerName,
                         style = MaterialTheme.typography.displayLarge,
-                        color = Color.White,
+                        color = primaryText,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = callerNumber,
                         style = MaterialTheme.typography.titleLarge,
-                        color = Color.White.copy(alpha = 0.7f)
+                        color = secondaryText
                     )
                 } else {
                     Text(
                         text = callerNumber,
                         style = MaterialTheme.typography.displayLarge,
-                        color = Color.White,
+                        color = primaryText,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -197,7 +202,7 @@ fun InCallScreen(
                 Text(
                     text = stateText,
                     style = MaterialTheme.typography.titleLarge,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = secondaryText
                 )
             }
 
@@ -269,16 +274,12 @@ fun InCallScreen(
                     }
                 }*/
 
-                // Hangup button
-                Button(
+                // Hangup button — red glow
+                AccentGlowButton(
                     onClick = onHangup,
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFD32F2F)
-                    )
+                    modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(1f),
+                    color = Color(0xFFD32F2F),
+                    shape = RoundedCornerShape(24.dp)
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -294,6 +295,7 @@ fun InCallScreen(
                         Text(
                             text = "Închide",
                             style = MaterialTheme.typography.titleLarge,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
                             color = Color.White
                         )
                     }

@@ -16,7 +16,7 @@ class HeadlessSmsSendService : Service() {
             
             if (recipient != null && message != null) {
                 try {
-                    val smsManager = SmsManager.getDefault()
+                    val smsManager = getSystemService(SmsManager::class.java)
                     smsManager.sendTextMessage(recipient, null, message, null, null)
                     Log.d("SmsService", "Message sent to $recipient")
                 } catch (e: Exception) {

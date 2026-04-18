@@ -30,8 +30,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.savedstate.compose.LocalSavedStateRegistryOwner
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +45,8 @@ import ro.softwarechef.freshboomer.R
 import ro.softwarechef.freshboomer.data.*
 import ro.softwarechef.freshboomer.models.QuickContact
 import ro.softwarechef.freshboomer.services.InactivityMonitorWorker
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassButton
 import java.io.File
 import java.util.UUID
 
@@ -90,7 +92,7 @@ fun SetupWizardScreen(
     // createConfigurationContext() returns a plain Context, not an Activity.
     val activity = baseContext as androidx.activity.ComponentActivity
     val localeContext = remember(appLanguage) {
-        val locale = java.util.Locale(appLanguage)
+        val locale = java.util.Locale.forLanguageTag(appLanguage)
         java.util.Locale.setDefault(locale)
         val config = android.content.res.Configuration(baseContext.resources.configuration)
         config.setLocale(locale)
@@ -214,14 +216,26 @@ fun SetupWizardScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (currentPage > 0) {
-                OutlinedButton(
+                GlassButton(
                     onClick = { currentPage-- },
                     modifier = Modifier.height(52.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.wizard_back), style = MaterialTheme.typography.titleMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            stringResource(R.string.wizard_back),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             } else {
                 // Skip button on first page
@@ -230,30 +244,58 @@ fun SetupWizardScreen(
                     modifier = Modifier.height(52.dp),
                     enabled = privacyAccepted
                 ) {
-                    Text(stringResource(R.string.wizard_skip), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (privacyAccepted) 0.5f else 0.2f))
+                    Text(
+                        stringResource(R.string.wizard_skip),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (privacyAccepted) 0.5f else 0.2f)
+                    )
                 }
             }
 
             if (currentPage < TOTAL_PAGES - 1) {
-                Button(
+                AccentGlowButton(
                     onClick = { currentPage++ },
                     modifier = Modifier.height(52.dp),
                     shape = RoundedCornerShape(16.dp),
                     enabled = currentPage != 0 || privacyAccepted
                 ) {
-                    Text(stringResource(R.string.wizard_next), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            stringResource(R.string.wizard_next),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             } else {
-                Button(
+                AccentGlowButton(
                     onClick = { saveAndFinish() },
                     modifier = Modifier.height(52.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(stringResource(R.string.wizard_finish), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            stringResource(R.string.wizard_finish),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }
@@ -412,19 +454,29 @@ private fun PrivacyPolicyDialog(
             )
         },
         confirmButton = {
-            Button(
+            AccentGlowButton(
                 onClick = onAccept,
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(stringResource(R.string.privacy_policy_accept), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(R.string.privacy_policy_accept),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = androidx.compose.ui.graphics.Color.White
+                )
             }
         },
         dismissButton = {
-            OutlinedButton(
+            GlassButton(
                 onClick = onDecline,
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(stringResource(R.string.privacy_policy_decline), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.privacy_policy_decline),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     )
@@ -558,7 +610,7 @@ private fun QuickContactsPage(
             }
 
             // Add contact button
-            OutlinedButton(
+            GlassButton(
                 onClick = {
                     val newId = UUID.randomUUID().toString()
                     val updated = contacts + QuickContact(
@@ -572,9 +624,20 @@ private fun QuickContactsPage(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.wizard_contacts_add), style = MaterialTheme.typography.titleMedium)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.wizard_contacts_add),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
 
             if (contacts.isEmpty()) {
@@ -840,16 +903,28 @@ private fun EmergencyContactsPage(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedButton(
+        GlassButton(
             onClick = {
                 onContactsChanged(emergencyContacts + EmergencyContact())
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.wizard_emergency_add), style = MaterialTheme.typography.bodyLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    stringResource(R.string.wizard_emergency_add),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
 
         if (emergencyContacts.isEmpty()) {

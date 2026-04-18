@@ -12,7 +12,12 @@ import ro.softwarechef.freshboomer.R
 import ro.softwarechef.freshboomer.data.LocaleHelper
 import ro.softwarechef.freshboomer.data.NicknamePreference
 import ro.softwarechef.freshboomer.tts.PiperTtsEngine
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
@@ -23,6 +28,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Close
@@ -102,89 +110,134 @@ fun ConfirmCallDialog(
         onDismiss()
     }
 
-    AlertDialog(
+    androidx.compose.ui.window.Dialog(
         onDismissRequest = onDismiss,
-        title = {},
-        text = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                if (photoUri != null) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(File(photoUri))
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = name,
-                        modifier = Modifier.size(140.dp),
-                        contentScale = ContentScale.Crop
+        properties = androidx.compose.ui.window.DialogProperties(
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        val bg = MaterialTheme.colorScheme.background
+        val isDark = (0.299f * bg.red + 0.587f * bg.green + 0.114f * bg.blue) < 0.5f
+        val dialogShape = RoundedCornerShape(24.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .clip(dialogShape)
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = if (isDark) 0.08f else 0.35f),
+                            Color.Transparent
+                        )
                     )
-                } else if (profile != null) {
-                    Image(
-                        painter = painterResource(profile),
-                        contentDescription = name,
-                        modifier = Modifier.size(140.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                } else if (icon != null) {
+                )
+                .border(
+                    BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)),
+                    dialogShape
+                )
+                .padding(horizontal = 20.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val avatarModifier = Modifier
+                .size(140.dp)
+                .clip(androidx.compose.foundation.shape.CircleShape)
+            if (photoUri != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(File(photoUri))
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = name,
+                    modifier = avatarModifier,
+                    contentScale = ContentScale.Crop
+                )
+            } else if (profile != null) {
+                Image(
+                    painter = painterResource(profile),
+                    contentDescription = name,
+                    modifier = avatarModifier,
+                    contentScale = ContentScale.Crop
+                )
+            } else if (icon != null) {
+                Box(
+                    modifier = avatarModifier
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
                     Icon(
                         imageVector = icon,
                         contentDescription = name,
-                        tint = Color.White,
-                        modifier = Modifier.size(140.dp)
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(80.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = context.getString(R.string.confirm_call_prompt, nickname, name),
-                    style = MaterialTheme.typography.titleLarge
-                )
+            } else {
+                GradientAvatar(name = name, size = 140.dp)
             }
-        },
-        confirmButton = {
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = context.getString(R.string.confirm_call_prompt, nickname, name),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Phone call button
-                OutlinedButton(
+                // "Da" — primary green glow (confirm call)
+                AccentGlowButton(
                     onClick = onPhoneCall,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .weight(1.0F, true),
-                    contentPadding = PaddingValues(horizontal = 12.dp)
+                    modifier = Modifier.height(56.dp).weight(1f),
+                    color = Color(0xFF4CAF50),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Call,
-                        contentDescription = null,
-                        modifier = Modifier.size(22.dp)
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text("Da", style = MaterialTheme.typography.titleMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Call,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Da",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
+                            color = Color.White
+                        )
+                    }
                 }
 
-                // Cancel button
-                OutlinedButton(
+                // "Nu" — glass (cancel)
+                GlassButton(
                     onClick = onDismiss,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .weight(1.0F, true),
-                    contentPadding = PaddingValues(horizontal = 12.dp)
+                    modifier = Modifier.height(56.dp).weight(1f),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = null,
-                        modifier = Modifier.size(22.dp)
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text("Nu", style = MaterialTheme.typography.titleMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Nu",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
-    )
+    }
 }
 
 private fun findWhatsAppContactDataId(context: Context, phoneNumber: String, mimeType: String): Long? {

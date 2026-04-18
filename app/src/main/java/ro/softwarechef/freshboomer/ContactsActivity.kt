@@ -34,7 +34,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import ro.softwarechef.freshboomer.models.Contact
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
 import ro.softwarechef.freshboomer.ui.composables.ConfirmCallDialog
+import ro.softwarechef.freshboomer.ui.composables.GlassBackground
+import ro.softwarechef.freshboomer.ui.composables.GlassButton
+import ro.softwarechef.freshboomer.ui.composables.GradientAvatar
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.composables.Inapoi
@@ -56,10 +60,7 @@ class ContactsActivity : ImmersiveActivity() {
         setContent {
             HideSystemBars()
             LauncherTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                GlassBackground {
                     ContactsScreen(
                         onBackClick = { finish() },
                         onAddContact = { showAddContactDialog() },
@@ -204,22 +205,26 @@ fun ContactsScreen(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f)
             )
-            FilledTonalButton(
+            GlassButton(
                 onClick = onAddContact,
                 shape = RoundedCornerShape(16.dp),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
             ) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.contacts_add),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.contacts_add),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
 
@@ -348,26 +353,13 @@ fun ContactItem(
     onCall: () -> Unit,
     onEdit: () -> Unit
 ) {
-    val initials = contact.name
-        .split(" ")
-        .take(2)
-        .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-        .joinToString("")
-        .ifEmpty { "?" }
-
-    // Generate a stable color from the contact name
-    val avatarColor = remember(contact.name) {
-        val hue = (contact.name.hashCode() and 0x7FFFFFFF) % 360
-        Color.hsl(hue.toFloat(), 0.45f, 0.55f)
-    }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onCall),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
@@ -377,21 +369,7 @@ fun ContactItem(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar circle with initials
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(CircleShape)
-                    .background(avatarColor),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = initials,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
+            GradientAvatar(name = contact.name, size = 56.dp)
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -417,30 +395,29 @@ fun ContactItem(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Call button
-            Button(
+            // Call button — green glow
+            AccentGlowButton(
                 onClick = onCall,
-                modifier = Modifier
-                    .height(52.dp)
-                    .widthIn(min = 100.dp),
+                modifier = Modifier.height(52.dp).widthIn(min = 100.dp),
+                color = Color(0xFF4CAF50),
                 shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4CAF50),
-                    contentColor = Color.White
-                ),
-                contentPadding = PaddingValues(horizontal = 12.dp)
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
             ) {
-                Icon(
-                    Icons.Default.Call,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = stringResource(R.string.contacts_call),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Call,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = stringResource(R.string.contacts_call),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }

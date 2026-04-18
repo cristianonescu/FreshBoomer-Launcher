@@ -14,6 +14,12 @@ class PhoneCallReceiver : BroadcastReceiver() {
         if (intent.action != TelephonyManager.ACTION_PHONE_STATE_CHANGED) return
 
         val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE) ?: return
+        // EXTRA_INCOMING_NUMBER was deprecated in API 29 in favour of READ_CALL_LOG
+        // or CallScreeningService. We explicitly do NOT request READ_CALL_LOG
+        // (Play Store privacy posture, see AI-INSTRUCTIONS). The primary path for
+        // call detection is `CallService` (default-dialer InCallService using
+        // `Call.Details.getHandle()`); this receiver is a fallback.
+        @Suppress("DEPRECATION")
         val incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
 
         Log.d("PhoneCallReceiver", "Phone state: $state, number: $incomingNumber, lastState: $lastState, lastNumber: $lastRingingNumber")

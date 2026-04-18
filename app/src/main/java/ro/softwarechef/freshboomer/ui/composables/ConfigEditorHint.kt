@@ -48,18 +48,20 @@ fun ConfigEditorHint(modifier: Modifier = Modifier) {
                 )
             }
             Spacer(modifier = Modifier.height(6.dp))
-            OutlinedButton(
+            GlassButton(
                 onClick = {
                     context.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(CONFIG_EDITOR_URL))
                     )
                 },
-                shape = RoundedCornerShape(6.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 Text(
                     text = stringResource(R.string.settings_config_editor_link),
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

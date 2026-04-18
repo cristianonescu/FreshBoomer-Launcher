@@ -23,6 +23,7 @@
     <string name="main_whatsapp">WhatsApp</string>
     <string name="main_missed_call">Apel pierdut</string>
     <string name="main_missed_call_time">%1$s la ora %2$s</string>
+    <string name="missed_call_tap_to_return">Apasati pentru a suna inapoi (la ora %1$s)</string>
 
     <!-- TTS — Main navigation (%1$s = nickname) -->
     <string name="tts_open_sms">%1$s, aici vezi dacă ai mesaje. Dacă nu vrei să vezi mesaje, în stânga sus apasă pe «Înapoi».</string>

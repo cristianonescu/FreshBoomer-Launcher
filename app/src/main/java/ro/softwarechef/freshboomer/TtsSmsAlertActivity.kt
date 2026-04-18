@@ -13,12 +13,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ro.softwarechef.freshboomer.call.CallManager
 import ro.softwarechef.freshboomer.data.AppConfig
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassBackground
+import ro.softwarechef.freshboomer.ui.composables.GlassButton
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
 
@@ -76,10 +80,7 @@ private fun TtsSmsAlertScreen(
     onDismiss: () -> Unit,
     onReplay: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    GlassBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -133,40 +134,42 @@ private fun TtsSmsAlertScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Replay button
-            OutlinedButton(
+            // Replay — glass (neutral)
+            GlassButton(
                 onClick = onReplay,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp),
+                modifier = Modifier.fillMaxWidth().height(60.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = stringResource(R.string.tts_sms_alert_replay),
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = stringResource(R.string.tts_sms_alert_replay),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Dismiss button
-            Button(
+            // Dismiss — primary accent glow
+            AccentGlowButton(
                 onClick = onDismiss,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp),
+                modifier = Modifier.fillMaxWidth().height(70.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
                     text = stringResource(R.string.tts_sms_alert_dismiss),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
                 )
             }
         }

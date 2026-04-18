@@ -34,6 +34,38 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private const val TAG = "TtsDownloadDialog"
+private const val UNLOCK_TAP_THRESHOLD = 5
+private const val UNLOCK_WINDOW_MS = 3000L
+
+/** Hidden settings-unlock icon: [UNLOCK_TAP_THRESHOLD] taps within
+ *  [UNLOCK_WINDOW_MS] invokes [onUnlock]. Shown in the footer so the
+ *  primary (elderly) user is unlikely to discover it. */
+@Composable
+private fun SettingsUnlockIcon(onUnlock: () -> Unit) {
+    var tapCount by remember { mutableIntStateOf(0) }
+    var firstTapTime by remember { mutableLongStateOf(0L) }
+
+    Icon(
+        imageVector = Icons.Default.Lock,
+        contentDescription = null,
+        modifier = Modifier
+            .size(14.dp)
+            .clickable {
+                val now = System.currentTimeMillis()
+                if (now - firstTapTime > UNLOCK_WINDOW_MS) {
+                    tapCount = 1
+                    firstTapTime = now
+                } else {
+                    tapCount++
+                }
+                if (tapCount >= UNLOCK_TAP_THRESHOLD) {
+                    tapCount = 0
+                    onUnlock()
+                }
+            },
+        tint = Color.Gray.copy(alpha = 0.3f)
+    )
+}
 
 enum class DownloadState {
     CHECKING,
@@ -142,29 +174,7 @@ fun TtsStatusFooter(
             }
             DownloadState.ERROR -> {
                 if (onSettingsClick != null) {
-                    var tapCount by remember { mutableIntStateOf(0) }
-                    var firstTapTime by remember { mutableLongStateOf(0L) }
-
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(14.dp)
-                            .clickable {
-                                val now = System.currentTimeMillis()
-                                if (now - firstTapTime > 3000L) {
-                                    tapCount = 1
-                                    firstTapTime = now
-                                } else {
-                                    tapCount++
-                                }
-                                if (tapCount >= 5) {
-                                    tapCount = 0
-                                    onSettingsClick()
-                                }
-                            },
-                        tint = Color.Gray.copy(alpha = 0.3f)
-                    )
+                    SettingsUnlockIcon(onUnlock = onSettingsClick)
                 }
                 Text(
                     text = stringResource(R.string.tts_download_error_retry),
@@ -178,29 +188,7 @@ fun TtsStatusFooter(
             }
             DownloadState.DONE -> {
                 if (onSettingsClick != null) {
-                    var tapCount by remember { mutableIntStateOf(0) }
-                    var firstTapTime by remember { mutableLongStateOf(0L) }
-
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(14.dp)
-                            .clickable {
-                                val now = System.currentTimeMillis()
-                                if (now - firstTapTime > 3000L) {
-                                    tapCount = 1
-                                    firstTapTime = now
-                                } else {
-                                    tapCount++
-                                }
-                                if (tapCount >= 5) {
-                                    tapCount = 0
-                                    onSettingsClick()
-                                }
-                            },
-                        tint = Color.Gray.copy(alpha = 0.3f)
-                    )
+                    SettingsUnlockIcon(onUnlock = onSettingsClick)
                 }
                 Text(
                     text = copyrightText,

@@ -44,6 +44,9 @@ import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import kotlinx.coroutines.delay
 import android.provider.ContactsContract
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassBackground
+import ro.softwarechef.freshboomer.ui.composables.GradientAvatar
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.composables.Inapoi
@@ -94,10 +97,7 @@ class SmsActivity : ImmersiveActivity() {
             setContent {
                 HideSystemBars()
                 LauncherTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
+                    GlassBackground {
                         SmsScreen(
                             onBackClick = { finish() },
                             conversations = conversations
@@ -288,30 +288,11 @@ fun SmsScreen(
                         .padding(bottom = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val initials = contact.name
-                        .split(" ")
-                        .take(2)
-                        .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-                        .joinToString("")
-                        .ifEmpty { "?" }
-                    val avatarColor = remember(contact.name) {
-                        val hue = (contact.name.hashCode() and 0x7FFFFFFF) % 360
-                        Color.hsl(hue.toFloat(), 0.45f, 0.55f)
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .background(avatarColor),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = initials,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
+                    GradientAvatar(
+                        name = contact.name,
+                        size = 44.dp,
+                        textStyle = MaterialTheme.typography.titleMedium
+                    )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
@@ -369,18 +350,6 @@ fun ConversationItem(
     contact: Contact,
     onClick: () -> Unit
 ) {
-    val initials = contact.name
-        .split(" ")
-        .take(2)
-        .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-        .joinToString("")
-        .ifEmpty { "?" }
-
-    val avatarColor = remember(contact.name) {
-        val hue = (contact.name.hashCode() and 0x7FFFFFFF) % 360
-        Color.hsl(hue.toFloat(), 0.45f, 0.55f)
-    }
-
     val timeText = remember(contact.date) {
         if (contact.date > 0) {
             val now = System.currentTimeMillis()
@@ -400,7 +369,7 @@ fun ConversationItem(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
@@ -410,21 +379,11 @@ fun ConversationItem(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar
-            Box(
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(CircleShape)
-                    .background(avatarColor),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = initials,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
+            GradientAvatar(
+                name = contact.name,
+                size = 52.dp,
+                textStyle = MaterialTheme.typography.titleLarge
+            )
 
             Spacer(modifier = Modifier.width(14.dp))
 
@@ -589,7 +548,7 @@ fun ConversationScreen(
                     )
                 )
 
-                Button(
+                AccentGlowButton(
                     onClick = {
                         if (messageText.isNotBlank()) {
                             onSendMessage(messageText)
@@ -597,22 +556,23 @@ fun ConversationScreen(
                         }
                     },
                     modifier = Modifier.height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.Send,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        "Trimite",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Send,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            "Trimite",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }

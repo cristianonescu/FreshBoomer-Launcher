@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "ro.softwarechef.freshboomer"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ro.softwarechef.freshboomer"
-        minSdk = 30
-        targetSdk = 35
+        minSdk = 31
+        targetSdk = 36
         versionCode = 6
         versionName = "1.3.2"
 
@@ -33,12 +33,21 @@ android {
         sourceCompatibility = VERSION_11
         targetCompatibility = VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
     buildFeatures {
         compose = true
     }
+}
+
+// Forces JDK 11 for Kotlin/Java compile and test tasks regardless of which
+// JDK Gradle itself runs on. Auto-provisioned via the foojay resolver in
+// settings.gradle.kts. Matches the declared build requirement in CLAUDE.md.
+kotlin {
+    jvmToolchain(11)
 }
 
 dependencies {
@@ -52,6 +61,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.appcompat)
     implementation(libs.coil.compose)
     implementation(libs.androidx.work.runtime.ktx)

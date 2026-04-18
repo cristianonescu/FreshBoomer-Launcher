@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GradientAvatar
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
@@ -116,7 +118,12 @@ fun WhatsAppCallScreen(
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.White.copy(alpha = 0.7f)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
+                GradientAvatar(
+                    name = callerName,
+                    size = 180.dp
+                )
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     text = callerName,
                     style = MaterialTheme.typography.displayLarge,
@@ -140,16 +147,12 @@ fun WhatsAppCallScreen(
                     .padding(bottom = 48.dp),
                 horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Reject button
-                Button(
+                // Reject — red glow
+                AccentGlowButton(
                     onClick = onRejectClick,
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFD32F2F)
-                    )
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    color = Color(0xFFD32F2F),
+                    shape = RoundedCornerShape(24.dp)
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -165,21 +168,18 @@ fun WhatsAppCallScreen(
                         Text(
                             text = "Respinge",
                             style = MaterialTheme.typography.titleLarge,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
                             color = Color.White
                         )
                     }
                 }
 
-                // Accept button
-                Button(
+                // Accept — green glow
+                AccentGlowButton(
                     onClick = onAnswerClick,
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF388E3C)
-                    )
+                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    color = Color(0xFF388E3C),
+                    shape = RoundedCornerShape(24.dp)
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -195,6 +195,7 @@ fun WhatsAppCallScreen(
                         Text(
                             text = "Răspunde",
                             style = MaterialTheme.typography.titleLarge,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
                             color = Color.White
                         )
                     }

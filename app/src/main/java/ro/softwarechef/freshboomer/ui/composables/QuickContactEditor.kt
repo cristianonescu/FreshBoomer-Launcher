@@ -48,8 +48,10 @@ import ro.softwarechef.freshboomer.data.ThemePreference
 import ro.softwarechef.freshboomer.data.TtsEngine
 import ro.softwarechef.freshboomer.data.TtsPreference
 import ro.softwarechef.freshboomer.models.QuickContact
+import androidx.compose.ui.text.font.FontWeight
 import ro.softwarechef.freshboomer.tts.PiperVoice
 import ro.softwarechef.freshboomer.tts.TtsModelManager
+// AccentGlowButton and GlassButton are in the same package so no import needed.
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -112,20 +114,20 @@ fun QuickContactSettingsScreen(
                 title = { Text(stringResource(R.string.settings_delete_contact_title)) },
                 text = { Text(stringResource(R.string.settings_delete_contact_message, contactToDelete.name)) },
                 confirmButton = {
-                    Button(
+                    AccentGlowButton(
                         onClick = {
                             QuickContactRepository.removeContact(context, deleteConfirmId!!)
                             contacts = QuickContactRepository.getContacts(context)
                             deleteConfirmId = null
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                        color = Color(0xFFD32F2F)
                     ) {
-                        Text(stringResource(R.string.delete))
+                        Text(stringResource(R.string.delete), fontWeight = FontWeight.ExtraBold, color = Color.White)
                     }
                 },
                 dismissButton = {
-                    OutlinedButton(onClick = { deleteConfirmId = null }) {
-                        Text(stringResource(R.string.cancel))
+                    GlassButton(onClick = { deleteConfirmId = null }) {
+                        Text(stringResource(R.string.cancel), fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
             )
@@ -234,7 +236,7 @@ fun QuickContactSettingsScreen(
                 }
 
                 item {
-                    OutlinedButton(
+                    GlassButton(
                         onClick = {
                             val newContact = QuickContact(
                                 id = UUID.randomUUID().toString(),
@@ -247,9 +249,20 @@ fun QuickContactSettingsScreen(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(stringResource(R.string.settings_add_contact))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                stringResource(R.string.settings_add_contact),
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
             }
@@ -482,11 +495,11 @@ fun QuickContactSettingsScreen(
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
-                        Button(
+                        AccentGlowButton(
                             onClick = onOpenOnboarding,
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(stringResource(R.string.settings_open))
+                            Text(stringResource(R.string.settings_open), fontWeight = FontWeight.ExtraBold, color = Color.White)
                         }
                     }
                 }
@@ -524,11 +537,11 @@ fun QuickContactSettingsScreen(
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
-                        Button(
+                        AccentGlowButton(
                             onClick = { showJsonEditor = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(stringResource(R.string.settings_open))
+                            Text(stringResource(R.string.settings_open), fontWeight = FontWeight.ExtraBold, color = Color.White)
                         }
                     }
                 }
@@ -557,11 +570,11 @@ fun QuickContactSettingsScreen(
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
-                        Button(
+                        AccentGlowButton(
                             onClick = { showImportUrlDialog = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(stringResource(R.string.settings_import))
+                            Text(stringResource(R.string.settings_import), fontWeight = FontWeight.ExtraBold, color = Color.White)
                         }
                     }
                 }
@@ -616,11 +629,11 @@ fun QuickContactSettingsScreen(
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
-                        Button(
+                        AccentGlowButton(
                             onClick = { showAboutScreen = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(stringResource(R.string.settings_open))
+                            Text(stringResource(R.string.settings_open), fontWeight = FontWeight.ExtraBold, color = Color.White)
                         }
                     }
                 }
@@ -654,11 +667,11 @@ fun QuickContactSettingsScreen(
                             )
                         },
                         confirmButton = {
-                            Button(
+                            AccentGlowButton(
                                 onClick = { showPrivacyPolicy = false },
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text(stringResource(R.string.settings_understood))
+                                Text(stringResource(R.string.settings_understood), fontWeight = FontWeight.ExtraBold, color = Color.White)
                             }
                         }
                     )
@@ -686,11 +699,11 @@ fun QuickContactSettingsScreen(
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
-                        Button(
+                        AccentGlowButton(
                             onClick = { showPrivacyPolicy = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(stringResource(R.string.settings_open))
+                            Text(stringResource(R.string.settings_open), fontWeight = FontWeight.ExtraBold, color = Color.White)
                         }
                     }
                 }
@@ -736,8 +749,8 @@ private fun TipsSection() {
                 }
             },
             confirmButton = {
-                Button(onClick = { showWhatsAppGuide = false }) {
-                    Text(stringResource(R.string.settings_understood))
+                AccentGlowButton(onClick = { showWhatsAppGuide = false }) {
+                    Text(stringResource(R.string.settings_understood), fontWeight = FontWeight.ExtraBold, color = Color.White)
                 }
             }
         )
@@ -766,11 +779,11 @@ private fun TipsSection() {
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
-                Button(
+                AccentGlowButton(
                     onClick = { showWhatsAppGuide = true },
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text(stringResource(R.string.settings_see))
+                    Text(stringResource(R.string.settings_see), fontWeight = FontWeight.ExtraBold, color = Color.White)
                 }
             }
         }
@@ -899,8 +912,8 @@ private fun AppRow(
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f)
         )
-        Button(onClick = onClick) {
-            Text(stringResource(R.string.settings_open))
+        AccentGlowButton(onClick = onClick) {
+            Text(stringResource(R.string.settings_open), fontWeight = FontWeight.ExtraBold, color = Color.White)
         }
     }
 }
@@ -1077,7 +1090,7 @@ private fun TtsUpdateRow() {
             }
         }
         Spacer(modifier = Modifier.width(8.dp))
-        Button(
+        AccentGlowButton(
             onClick = {
                 scope.launch {
                     checkState = UpdateCheckState.Checking
@@ -1120,7 +1133,7 @@ private fun TtsUpdateRow() {
                     && checkState != UpdateCheckState.Downloading
                     && checkState != UpdateCheckState.NoModel
         ) {
-            Text(stringResource(R.string.settings_tts_update_check))
+            Text(stringResource(R.string.settings_tts_update_check), fontWeight = FontWeight.ExtraBold, color = Color.White)
         }
     }
 }
@@ -1220,7 +1233,7 @@ private fun MedicationRemindersSection(
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(4.dp)
                     )
-                    Button(
+                    AccentGlowButton(
                         onClick = {
                             context.startActivity(
                                 ro.softwarechef.freshboomer.services.MedicationReminderScheduler.getExactAlarmSettingsIntent()
@@ -1229,7 +1242,7 @@ private fun MedicationRemindersSection(
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
-                        Text(stringResource(R.string.medication_exact_alarm_grant))
+                        Text(stringResource(R.string.medication_exact_alarm_grant), fontWeight = FontWeight.ExtraBold, color = Color.White)
                     }
                 }
 
@@ -1264,7 +1277,7 @@ private fun MedicationRemindersSection(
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(
+                GlassButton(
                     onClick = {
                         val updated = reminders + ro.softwarechef.freshboomer.data.MedicationReminder()
                         onRemindersChanged(updated)
@@ -1272,9 +1285,20 @@ private fun MedicationRemindersSection(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.settings_medication_add))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            stringResource(R.string.settings_medication_add),
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
@@ -1316,17 +1340,17 @@ private fun MedicationReminderItem(
                 TimePicker(state = timePickerState)
             },
             confirmButton = {
-                Button(onClick = {
+                AccentGlowButton(onClick = {
                     val newTime = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
                     onChanged(reminder.copy(time = newTime))
                     showTimePicker = false
                 }) {
-                    Text("OK")
+                    Text("OK", fontWeight = FontWeight.ExtraBold, color = Color.White)
                 }
             },
             dismissButton = {
-                OutlinedButton(onClick = { showTimePicker = false }) {
-                    Text(stringResource(R.string.cancel))
+                GlassButton(onClick = { showTimePicker = false }) {
+                    Text(stringResource(R.string.cancel), fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onSurface)
                 }
             }
         )
@@ -1365,14 +1389,15 @@ private fun MedicationReminderItem(
                 text = stringResource(R.string.settings_medication_time),
                 style = MaterialTheme.typography.bodyMedium
             )
-            OutlinedButton(
+            GlassButton(
                 onClick = { showTimePicker = true },
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
                     text = reminder.time,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -1725,7 +1750,7 @@ private fun EmergencyContactsSection(
                             .padding(bottom = 8.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
                         )
                     ) {
                         Row(
@@ -1780,7 +1805,7 @@ private fun EmergencyContactsSection(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
+            GlassButton(
                 onClick = {
                     val updated = emergencyContacts + EmergencyContact()
                     onContactsChanged(updated)
@@ -1788,9 +1813,20 @@ private fun EmergencyContactsSection(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.settings_emergency_add))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.settings_emergency_add),
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
     }
@@ -1827,23 +1863,28 @@ private fun ThemeSection(
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Box {
-                    OutlinedButton(
+                    GlassButton(
                         onClick = { expanded = true },
                         shape = RoundedCornerShape(12.dp)
                     ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = when (selectedTheme) {
                                 AppThemeMode.SYSTEM -> stringResource(R.string.settings_theme_auto_short)
                                 AppThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
                                 AppThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
-                            }
+                            },
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
                             Icons.Default.KeyboardArrowDown,
                             contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
+                        }
                     }
                     DropdownMenu(
                         expanded = expanded,
@@ -2003,15 +2044,26 @@ private fun ContactCard(
                 ) {
                     // Save button (only visible if changes were made)
                     if (editingName != contact.name || editingPhone != contact.phoneNumber) {
-                        FilledTonalButton(
+                        AccentGlowButton(
                             onClick = {
                                 if (editingName != contact.name) onNameChange(editingName)
                                 if (editingPhone != contact.phoneNumber) onPhoneChange(editingPhone)
                             }
                         ) {
-                            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(stringResource(R.string.settings_contact_save))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    stringResource(R.string.settings_contact_save),
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
 
@@ -2144,8 +2196,8 @@ private fun LicensesSection() {
                 }
             },
             confirmButton = {
-                Button(onClick = { showFullLicense = null }) {
-                    Text("Inchide")
+                AccentGlowButton(onClick = { showFullLicense = null }) {
+                    Text("Inchide", fontWeight = FontWeight.ExtraBold, color = Color.White)
                 }
             }
         )
@@ -2209,12 +2261,17 @@ private fun LicensesSection() {
                                 color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(top = 4.dp)
                             )
-                            OutlinedButton(
+                            GlassButton(
                                 onClick = { showFullLicense = lib.license },
                                 modifier = Modifier.padding(top = 8.dp),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text("Citeste licenta", style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    "Citeste licenta",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         }
                     }
@@ -2387,11 +2444,11 @@ private fun ImportUrlDialog(
             }
         },
         confirmButton = {
-            Button(
+            AccentGlowButton(
                 onClick = {
                     if (url.isBlank()) {
                         error = "URL-ul nu poate fi gol"
-                        return@Button
+                        return@AccentGlowButton
                     }
                     isLoading = true
                     error = null
@@ -2414,15 +2471,15 @@ private fun ImportUrlDialog(
                 },
                 enabled = !isLoading
             ) {
-                Text("Importa")
+                Text("Importa", fontWeight = FontWeight.ExtraBold, color = Color.White)
             }
         },
         dismissButton = {
-            OutlinedButton(
+            GlassButton(
                 onClick = onDismiss,
                 enabled = !isLoading
             ) {
-                Text("Anuleaza")
+                Text("Anuleaza", fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onSurface)
             }
         }
     )

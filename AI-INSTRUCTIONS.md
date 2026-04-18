@@ -1,6 +1,6 @@
 # AI-INSTRUCTIONS.md
 
-Operating manual for any AI assistant (Claude Code, Codex, Cursor, etc.) working on this repository. Read this **before** touching code. It complements `CLAUDE.md` (architecture) — this file is about *how to collaborate*, not *what the code does*.
+Operating manual for any AI assistant (Claude Code, Codex, Cursor, etc.) working on this repository. Read this **before** touching code. It complements `CLAUDE.md` if present, or `AGENTS.md` otherwise — this file is about *how to collaborate*, not *what the code does*.
 
 ---
 
@@ -12,7 +12,7 @@ Operating manual for any AI assistant (Claude Code, Codex, Cursor, etc.) working
 - **UI language:** Romanian. All user-visible strings, TTS, toasts, labels.
 - **Target user:** non-technical elderly person; simplicity and accessibility trump elegance.
 - **Distribution:** Google Play Store. Policy compliance is mandatory.
-- **Build:** JDK 11, Compile/Target SDK 35, Min SDK 31. See `CLAUDE.md` for build commands and architecture.
+- **Build:** JDK 11, Compile/Target SDK 36, Min SDK 31. See `CLAUDE.md` for build commands and architecture.
 
 ---
 
@@ -21,13 +21,13 @@ Operating manual for any AI assistant (Claude Code, Codex, Cursor, etc.) working
 These rules override defaults and personal judgment. If a rule conflicts with an instruction in the moment, **ask** before breaking it.
 
 ### 2.1 Effort & Output
-1. **Always use medium reasoning effort.** Not low (sloppy), not max (slow/expensive). Medium.
+1. **Default to medium reasoning effort.** If the tool does not expose this control, follow the spirit of this rule: avoid both shallow guesses and excessive analysis.
 2. **Tone:** professional and direct. Not chatty, not overly friendly, no filler, no congratulations. Short sentences.
 3. **Strong solutions over quick fixes.** Prefer the root-cause fix, even if longer. Flag when something is a temporary patch and why.
 4. **Ask when unclear.** Do not invent requirements. Do not guess at product behavior, UX copy, contact lists, or Google Play policy edges — ask.
 
 ### 2.2 Planning & Continuity
-5. **Every non-trivial task gets a plan file.** Before starting work that spans more than a handful of edits, create or update a markdown plan/TODO in the repo (e.g. `docs/plans/<task-name>.md` or update `TODO.md`). Include goal, steps, current status, open questions, next action.
+5. **Every task involving more than a small localized change, or any multi-step investigation/implementation, gets a plan file.** Before starting such work, create or update a markdown plan/TODO in the repo (e.g. `docs/plans/<task-name>.md` or update `TODO.md`). Include goal, steps, current status, open questions, next action.
 6. **Design for session resumption.** Future sessions must be able to pick up from the plan file alone. Record decisions made, paths touched, and *why*. Mark steps `[ ]` / `[x]` / `[blocked: ...]`.
 7. **Close the loop.** When a task ends, update its plan file: mark done, note deviations from plan, and summarize what changed.
 
@@ -38,7 +38,7 @@ These rules override defaults and personal judgment. If a rule conflicts with an
 11. **Never force-push, reset --hard, or delete branches** without explicit confirmation.
 
 ### 2.4 Android & Play Store Compliance
-12. **Respect Android development rules.** Activity lifecycle, Compose state hoisting, proper coroutine scopes, no main-thread I/O, no leaked context, no hardcoded strings where `strings.xml` is appropriate (except this project's deliberate Romanian-only design).
+12. **Respect Android development rules.** Activity lifecycle, Compose state hoisting, proper coroutine scopes, no main-thread I/O, no leaked context, and prefer `strings.xml` for new or changed user-visible strings unless the existing area intentionally keeps copy inline and the user has not asked for a localization cleanup.
 13. **Do not break Google Play policies.** In particular:
     - No sensitive permissions that can't be justified (`CALL_LOG`, `READ_SMS`, etc.) — this app dropped `CALL_LOG` deliberately (see commit `30763ed`). Do **not** reintroduce it without user approval.
     - Default phone / SMS / launcher role declarations must stay consistent with actual functionality.
@@ -47,14 +47,15 @@ These rules override defaults and personal judgment. If a rule conflicts with an
     - Privacy policy link and data safety form must stay accurate — if you change data handling, flag it so `privacy-policy` and the Play Console data-safety form can be updated.
     - Target SDK must stay current with Play's requirements.
     - Accessibility service and `SYSTEM_ALERT_WINDOW` usage (if any) must be justified.
-14. **Test on-device assumptions.** Min SDK 31 — don't use APIs above 31 without a version guard.
+    - **No private URLs, hostnames, or example config endpoints in the repo.** This is a public GitHub repository. User-supplied config URLs are entered at runtime via the onboarding/settings flow; never hardcode a default or check in a sample URL in code, docs, tests, or commit messages.
+14. **Test on-device assumptions.** Min SDK 31 — don't use APIs above 31 without a version guard, and call out any behavior that still needs device/emulator verification.
 
 ### 2.5 Documentation Hygiene
-15. **Keep `.md` and `.html` files in sync with code.** If you change behavior, update `README.md`, `CLAUDE.md`, `AI-INSTRUCTIONS.md`, `privacy-policy.html`, and any plan files affected. Stale docs are a bug.
+15. **Keep `.md` and `.html` files in sync with code.** Update affected docs when behavior, setup, permissions, privacy, or workflow changes. This may include `README.md`, `CLAUDE.md`, `AGENTS.md`, `AI-INSTRUCTIONS.md`, `privacy-policy.html`, and relevant plan files. Do not edit unrelated docs just to satisfy the rule. Stale docs are a bug.
 16. **Update this file** when new collaboration rules emerge.
 
 ### 2.6 Review Before Test
-17. **Always review changes before running tests or builds.** Read the diff (`git diff`), confirm the edits match intent, *then* run `./gradlew :app:assembleDebug` / `:app:test`. Catches accidental deletions, mis-scoped edits, and stray debug code before they waste a build cycle.
+17. **For tasks with code or config edits, always review changes before running tests or builds.** Read the diff (`git diff`), confirm the edits match intent, *then* run `./gradlew :app:assembleDebug` / `:app:test`. Catches accidental deletions, mis-scoped edits, and stray debug code before they waste a build cycle.
 
 ### 2.7 Suggestions & Ideas
 18. **Proactively propose improvements**, but as a **numbered list the user picks from** — do not implement unsolicited. Examples: refactor opportunities, missing tests, accessibility wins, Play policy risks, dependency updates, dead code. One line per idea + one line of rationale.
@@ -100,7 +101,7 @@ For any task larger than a one-line fix:
 
 ## 5. What "Done" Looks Like
 
-A task is done when **all** of the following hold:
+A task is done when **all applicable** items below hold:
 - [ ] Code builds (`./gradlew :app:assembleDebug`).
 - [ ] Relevant tests pass.
 - [ ] Diff self-reviewed.

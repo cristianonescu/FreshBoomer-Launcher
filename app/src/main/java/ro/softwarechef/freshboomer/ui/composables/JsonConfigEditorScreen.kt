@@ -604,7 +604,7 @@ fun JsonConfigEditorScreen(onBack: () -> Unit) {
                 .padding(horizontal = 12.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            OutlinedButton(
+            GlassButton(
                 onClick = {
                     editedConfig = ConfigData()
                     Toast.makeText(context, "Resetat la valori implicite", Toast.LENGTH_SHORT).show()
@@ -612,11 +612,23 @@ fun JsonConfigEditorScreen(onBack: () -> Unit) {
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Reseteaza", style = MaterialTheme.typography.bodyLarge)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Reseteaza",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
-            Button(
+            AccentGlowButton(
                 onClick = {
                     AppConfig.save(context, editedConfig)
                     Toast.makeText(context, "Configurare salvata", Toast.LENGTH_SHORT).show()
@@ -625,7 +637,12 @@ fun JsonConfigEditorScreen(onBack: () -> Unit) {
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Salveaza", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                Text(
+                    "Salveaza",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
+                )
             }
         }
     }

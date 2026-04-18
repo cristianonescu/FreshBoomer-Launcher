@@ -99,53 +99,32 @@ abstract class ImmersiveActivity : ComponentActivity() {
         try { unregisterReceiver(chargingReceiver) } catch (_: Exception) {}
     }
     fun refreshLastCall() {
-        // Fetch the most recent missed call
         val newLastCall = getLastCall()
         Log.d("LastCaller", "New last call: $newLastCall")
 
-        // Get previously announced number and count
-        val lastAnnouncedNumber = sharedPrefs.getString(KEY_LAST_ANNOUNCED_NUMBER, null)
-        val announcementCount = sharedPrefs.getInt(KEY_ANNOUNCEMENT_COUNT, 0)
+        lastCalledNumber = newLastCall
 
-        if (newLastCall != null) {
-            // Check if this is a different missed call than before
-            if (newLastCall.number != lastAnnouncedNumber) {
-                // New missed call - reset counter
-                lastCallAnnouncementCount = 0
-                with(sharedPrefs.edit()) {
-                    putString(KEY_LAST_ANNOUNCED_NUMBER, newLastCall.number)
-                    putInt(KEY_ANNOUNCEMENT_COUNT, 0)
-                    apply()
-                }
-                Log.d("LastCaller", "New missed call detected, resetting counter")
-            } else {
-                // Same missed call - get count from preferences
-                lastCallAnnouncementCount = announcementCount
-            }
+        val decision = ro.softwarechef.freshboomer.data.MissedCallAnnouncer.decide(
+            currentCallNumber = newLastCall?.number,
+            lastAnnouncedNumber = sharedPrefs.getString(KEY_LAST_ANNOUNCED_NUMBER, null),
+            storedCount = sharedPrefs.getInt(KEY_ANNOUNCEMENT_COUNT, 0),
+            maxAnnouncements = ro.softwarechef.freshboomer.data.AppConfig.current.maxMissedCallAnnouncements
+        )
+        lastCallAnnouncementCount = decision.newCount
 
-            lastCalledNumber = newLastCall
-        } else {
-            // No missed calls
-            lastCalledNumber = null
-            lastCallAnnouncementCount = 0
+        with(sharedPrefs.edit()) {
+            putString(KEY_LAST_ANNOUNCED_NUMBER, decision.newLastAnnouncedNumber)
+            putInt(KEY_ANNOUNCEMENT_COUNT, decision.newCount)
+            apply()
         }
-        // Announce only if we have a missed call and haven't announced 3 times yet
-        if (lastCalledNumber != null && lastCallAnnouncementCount < ro.softwarechef.freshboomer.data.AppConfig.current.maxMissedCallAnnouncements) {
-            lastCallAnnouncementCount++
 
-            // Save updated count
-            with(sharedPrefs.edit()) {
-                putInt(KEY_ANNOUNCEMENT_COUNT, lastCallAnnouncementCount)
-                apply()
-            }
-
-            val callerInfo = lastCalledNumber!!.name ?: lastCalledNumber!!.number
+        if (decision.shouldAnnounce && newLastCall != null) {
+            val callerInfo = newLastCall.name ?: newLastCall.number
             val nickname = NicknamePreference.getNickname(this)
-            speakOutLoud(getString(R.string.tts_missed_call, nickname, callerInfo, lastCalledNumber!!.time))
-            Log.d("LastCaller", "Announced call #$lastCallAnnouncementCount for ${lastCalledNumber!!.number}")
-        } else if (lastCalledNumber != null) {
-//            lastCalledNumber = LastCaller("", null, null)
-            Log.d("LastCaller", "Call already announced 3 times, skipping announcement")
+            speakOutLoud(getString(R.string.tts_missed_call, nickname, callerInfo, newLastCall.time))
+            Log.d("LastCaller", "Announced call #${decision.newCount} for ${newLastCall.number}")
+        } else if (newLastCall != null) {
+            Log.d("LastCaller", "Call already at max announcements, skipping")
         }
     }
 

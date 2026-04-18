@@ -18,6 +18,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ro.softwarechef.freshboomer.data.AppConfig
 import ro.softwarechef.freshboomer.services.MedicationReminderScheduler
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassBackground
+import ro.softwarechef.freshboomer.ui.composables.GlassButton
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
 
@@ -74,10 +77,7 @@ private fun MedicationAlertScreen(
     onDismiss: () -> Unit,
     onSnooze: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    GlassBackground {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -126,45 +126,43 @@ private fun MedicationAlertScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // "I took it" dismiss button (large, green)
-            Button(
+            // "I took it" dismiss — primary green glow
+            AccentGlowButton(
                 onClick = onDismiss,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4CAF50)
-                )
+                modifier = Modifier.fillMaxWidth().height(80.dp),
+                color = Color(0xFF4CAF50),
+                shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
                     text = stringResource(R.string.medication_alert_dismiss),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     color = Color.White
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // "Later" snooze button
-            OutlinedButton(
+            // "Later" snooze — glass (neutral)
+            GlassButton(
                 onClick = onSnooze,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp),
+                modifier = Modifier.fillMaxWidth().height(60.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.medication_alert_snooze),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.medication_alert_snooze_info, snoozeDuration),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = stringResource(R.string.medication_alert_snooze),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.medication_alert_snooze_info, snoozeDuration),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
             }
         }
     }

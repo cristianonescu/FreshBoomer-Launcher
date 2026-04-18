@@ -24,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import ro.softwarechef.freshboomer.R
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassButton
 
 @Composable
 fun OnboardingScreen(
@@ -99,19 +101,27 @@ fun OnboardingScreen(
                 }
             },
             confirmButton = {
-                Button(
+                AccentGlowButton(
                     onClick = {
                         showSmsGuideDialog = false
                         val intent = Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
                         settingsLauncher.launch(intent)
                     }
                 ) {
-                    Text(stringResource(R.string.onboarding_open_settings))
+                    Text(
+                        stringResource(R.string.onboarding_open_settings),
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
                 }
             },
             dismissButton = {
-                OutlinedButton(onClick = { showSmsGuideDialog = false }) {
-                    Text(stringResource(R.string.cancel))
+                GlassButton(onClick = { showSmsGuideDialog = false }) {
+                    Text(
+                        stringResource(R.string.cancel),
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         )
@@ -353,14 +363,19 @@ fun OnboardingScreen(
 
         // Bottom button
         if (state.allGranted) {
-            Button(
+            AccentGlowButton(
                 onClick = onAllGranted,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text(stringResource(R.string.onboarding_continue), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(R.string.onboarding_continue),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
+                )
             }
         }
     }
@@ -443,13 +458,18 @@ private fun OnboardingStep(
                     fontWeight = FontWeight.SemiBold
                 )
             } else {
-                Button(
+                AccentGlowButton(
                     onClick = onRequest,
                     enabled = enabled,
-                    shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Text(buttonLabel, style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        buttonLabel,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
                 }
             }
         }

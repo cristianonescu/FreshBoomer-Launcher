@@ -169,7 +169,15 @@ object MedicationReminderScheduler {
         return context.getSharedPreferences(SNOOZE_PREFS, Context.MODE_PRIVATE)
     }
 
-    internal fun calculateNextFireTime(time: String, daysOfWeek: List<Int>): Long? {
+    /**
+     * @param nowMs "current time" baseline; defaults to the wall clock.
+     *   Injectable for deterministic tests.
+     */
+    internal fun calculateNextFireTime(
+        time: String,
+        daysOfWeek: List<Int>,
+        nowMs: Long = System.currentTimeMillis()
+    ): Long? {
         if (daysOfWeek.isEmpty()) return null
 
         val parts = time.split(":")
@@ -177,17 +185,11 @@ object MedicationReminderScheduler {
         val hour = parts[0].toIntOrNull() ?: return null
         val minute = parts[1].toIntOrNull() ?: return null
 
-        val now = Calendar.getInstance()
-        val candidate = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, hour)
-            set(Calendar.MINUTE, minute)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
+        val candidate = Calendar.getInstance()
 
         // Try today and the next 7 days
         for (offset in 0..7) {
-            candidate.timeInMillis = now.timeInMillis
+            candidate.timeInMillis = nowMs
             candidate.set(Calendar.HOUR_OF_DAY, hour)
             candidate.set(Calendar.MINUTE, minute)
             candidate.set(Calendar.SECOND, 0)
@@ -207,7 +209,7 @@ object MedicationReminderScheduler {
                 else -> 0
             }
 
-            if (isoDow in daysOfWeek && candidate.timeInMillis > now.timeInMillis) {
+            if (isoDow in daysOfWeek && candidate.timeInMillis > nowMs) {
                 return candidate.timeInMillis
             }
         }

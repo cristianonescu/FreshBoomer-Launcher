@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,6 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassBackground
+import ro.softwarechef.freshboomer.ui.composables.GlassButton
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.composables.Inapoi
@@ -40,10 +44,7 @@ class PhoneActivity : ImmersiveActivity() {
         setContent {
             HideSystemBars()
             LauncherTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                GlassBackground {
                     PhoneScreen(
                         onCall = { number -> makePhoneCall(number) }
                     )
@@ -157,7 +158,7 @@ fun DialPad(
             listOf("1", "2", "3"),
             listOf("4", "5", "6"),
             listOf("7", "8", "9"),
-            listOf("*", "0", "#")
+            listOf("", "0", "")
         )
 
         numbers.forEach { row ->
@@ -168,11 +169,15 @@ fun DialPad(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 row.forEach { number ->
-                    DialButton(
-                        text = number,
-                        onClick = { onNumberClick(number) },
-                        modifier = Modifier.weight(1f)
-                    )
+                    if (number.isEmpty()) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    } else {
+                        DialButton(
+                            text = number,
+                            onClick = { onNumberClick(number) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
         }
@@ -183,47 +188,44 @@ fun DialPad(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Delete button
-            Button(
+            // Delete button — destructive action, red glow
+            AccentGlowButton(
                 onClick = onDelete,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                )
+                color = MaterialTheme.colorScheme.error
             ) {
                 Text(
                     text = stringResource(R.string.phone_delete),
                     style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
                 )
             }
-            // Call button
-            Button(
+            // Call button — primary action, green glow
+            AccentGlowButton(
                 onClick = onCall,
                 modifier = Modifier
                     .weight(2f)
                     .fillMaxHeight(),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4CAF50),
-                    contentColor = Color.White
-                )
+                color = Color(0xFF4CAF50)
             ) {
-                Icon(
-                    Icons.Default.Call,
-                    contentDescription = null,
-                    modifier = Modifier.size(36.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = stringResource(R.string.phone_call),
-                    style = MaterialTheme.typography.displayLarge,
-                    color = Color.White
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Call,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(36.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = stringResource(R.string.phone_call),
+                        style = MaterialTheme.typography.displayLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
@@ -235,19 +237,18 @@ fun DialButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Button(
+    // Glass-style dial key matching the v2 prototype's minimalist dial pad.
+    GlassButton(
         onClick = onClick,
-        modifier = modifier
-            .fillMaxHeight(),
-        shape = RoundedCornerShape(16.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        )
+        modifier = modifier.fillMaxHeight(),
+        shape = RoundedCornerShape(18.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.onPrimary
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

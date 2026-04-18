@@ -18,7 +18,7 @@ object LocaleHelper {
      */
     fun wrap(context: Context): Context {
         val lang = readLanguageFromDisk(context)
-        val locale = Locale(lang)
+        val locale = Locale.forLanguageTag(lang)
         Locale.setDefault(locale)
         val config = Configuration(context.resources.configuration)
         config.setLocale(locale)
@@ -48,8 +48,8 @@ object LocaleHelper {
      */
     fun getLocale(): Locale {
         return when (AppConfig.current.appLanguage) {
-            "en" -> Locale("en")
-            else -> Locale("ro")
+            "en" -> Locale.forLanguageTag("en")
+            else -> Locale.forLanguageTag("ro")
         }
     }
 

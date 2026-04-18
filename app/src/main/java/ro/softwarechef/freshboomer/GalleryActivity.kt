@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import kotlinx.coroutines.launch
+import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
+import ro.softwarechef.freshboomer.ui.composables.GlassBackground
+import ro.softwarechef.freshboomer.ui.composables.GlassButton
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.composables.Inapoi
@@ -53,10 +56,7 @@ class GalleryActivity : ImmersiveActivity() {
         setContent {
             HideSystemBars()
             LauncherTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                GlassBackground {
                     GalleryScreen(photos = photos.value)
                 }
             }
@@ -159,7 +159,7 @@ fun GalleryScreen(photos: List<Uri>) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
+                GlassButton(
                     onClick = {
                         coroutineScope.launch {
                             if (pagerState.currentPage > 0) {
@@ -171,16 +171,24 @@ fun GalleryScreen(photos: List<Uri>) {
                     modifier = Modifier.height(56.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.back), style = MaterialTheme.typography.titleLarge)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            stringResource(R.string.back),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
 
-                Button(
+                AccentGlowButton(
                     onClick = {
                         coroutineScope.launch {
                             if (pagerState.currentPage < photos.size - 1) {
@@ -192,13 +200,21 @@ fun GalleryScreen(photos: List<Uri>) {
                     modifier = Modifier.height(56.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(stringResource(R.string.gallery_next), style = MaterialTheme.typography.titleLarge)
-                    Spacer(Modifier.width(8.dp))
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            stringResource(R.string.gallery_next),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold,
+                            color = Color.White
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
                 }
             }
         } else {

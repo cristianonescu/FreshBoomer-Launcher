@@ -23,6 +23,7 @@
     <string name="main_whatsapp">WhatsApp</string>
     <string name="main_missed_call">Missed call</string>
     <string name="main_missed_call_time">%1$s at %2$s</string>
+    <string name="missed_call_tap_to_return">Tap to call back (at %1$s)</string>
 
     <!-- TTS — Main navigation (%1$s = nickname) -->
     <string name="tts_open_sms">%1$s, here you can see if you have messages. If you don\'t want to see messages, press \"Back\" in the top left.</string>

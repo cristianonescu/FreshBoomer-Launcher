@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ro.softwarechef.freshboomer.R
@@ -403,7 +404,11 @@ fun GridButton(
             hoveredElevation = 8.dp
         ),
         shape = RoundedCornerShape(200.dp),
-        colors = if (!hasImage) {
+        // Quick-contact buttons are always transparent — the content (photo,
+        // drawable, or gradient avatar) paints the whole circular surface.
+        // A gray container here would show as a ring around smaller content.
+        // Icon-only utility buttons take the `roundedSquare` branch above.
+        colors = if (!hasImage && icon != null) {
             ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.gray))
         } else {
             ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -451,8 +456,10 @@ fun GridButton(
                 ) {
                     GradientAvatar(
                         name = text,
-                        size = 100.dp,
-                        textStyle = resolvedTextStyle.copy(fontWeight = FontWeight.Bold)
+                        modifier = Modifier.fillMaxSize(),
+                        size = null,
+                        textStyle = resolvedTextStyle.copy(fontWeight = FontWeight.Bold),
+                        initialFontSize = 96.sp
                     )
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,

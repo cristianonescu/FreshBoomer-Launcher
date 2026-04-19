@@ -155,10 +155,14 @@ fun TtsStatusFooter(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Fixed-width bar so the footer looks the same on phone
+                    // and tablet. `fillMaxWidth(0.6f)` rendered too wide on
+                    // narrow screens because density-scaling inflated the
+                    // track width relative to the column container.
                     LinearProgressIndicator(
                         progress = { if (totalMb > 0) progress else 0f },
                         modifier = Modifier
-                            .fillMaxWidth(0.6f)
+                            .width(200.dp)
                             .height(3.dp),
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -167,7 +171,7 @@ fun TtsStatusFooter(
                             stringResource(R.string.tts_download_progress, downloadedMb, totalMb)
                         else
                             stringResource(R.string.tts_download_progress_unknown, downloadedMb),
-                        fontSize = 8.sp,
+                        fontSize = 9.sp,
                         color = Color.Gray
                     )
                 }

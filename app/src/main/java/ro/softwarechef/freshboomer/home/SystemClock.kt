@@ -65,11 +65,15 @@ fun SystemClock(
     val clockColor = MaterialTheme.colorScheme.onBackground
     val clockSize = 40.dp
 
+    // Single-line header that adapts to width: clock + time grouped on the
+    // left, calendar icon + date grouped on the right, with a flexible
+    // spacer between them. Both date labels are single-line + ellipsised
+    // so a narrow screen never wraps the header onto two rows.
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(clockSize)
-            .padding(bottom = 0.dp),
+            .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -85,20 +89,23 @@ fun SystemClock(
             text = currentTime,
             style = MaterialTheme.typography.titleLarge,
             color = clockColor,
+            maxLines = 1,
             lineHeight = clockSize.value.sp
         )
-        Spacer(Modifier.width(50.dp))
+        Spacer(Modifier.width(20.dp))
         Icon(
             imageVector = Icons.Default.DateRange,
             contentDescription = null,
             tint = clockColor,
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(24.dp)
         )
         Spacer(Modifier.width(6.dp))
         Text(
             text = currentDate,
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.titleLarge,
             color = clockColor,
+            maxLines = 1,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             lineHeight = clockSize.value.sp
         )
     }

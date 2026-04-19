@@ -5,7 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.CheckCircle
@@ -27,8 +31,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -38,85 +46,83 @@ data class BatteryUiState(
     val isFull: Boolean
 )
 
+/**
+ * Shared glass-style banner for battery status overlays. Matches the visual
+ * language of [ro.softwarechef.freshboomer.home.LastCallerBanner] (translucent
+ * surface + top highlight gradient + 1dp accent border + 16dp rounded
+ * corners) so battery state reads as part of the app rather than an OS-style
+ * system toast.
+ */
 @Composable
-fun LowBatteryOverlay(batteryLevel: Int) {
-    Box(
+private fun GlassStatusBanner(
+    accent: Color,
+    icon: ImageVector,
+    text: String
+) {
+    val shape = RoundedCornerShape(16.dp)
+    val bg = MaterialTheme.colorScheme.background
+    val isDark = (0.299f * bg.red + 0.587f * bg.green + 0.114f * bg.blue) < 0.5f
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Red)
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .clip(shape)
+            .background(accent.copy(alpha = if (isDark) 0.20f else 0.18f))
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = if (isDark) 0.08f else 0.25f),
+                        Color.Transparent
+                    )
+                )
+            )
+            .border(BorderStroke(1.dp, accent.copy(alpha = 0.45f)), shape)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.Warning,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = "Puneți telefonul la încărcat. Baterie scăzută ($batteryLevel%)",
-                color = Color.White,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-        }
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = accent,
+            modifier = Modifier.size(22.dp)
+        )
+        Spacer(Modifier.width(10.dp))
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.ExtraBold,
+            textAlign = TextAlign.Center
+        )
     }
+}
+
+@Composable
+fun LowBatteryOverlay(batteryLevel: Int) {
+    GlassStatusBanner(
+        accent = Color(0xFFE53935),
+        icon = Icons.Default.Warning,
+        text = "Puneți telefonul la încărcat. Baterie scăzută ($batteryLevel%)"
+    )
 }
 
 @Composable
 fun ChargingOverlay(level: Int) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF2E7D32))
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.BatteryChargingFull,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = "Se încarcă… ($level%)",
-                color = Color.White,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
+    GlassStatusBanner(
+        accent = Color(0xFF4CAF50),
+        icon = Icons.Default.BatteryChargingFull,
+        text = "Se încarcă… ($level%)"
+    )
 }
 
 @Composable
 fun FullyChargedOverlay() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF1565C0))
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = "Bateria este complet încărcată",
-                color = Color.White,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
+    GlassStatusBanner(
+        accent = MaterialTheme.colorScheme.primary,
+        icon = Icons.Default.CheckCircle,
+        text = "Bateria este complet încărcată"
+    )
 }
 
 @Composable

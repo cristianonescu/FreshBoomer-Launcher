@@ -31,8 +31,9 @@ import androidx.compose.ui.unit.sp
 fun GradientAvatar(
     name: String,
     modifier: Modifier = Modifier,
-    size: Dp = 72.dp,
-    textStyle: TextStyle = MaterialTheme.typography.headlineMedium
+    size: Dp? = 72.dp,
+    textStyle: TextStyle = MaterialTheme.typography.headlineMedium,
+    initialFontSize: androidx.compose.ui.unit.TextUnit = androidx.compose.ui.unit.TextUnit.Unspecified
 ) {
     val palette = listOf(
         MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.tertiary,
@@ -45,9 +46,12 @@ fun GradientAvatar(
 
     val initial = name.trim().firstOrNull()?.uppercaseChar()?.toString().orEmpty()
 
+    // `size == null` => rely on caller's [modifier] for sizing (e.g. fillMaxSize).
+    // Otherwise apply the fixed circular size.
+    val sizedModifier = if (size != null) modifier.size(size) else modifier
+
     Box(
-        modifier = modifier
-            .size(size)
+        modifier = sizedModifier
             .clip(CircleShape)
             .background(Brush.verticalGradient(listOf(top, bottom))),
         contentAlignment = Alignment.Center
@@ -57,7 +61,11 @@ fun GradientAvatar(
             color = Color.White,
             style = textStyle,
             fontWeight = FontWeight.Bold,
-            fontSize = (size.value * 0.42f).sp
+            fontSize = when {
+                initialFontSize != androidx.compose.ui.unit.TextUnit.Unspecified -> initialFontSize
+                size != null -> (size.value * 0.42f).sp
+                else -> 48.sp
+            }
         )
     }
 }

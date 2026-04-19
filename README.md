@@ -21,16 +21,16 @@ Or grab the latest APK from the [Releases](https://github.com/cristianonescu/Fre
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/Screenshot_20260407_210521_FreshBoomer.jpg" width="200" alt="Home screen with quick contacts and call confirmation">
-  <img src="screenshots/Screenshot_20260407_210445_FreshBoomer.jpg" width="200" alt="Dial pad">
-  <img src="screenshots/Screenshot_20260407_210535_FreshBoomer.jpg" width="200" alt="SMS conversations">
-  <img src="screenshots/Screenshot_20260407_205511_FreshBoomer.jpg" width="200" alt="Setup wizard — welcome and language selection">
+  <img src="screenshots/phone/01_home.png" width="200" alt="Home screen — quick contacts, clock, utility row">
+  <img src="screenshots/phone/02_phone.png" width="200" alt="Dial pad with large digits and call button">
+  <img src="screenshots/phone/03_contacts.png" width="200" alt="Contact list with per-row call buttons">
+  <img src="screenshots/phone/07_confirm_call.png" width="200" alt="Call confirmation dialog">
 </p>
 <p align="center">
-  <img src="screenshots/Screenshot_20260407_205536_FreshBoomer.jpg" width="200" alt="Setup wizard — feature customization">
-  <img src="screenshots/Screenshot_20260407_210603_FreshBoomer.jpg" width="200" alt="Settings — theme, features, and TTS">
-  <img src="screenshots/Screenshot_20260407_210610_FreshBoomer.jpg" width="200" alt="Settings — permissions and advanced config">
-  <img src="screenshots/Screenshot_20260407_210624_FreshBoomer.jpg" width="200" alt="JSON config editor">
+  <img src="screenshots/phone/04_sms.png" width="200" alt="SMS inbox">
+  <img src="screenshots/phone/08_wizard_welcome.png" width="200" alt="Setup wizard — welcome and language selection">
+  <img src="screenshots/phone/10_wizard_features.png" width="200" alt="Setup wizard — feature toggles and theme">
+  <img src="screenshots/tablet/11_settings.png" width="200" alt="Settings — apps, TTS, SMS voice messages">
 </p>
 
 ## Features

@@ -6,7 +6,10 @@ import android.content.Intent
 import android.telephony.TelephonyManager
 import android.util.Log
 import ro.softwarechef.freshboomer.IncomingCallActivity
+import ro.softwarechef.freshboomer.data.LauncherNavigator
 import ro.softwarechef.freshboomer.data.MissedCallStore
+
+private const val TAG = "FB/PhoneCallReceiver"
 
 class PhoneCallReceiver : BroadcastReceiver() {
 
@@ -22,7 +25,7 @@ class PhoneCallReceiver : BroadcastReceiver() {
         @Suppress("DEPRECATION")
         val incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
 
-        Log.d("PhoneCallReceiver", "Phone state: $state, number: $incomingNumber, lastState: $lastState, lastNumber: $lastRingingNumber")
+        Log.d(TAG, "Phone state: $state, number: $incomingNumber, lastState: $lastState, lastNumber: $lastRingingNumber")
 
         when (state) {
             TelephonyManager.EXTRA_STATE_RINGING -> {
@@ -33,13 +36,13 @@ class PhoneCallReceiver : BroadcastReceiver() {
                 lastState = TelephonyManager.EXTRA_STATE_RINGING
 
                 if (incomingNumber != null) {
-                    val callIntent = Intent(context, IncomingCallActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                    LauncherNavigator.launch(
+                        context,
+                        LauncherNavigator.Screen.INCOMING_CALL,
+                        excludeFromRecents = true
+                    ) {
                         putExtra(IncomingCallActivity.EXTRA_INCOMING_NUMBER, incomingNumber)
                     }
-                    context.startActivity(callIntent)
                 }
             }
             TelephonyManager.EXTRA_STATE_OFFHOOK -> {
@@ -52,7 +55,7 @@ class PhoneCallReceiver : BroadcastReceiver() {
                 // fallback to CallService (which is the primary path when this
                 // app holds the default-dialer role).
                 if (lastState == TelephonyManager.EXTRA_STATE_RINGING && lastRingingNumber != null) {
-                    Log.d("PhoneCallReceiver", "Missed call detected via PHONE_STATE: $lastRingingNumber")
+                    Log.d(TAG, "Missed call detected via PHONE_STATE: $lastRingingNumber")
                     MissedCallStore.record(context, lastRingingNumber)
                 }
                 lastRingingNumber = null

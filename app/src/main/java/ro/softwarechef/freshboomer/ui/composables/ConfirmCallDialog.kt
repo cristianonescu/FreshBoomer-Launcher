@@ -63,6 +63,8 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
 
+private const val TAG = "FB/ConfirmCallDialog"
+
 @Composable
 fun ConfirmCallDialog(
     name: String,
@@ -249,7 +251,7 @@ private fun findWhatsAppContactDataId(context: Context, phoneNumber: String, mim
     }
     val strippedNumber = normalizedNumber.replace("+", "").replace(" ", "").replace("-", "")
 
-    Log.d("WhatsApp", "Looking up WhatsApp data for: $phoneNumber -> normalized: $normalizedNumber, stripped: $strippedNumber")
+    Log.d(TAG, "Looking up WhatsApp data for: $phoneNumber -> normalized: $normalizedNumber, stripped: $strippedNumber")
 
     // Approach 1: Query WhatsApp data rows directly matching the phone number in data3
     // WhatsApp stores the number as "40734490731@s.whatsapp.net" or similar in DATA1
@@ -264,13 +266,13 @@ private fun findWhatsAppContactDataId(context: Context, phoneNumber: String, mim
         while (cursor.moveToNext()) {
             val id = cursor.getLong(cursor.getColumnIndexOrThrow(ContactsContract.Data._ID))
             val data1 = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Data.DATA1)) ?: continue
-            Log.d("WhatsApp", "  Found WhatsApp entry: id=$id, data1=$data1")
+            Log.d(TAG, "  Found WhatsApp entry: id=$id, data1=$data1")
 
             // WhatsApp data1 is typically like "40734490731@s.whatsapp.net" or the display name
             // Check if it contains our stripped number
             val data1Stripped = data1.replace("+", "").replace(" ", "").replace("-", "")
             if (data1Stripped.contains(strippedNumber) || strippedNumber.endsWith(data1Stripped.take(10))) {
-                Log.d("WhatsApp", "  Match found! id=$id")
+                Log.d(TAG, "  Match found! id=$id")
                 return id
             }
         }
@@ -310,7 +312,7 @@ private fun findWhatsAppContactDataId(context: Context, phoneNumber: String, mim
         }
     }
 
-    Log.d("WhatsApp", "  PhoneLookup found contact IDs: $contactIds")
+    Log.d(TAG, "  PhoneLookup found contact IDs: $contactIds")
 
     for (contactId in contactIds) {
         context.contentResolver.query(
@@ -322,13 +324,13 @@ private fun findWhatsAppContactDataId(context: Context, phoneNumber: String, mim
         )?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val id = cursor.getLong(cursor.getColumnIndexOrThrow(ContactsContract.Data._ID))
-                Log.d("WhatsApp", "  Match via PhoneLookup! contactId=$contactId, dataId=$id")
+                Log.d(TAG, "  Match via PhoneLookup! contactId=$contactId, dataId=$id")
                 return id
             }
         }
     }
 
-    Log.w("WhatsApp", "  No WhatsApp data found for $phoneNumber")
+    Log.w(TAG, "  No WhatsApp data found for $phoneNumber")
     return null
 }
 
@@ -344,9 +346,9 @@ private fun startWhatsAppVideoCall(context: Context, phoneNumber: String) {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
             context.startActivity(intent)
-            Log.d("WhatsApp", "Launched WhatsApp video call intent for dataId=$dataId")
+            Log.d(TAG, "Launched WhatsApp video call intent for dataId=$dataId")
         } catch (e: Exception) {
-            Log.e("WhatsApp", "Failed to launch WhatsApp video call", e)
+            Log.e(TAG, "Failed to launch WhatsApp video call", e)
             Toast.makeText(context, "Nu s-a putut deschide WhatsApp", Toast.LENGTH_LONG).show()
         }
     } else {

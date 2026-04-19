@@ -1,7 +1,6 @@
 package ro.softwarechef.freshboomer
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.telecom.Call
 import android.telecom.TelecomManager
@@ -36,12 +35,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ro.softwarechef.freshboomer.call.CallManager
+import ro.softwarechef.freshboomer.data.LauncherNavigator
 import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
 import ro.softwarechef.freshboomer.ui.composables.GlassBackground
 import ro.softwarechef.freshboomer.ui.composables.GradientAvatar
 import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
+
+private const val TAG = "FB/IncomingCallActivity"
 
 class IncomingCallActivity : ImmersiveActivity() {
 
@@ -77,18 +79,17 @@ class IncomingCallActivity : ImmersiveActivity() {
                 LaunchedEffect(callState) {
                     when (callState) {
                         Call.STATE_ACTIVE -> {
-                            // Call was answered — go to InCallActivity
-                            val intent = Intent(this@IncomingCallActivity, InCallActivity::class.java)
-                            startActivity(intent)
-                            finish()
+                            LauncherNavigator.go(
+                                this@IncomingCallActivity,
+                                LauncherNavigator.Screen.IN_CALL,
+                                finishCaller = true
+                            )
                         }
                         Call.STATE_DISCONNECTED -> {
-                            // Caller gave up or call ended — go back to main screen
-                            val mainIntent = Intent(this@IncomingCallActivity, MainActivity::class.java).apply {
-                                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                            }
-                            startActivity(mainIntent)
-                            finish()
+                            LauncherNavigator.go(
+                                this@IncomingCallActivity,
+                                LauncherNavigator.Screen.HOME
+                            )
                         }
                     }
                 }
@@ -135,7 +136,7 @@ class IncomingCallActivity : ImmersiveActivity() {
                 setMaxVolume()
             }, 3000)
         } catch (e: Exception) {
-            Log.e("IncomingCall", "Failed to accept call (fallback)", e)
+            Log.e(TAG, "Failed to accept call (fallback)", e)
         }
         finish()
     }
@@ -146,7 +147,7 @@ class IncomingCallActivity : ImmersiveActivity() {
             val telecomManager = getSystemService(Context.TELECOM_SERVICE) as TelecomManager
             telecomManager.endCall()
         } catch (e: Exception) {
-            Log.e("IncomingCall", "Failed to reject call (fallback)", e)
+            Log.e(TAG, "Failed to reject call (fallback)", e)
         }
     }
 }

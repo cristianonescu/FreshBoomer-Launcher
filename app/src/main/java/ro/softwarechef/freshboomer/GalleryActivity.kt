@@ -26,9 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
 import ro.softwarechef.freshboomer.ui.composables.GlassBackground
 import ro.softwarechef.freshboomer.ui.composables.GlassButton
@@ -38,6 +41,7 @@ import ro.softwarechef.freshboomer.ui.composables.Inapoi
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
 
 class GalleryActivity : ImmersiveActivity() {
+    override val backReturnsToHome: Boolean = true
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -78,28 +82,31 @@ class GalleryActivity : ImmersiveActivity() {
     }
 
     private fun loadPhotos() {
-        val imageList = mutableListOf<Uri>()
-        val projection = arrayOf(MediaStore.Images.Media._ID)
-        val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
+        lifecycleScope.launch {
+            val imageList = withContext(Dispatchers.IO) {
+                val result = mutableListOf<Uri>()
+                val projection = arrayOf(MediaStore.Images.Media._ID)
+                val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
-        contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            null,
-            null,
-            sortOrder
-        )?.use { cursor ->
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(idColumn)
-                val uri = ContentUris.withAppendedId(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id
-                )
-                imageList.add(uri)
+                contentResolver.query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    projection,
+                    null,
+                    null,
+                    sortOrder
+                )?.use { cursor ->
+                    val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+                    while (cursor.moveToNext()) {
+                        val id = cursor.getLong(idColumn)
+                        result.add(ContentUris.withAppendedId(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id
+                        ))
+                    }
+                }
+                result
             }
+            photos.value = imageList
         }
-
-        photos.value = imageList
     }
 }
 

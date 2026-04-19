@@ -6,6 +6,8 @@ import android.os.IBinder
 import android.telephony.SmsManager
 import android.util.Log
 
+private const val TAG = "FB/HeadlessSmsSendService"
+
 class HeadlessSmsSendService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -18,9 +20,9 @@ class HeadlessSmsSendService : Service() {
                 try {
                     val smsManager = getSystemService(SmsManager::class.java)
                     smsManager.sendTextMessage(recipient, null, message, null, null)
-                    Log.d("SmsService", "Message sent to $recipient")
+                    Log.d(TAG, "Message sent to $recipient")
                 } catch (e: Exception) {
-                    Log.e("SmsService", "Error sending message", e)
+                    Log.e(TAG, "Error sending message", e)
                 }
             }
         }

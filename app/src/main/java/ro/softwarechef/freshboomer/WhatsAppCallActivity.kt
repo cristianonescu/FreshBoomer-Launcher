@@ -22,6 +22,8 @@ import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
 
+private const val TAG = "FB/WhatsAppCallActivity"
+
 class WhatsAppCallActivity : ImmersiveActivity() {
 
     companion object {
@@ -35,7 +37,7 @@ class WhatsAppCallActivity : ImmersiveActivity() {
 
     private val callEndedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("WhatsAppCall", "Call ended broadcast received")
+            Log.d(TAG, "Call ended broadcast received")
             speakOutLoud(getString(R.string.tts_whatsapp_ended))
             finish()
         }

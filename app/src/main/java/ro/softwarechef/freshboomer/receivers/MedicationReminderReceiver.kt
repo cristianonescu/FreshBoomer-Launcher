@@ -9,9 +9,9 @@ import android.content.Intent
 import android.media.AudioAttributes
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import ro.softwarechef.freshboomer.MedicationAlertActivity
 import ro.softwarechef.freshboomer.R
 import ro.softwarechef.freshboomer.data.AppConfig
+import ro.softwarechef.freshboomer.data.LauncherNavigator
 import ro.softwarechef.freshboomer.services.MedicationReminderScheduler
 
 class MedicationReminderReceiver : BroadcastReceiver() {
@@ -41,13 +41,11 @@ class MedicationReminderReceiver : BroadcastReceiver() {
         showNotification(context, reminderId, reminderName, snoozeDuration)
 
         // Launch full-screen alert activity
-        val alertIntent = Intent(context, MedicationAlertActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        LauncherNavigator.launch(context, LauncherNavigator.Screen.MEDICATION_ALERT) {
             putExtra("reminder_id", reminderId)
             putExtra("reminder_name", reminderName)
             putExtra("snooze_duration", snoozeDuration)
         }
-        context.startActivity(alertIntent)
 
         // Schedule next occurrence (for non-snooze alarms only)
         if (!isSnooze) {
@@ -85,8 +83,10 @@ class MedicationReminderReceiver : BroadcastReceiver() {
         reminderName: String,
         snoozeDuration: Int
     ) {
-        val fullScreenIntent = Intent(context, MedicationAlertActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        val fullScreenIntent = LauncherNavigator.intentFor(
+            context,
+            LauncherNavigator.Screen.MEDICATION_ALERT
+        ) {
             putExtra("reminder_id", reminderId)
             putExtra("reminder_name", reminderName)
             putExtra("snooze_duration", snoozeDuration)

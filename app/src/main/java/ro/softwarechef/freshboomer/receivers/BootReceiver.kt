@@ -3,8 +3,8 @@ package ro.softwarechef.freshboomer.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import ro.softwarechef.freshboomer.MainActivity
 import ro.softwarechef.freshboomer.data.AppConfig
+import ro.softwarechef.freshboomer.data.LauncherNavigator
 import ro.softwarechef.freshboomer.services.InactivityMonitorWorker
 import ro.softwarechef.freshboomer.services.MedicationReminderScheduler
 
@@ -20,10 +20,7 @@ class BootReceiver : BroadcastReceiver() {
             // Reschedule medication reminders
             MedicationReminderScheduler.scheduleAll(context)
 
-            val launchIntent = Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            context.startActivity(launchIntent)
+            LauncherNavigator.launch(context, LauncherNavigator.Screen.HOME)
         }
     }
 }

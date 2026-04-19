@@ -1,13 +1,13 @@
 package ro.softwarechef.freshboomer.services
 
-import android.content.Intent
 import android.telecom.Call
 import android.telecom.InCallService
 import android.util.Log
-import ro.softwarechef.freshboomer.InCallActivity
-import ro.softwarechef.freshboomer.IncomingCallActivity
 import ro.softwarechef.freshboomer.call.CallManager
+import ro.softwarechef.freshboomer.data.LauncherNavigator
 import ro.softwarechef.freshboomer.data.MissedCallStore
+
+private const val TAG = "FB/CallService"
 
 class CallService : InCallService() {
 
@@ -26,7 +26,7 @@ class CallService : InCallService() {
     @Suppress("DEPRECATION")
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
-        Log.d("CallService", "onCallAdded: state=${call.state}")
+        Log.d(TAG, "onCallAdded: state=${call.state}")
 
         CallManager.updateCall(call, applicationContext)
 
@@ -36,34 +36,29 @@ class CallService : InCallService() {
                 trackRingingCall(call)
 
                 // Incoming call
-                val intent = Intent(this, IncomingCallActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                            Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                }
-                startActivity(intent)
+                LauncherNavigator.launch(
+                    this,
+                    LauncherNavigator.Screen.INCOMING_CALL,
+                    excludeFromRecents = true
+                )
             }
             Call.STATE_DIALING, Call.STATE_CONNECTING, Call.STATE_ACTIVE -> {
                 // Outgoing or active call
-                val intent = Intent(this, InCallActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP
-                }
-                startActivity(intent)
+                LauncherNavigator.launch(this, LauncherNavigator.Screen.IN_CALL)
             }
         }
     }
 
     override fun onCallRemoved(call: Call) {
         super.onCallRemoved(call)
-        Log.d("CallService", "onCallRemoved")
+        Log.d(TAG, "onCallRemoved")
 
         // If this was a ringing call that was never answered, persist as missed.
         val state = ringingCalls.remove(call)
         ringingCallbacks.remove(call)?.let { call.unregisterCallback(it) }
         if (state != null && !state.answered) {
             val number = call.details?.handle?.schemeSpecificPart
-            Log.d("CallService", "Missed call recorded: $number")
+            Log.d(TAG, "Missed call recorded: $number")
             MissedCallStore.record(applicationContext, number)
         }
 

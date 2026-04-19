@@ -33,6 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import android.database.ContentObserver
+import android.os.Handler
+import android.os.Looper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ro.softwarechef.freshboomer.models.Contact
 import ro.softwarechef.freshboomer.ui.composables.AccentGlowButton
 import ro.softwarechef.freshboomer.ui.composables.ConfirmCallDialog
@@ -43,9 +49,10 @@ import ro.softwarechef.freshboomer.ui.composables.HideSystemBars
 import ro.softwarechef.freshboomer.ui.composables.ImmersiveActivity
 import ro.softwarechef.freshboomer.ui.composables.Inapoi
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
-import kotlinx.coroutines.delay
 
 class ContactsActivity : ImmersiveActivity() {
+    override val backReturnsToHome: Boolean = true
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -133,26 +140,26 @@ fun ContactsScreen(
     onCallContact: (String) -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var contacts by remember { mutableStateOf<List<Contact>>(emptyList()) }
     var searchQuery by remember { mutableStateOf("") }
 
     var confirmCallContact by remember { mutableStateOf<Contact?>(null) }
 
-    // Load contacts initially
-    LaunchedEffect(Unit) {
-        loadContacts(context) { loadedContacts ->
-            contacts = loadedContacts
-        }
-    }
+    // Initial load + live updates via ContentObserver (replaces the
+    // previous 1s polling loop that also ran the query on the main thread).
+    LaunchedEffect(Unit) { contacts = loadContacts(context) }
 
-    // Set up periodic refresh
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(1000)
-            loadContacts(context) { loadedContacts ->
-                contacts = loadedContacts
+    DisposableEffect(context) {
+        val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean) {
+                scope.launch { contacts = loadContacts(context) }
             }
         }
+        context.contentResolver.registerContentObserver(
+            ContactsContract.Contacts.CONTENT_URI, true, observer
+        )
+        onDispose { context.contentResolver.unregisterContentObserver(observer) }
     }
 
     val filteredContacts = contacts.filter {
@@ -423,42 +430,40 @@ fun ContactItem(
     }
 }
 
-private fun loadContacts(context: android.content.Context, onContactsLoaded: (List<Contact>) -> Unit) {
-    if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
-        != PackageManager.PERMISSION_GRANTED
-    ) {
-        onContactsLoaded(emptyList())
-        return
-    }
-
-    val contacts = mutableListOf<Contact>()
-
-    context.contentResolver.query(
-        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-        arrayOf(
-            ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-            ContactsContract.CommonDataKinds.Phone.NUMBER,
-            ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
-        ),
-        null,
-        null,
-        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
-    )?.use { cursor ->
-        while (cursor.moveToNext()) {
-            val id = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
-            val name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-            val phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
-            val lookupKey = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY))
-
-            contacts.add(Contact(
-                id = id,
-                name = name,
-                phoneNumber = phoneNumber,
-                lookupKey = lookupKey
-            ))
+private suspend fun loadContacts(context: android.content.Context): List<Contact> =
+    withContext(Dispatchers.IO) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            return@withContext emptyList()
         }
-    }
 
-    onContactsLoaded(contacts)
-}
+        val result = mutableListOf<Contact>()
+        context.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            arrayOf(
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY
+            ),
+            null,
+            null,
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+        )?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val id = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                val phoneNumber = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val lookupKey = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY))
+
+                result.add(Contact(
+                    id = id,
+                    name = name,
+                    phoneNumber = phoneNumber,
+                    lookupKey = lookupKey
+                ))
+            }
+        }
+        result
+    }

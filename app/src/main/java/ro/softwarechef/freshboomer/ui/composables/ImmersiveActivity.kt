@@ -4,20 +4,18 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.SharedPreferences
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import ro.softwarechef.freshboomer.MainActivity
 import ro.softwarechef.freshboomer.R
 import android.media.AudioAttributes
 import android.provider.ContactsContract
@@ -29,12 +27,17 @@ import ro.softwarechef.freshboomer.data.InactivityTracker
 import ro.softwarechef.freshboomer.data.LocaleHelper
 import ro.softwarechef.freshboomer.data.NicknamePreference
 import ro.softwarechef.freshboomer.tts.PiperTtsEngine
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ro.softwarechef.freshboomer.data.MissedCallStore
 import java.util.Locale
+
+private const val TAG = "FB/ImmersiveActivity"
 
 abstract class ImmersiveActivity : ComponentActivity() {
     private var fallbackTts: TextToSpeech? = null
@@ -45,26 +48,25 @@ abstract class ImmersiveActivity : ComponentActivity() {
     /** Override to true in call-related activities to prevent auto-navigation to MainActivity. */
     protected open val disableInactivityTimeout: Boolean = false
 
+    /**
+     * Override to true in top-level launcher screens (Phone, Contacts, Sms, Gallery) so
+     * system back matches the in-screen `Inapoi` button and always returns HOME.
+     * Registered at lowest priority — any `BackHandler` in the Compose tree (dialogs,
+     * conversation views) still takes precedence.
+     */
+    protected open val backReturnsToHome: Boolean = false
+
     var lastCalledNumber by mutableStateOf<LastCaller?>(null)
         private set
-    private var lastCallAnnouncementCount = 0
-
-    private lateinit var sharedPrefs: SharedPreferences
-    private val PREFS_NAME = "LauncherPrefs"
-    private val KEY_LAST_ANNOUNCED_NUMBER = "last_announced_number"
-    private val KEY_ANNOUNCEMENT_COUNT = "announcement_count"
 
     private val inactivityTimeoutMs get() = ro.softwarechef.freshboomer.data.AppConfig.current.inactivityTimeoutMs
-    private val inactivityHandler = Handler(Looper.getMainLooper())
-    private val inactivityRunnable = Runnable {
-        navigateToMainActivity()
-    }
+    private var inactivityJob: Job? = null
 
     private val chargingReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_POWER_CONNECTED) {
                 InactivityTracker.recordInteraction(context)
-                Log.d("ImmersiveActivity", "Charger connected — interaction recorded")
+                Log.d(TAG, "Charger connected — interaction recorded")
             }
         }
     }
@@ -83,8 +85,18 @@ abstract class ImmersiveActivity : ComponentActivity() {
         val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as android.app.KeyguardManager
         keyguardManager.requestDismissKeyguard(this, null)
 
-        sharedPrefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         startInactivityTimer()
+
+        if (backReturnsToHome) {
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    ro.softwarechef.freshboomer.data.LauncherNavigator.go(
+                        this@ImmersiveActivity,
+                        ro.softwarechef.freshboomer.data.LauncherNavigator.Screen.HOME
+                    )
+                }
+            })
+        }
 
         // Register charging receiver for inactivity tracking
         registerReceiver(
@@ -100,31 +112,28 @@ abstract class ImmersiveActivity : ComponentActivity() {
     }
     fun refreshLastCall() {
         val newLastCall = getLastCall()
-        Log.d("LastCaller", "New last call: $newLastCall")
+        Log.d(TAG, "New last call: $newLastCall")
 
         lastCalledNumber = newLastCall
 
+        val stored = ro.softwarechef.freshboomer.data.MissedCallAnnouncementStore.read(this)
         val decision = ro.softwarechef.freshboomer.data.MissedCallAnnouncer.decide(
             currentCallNumber = newLastCall?.number,
-            lastAnnouncedNumber = sharedPrefs.getString(KEY_LAST_ANNOUNCED_NUMBER, null),
-            storedCount = sharedPrefs.getInt(KEY_ANNOUNCEMENT_COUNT, 0),
+            lastAnnouncedNumber = stored.lastAnnouncedNumber,
+            storedCount = stored.count,
             maxAnnouncements = ro.softwarechef.freshboomer.data.AppConfig.current.maxMissedCallAnnouncements
         )
-        lastCallAnnouncementCount = decision.newCount
-
-        with(sharedPrefs.edit()) {
-            putString(KEY_LAST_ANNOUNCED_NUMBER, decision.newLastAnnouncedNumber)
-            putInt(KEY_ANNOUNCEMENT_COUNT, decision.newCount)
-            apply()
-        }
+        ro.softwarechef.freshboomer.data.MissedCallAnnouncementStore.write(
+            this, decision.newLastAnnouncedNumber, decision.newCount
+        )
 
         if (decision.shouldAnnounce && newLastCall != null) {
             val callerInfo = newLastCall.name ?: newLastCall.number
             val nickname = NicknamePreference.getNickname(this)
             speakOutLoud(getString(R.string.tts_missed_call, nickname, callerInfo, newLastCall.time))
-            Log.d("LastCaller", "Announced call #${decision.newCount} for ${newLastCall.number}")
+            Log.d(TAG, "Announced call #${decision.newCount} for ${newLastCall.number}")
         } else if (newLastCall != null) {
-            Log.d("LastCaller", "Call already at max announcements, skipping")
+            Log.d(TAG, "Call already at max announcements, skipping")
         }
     }
 
@@ -148,28 +157,25 @@ abstract class ImmersiveActivity : ComponentActivity() {
 
     private fun startInactivityTimer() {
         if (disableInactivityTimeout) return
-        inactivityHandler.postDelayed(inactivityRunnable, inactivityTimeoutMs)
+        inactivityJob?.cancel()
+        inactivityJob = lifecycleScope.launch {
+            delay(inactivityTimeoutMs)
+            navigateToMainActivity()
+        }
     }
 
     private fun stopInactivityTimer() {
-        inactivityHandler.removeCallbacks(inactivityRunnable)
+        inactivityJob?.cancel()
+        inactivityJob = null
     }
 
-    private fun resetInactivityTimer() {
-        stopInactivityTimer()
-        startInactivityTimer()
-    }
+    private fun resetInactivityTimer() = startInactivityTimer()
 
     private fun navigateToMainActivity() {
-        if (this is MainActivity) return
-
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-        }
-        startActivity(intent)
-        finish()
+        ro.softwarechef.freshboomer.data.LauncherNavigator.go(
+            this,
+            ro.softwarechef.freshboomer.data.LauncherNavigator.Screen.HOME
+        )
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -219,7 +225,7 @@ abstract class ImmersiveActivity : ComponentActivity() {
                     }
                 }
             } catch (e: Exception) {
-                Log.w("ELDER_APP", "Contact name lookup failed: ${e.localizedMessage}")
+                Log.w(TAG, "Contact name lookup failed: ${e.localizedMessage}")
             }
 
             val timeStr = if (record.timestamp > 0L) {
@@ -233,7 +239,7 @@ abstract class ImmersiveActivity : ComponentActivity() {
                 timestamp = record.timestamp
             )
         } catch (e: Exception) {
-            Log.e("ELDER_APP", "Failed to get last missed call", e)
+            Log.e(TAG, "Failed to get last missed call", e)
             null
         }
     }
@@ -267,7 +273,7 @@ abstract class ImmersiveActivity : ComponentActivity() {
                     audioManager.setCommunicationDevice(speakerDevice)
                 }
             } catch (e: Exception) {
-                Log.e("ELDER_APP", "setCommunicationDevice failed: ${e.localizedMessage}")
+                Log.e(TAG, "setCommunicationDevice failed: ${e.localizedMessage}")
                 audioManager.isSpeakerphoneOn = true
             }
         } else {
@@ -288,7 +294,7 @@ abstract class ImmersiveActivity : ComponentActivity() {
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
         if (!notificationManager.isNotificationPolicyAccessGranted) {
-            Log.w("ELDER_APP", "No DND policy access — skipping setMaxVolume. Grant via Settings > Apps > Special access > Do Not Disturb.")
+            Log.w(TAG, "No DND policy access — skipping setMaxVolume. Grant via Settings > Apps > Special access > Do Not Disturb.")
             return
         }
 
@@ -308,9 +314,20 @@ abstract class ImmersiveActivity : ComponentActivity() {
                     AudioManager.FLAG_SHOW_UI
                 )
             } catch (e: SecurityException) {
-                Log.w("ELDER_APP", "Cannot set volume for stream $stream: ${e.message}")
+                Log.w(TAG, "Cannot set volume for stream $stream: ${e.message}")
             }
         }
+    }
+
+    /**
+     * Speak the nickname-formatted [ttsResId] and navigate to [screen]. Used by
+     * [MainActivity] for the four quick-launch buttons so the announce/navigate
+     * pair can't drift apart.
+     */
+    fun announceAndGo(screen: ro.softwarechef.freshboomer.data.LauncherNavigator.Screen, ttsResId: Int) {
+        val nick = NicknamePreference.getNickname(this)
+        speakOutLoud(getString(ttsResId, nick))
+        ro.softwarechef.freshboomer.data.LauncherNavigator.go(this, screen)
     }
 
     fun launchWhatsApp() {
@@ -338,11 +355,11 @@ abstract class ImmersiveActivity : ComponentActivity() {
 
     fun speakOutLoud(text: String) {
         if (!ro.softwarechef.freshboomer.data.TtsPreference.isEnabled(this)) {
-            Log.d("ELDER_APP", "TTS skipped: disabled by user")
+            Log.d(TAG, "TTS skipped: disabled by user")
             return
         }
         if (isInCall()) {
-            Log.d("ELDER_APP", "TTS skipped: in call")
+            Log.d(TAG, "TTS skipped: in call")
             return
         }
 
@@ -356,7 +373,7 @@ abstract class ImmersiveActivity : ComponentActivity() {
                 0
             )
         } catch (e: SecurityException) {
-            Log.w("ELDER_APP", "Cannot set TTS volume: ${e.message}")
+            Log.w(TAG, "Cannot set TTS volume: ${e.message}")
         }
 
         val preferredEngine = ro.softwarechef.freshboomer.data.TtsPreference.getEngine(this)
@@ -378,7 +395,7 @@ abstract class ImmersiveActivity : ComponentActivity() {
                     configureFallbackTts()
                     fallbackTts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "elder_tts")
                 } else {
-                    Log.e("ELDER_APP", "Fallback TTS init failed")
+                    Log.e(TAG, "Fallback TTS init failed")
                 }
             }
         } else if (fallbackTtsInitialized) {

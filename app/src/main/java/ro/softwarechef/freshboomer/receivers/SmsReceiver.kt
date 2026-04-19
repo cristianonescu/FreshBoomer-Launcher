@@ -7,9 +7,11 @@ import android.media.AudioManager
 import android.provider.Telephony
 import android.telephony.SmsMessage
 import android.util.Log
-import ro.softwarechef.freshboomer.TtsSmsAlertActivity
 import ro.softwarechef.freshboomer.data.AppConfig
+import ro.softwarechef.freshboomer.data.LauncherNavigator
 import ro.softwarechef.freshboomer.data.EmergencyContact
+
+private const val TAG = "FB/SmsReceiver"
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -54,7 +56,7 @@ class SmsReceiver : BroadcastReceiver() {
             }
             context.sendBroadcast(updateIntent)
 
-            Log.d("SmsReceiver", "Received SMS${if (!isDefault) " (non-default)" else ""} from $sender: $messageBody")
+            Log.d(TAG, "Received SMS${if (!isDefault) " (non-default)" else ""} from $sender: $messageBody")
 
             // Check for TTS SMS trigger
             checkTtsSms(context, sender, messageBody)
@@ -86,7 +88,7 @@ class SmsReceiver : BroadcastReceiver() {
 
         // Check trusted sender if required
         if (config.featureTtsSmsTrustedOnly && !isTrustedSender(sender, config.emergencyContacts)) {
-            Log.d("SmsReceiver", "TTS SMS ignored: sender $sender is not a trusted contact")
+            Log.d(TAG, "TTS SMS ignored: sender $sender is not a trusted contact")
             return
         }
 
@@ -94,19 +96,17 @@ class SmsReceiver : BroadcastReceiver() {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
         if (audioManager.mode == AudioManager.MODE_IN_CALL ||
             audioManager.mode == AudioManager.MODE_IN_COMMUNICATION) {
-            Log.d("SmsReceiver", "TTS SMS deferred: currently in a call")
+            Log.d(TAG, "TTS SMS deferred: currently in a call")
             return
         }
 
         // Launch full-screen TTS alert
-        val alertIntent = Intent(context, TtsSmsAlertActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        LauncherNavigator.launch(context, LauncherNavigator.Screen.TTS_SMS_ALERT) {
             putExtra("sender", sender)
             putExtra("message", actualMessage)
         }
-        context.startActivity(alertIntent)
 
-        Log.d("SmsReceiver", "TTS SMS triggered from $sender: $actualMessage")
+        Log.d(TAG, "TTS SMS triggered from $sender: $actualMessage")
     }
 
     private fun isTrustedSender(sender: String, contacts: List<EmergencyContact>): Boolean {

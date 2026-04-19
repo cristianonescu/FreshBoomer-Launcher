@@ -10,6 +10,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 
+private const val TAG = "FB/QuickContactRepository"
+
 object QuickContactRepository {
 
     private const val FILENAME = "quick_contacts.json"
@@ -139,7 +141,7 @@ object QuickContactRepository {
             destFile.writeBytes(bytes)
             destFile.absolutePath
         } catch (e: Exception) {
-            Log.e("QuickContactRepo", "Failed to decode base64 photo", e)
+            Log.e(TAG, "Failed to decode base64 photo", e)
             null
         }
     }

@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
+private const val TAG = "FB/CallManager"
+
 object CallManager {
     var currentCall by mutableStateOf<Call?>(null)
         private set
@@ -29,7 +31,7 @@ object CallManager {
     @Suppress("DEPRECATION")
     private val callCallback = object : Call.Callback() {
         override fun onStateChanged(call: Call, newState: Int) {
-            Log.d("CallManager", "Call state changed: $newState")
+            Log.d(TAG, "Call state changed: $newState")
             callState = newState
 
             // Retry extracting number/name if not yet resolved
@@ -103,7 +105,7 @@ object CallManager {
                 } else null
             }
         } catch (e: Exception) {
-            Log.e("CallManager", "Contact lookup failed", e)
+            Log.e(TAG, "Contact lookup failed", e)
             null
         }
     }

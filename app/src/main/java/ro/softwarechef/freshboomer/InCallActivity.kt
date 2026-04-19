@@ -1,7 +1,6 @@
 package ro.softwarechef.freshboomer
 
 import android.content.Context
-import android.content.Intent
 import android.media.AudioManager
 import android.os.Bundle
 import android.telecom.Call
@@ -96,13 +95,10 @@ class InCallActivity : ImmersiveActivity() {
     }
 
     private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-        }
-        startActivity(intent)
-        finish()
+        ro.softwarechef.freshboomer.data.LauncherNavigator.go(
+            this,
+            ro.softwarechef.freshboomer.data.LauncherNavigator.Screen.HOME
+        )
     }
 
     private fun toggleSpeaker(): Boolean {

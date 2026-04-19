@@ -6,6 +6,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import ro.softwarechef.freshboomer.WhatsAppCallActivity
+import ro.softwarechef.freshboomer.data.LauncherNavigator
 
 class WhatsAppCallListenerService : NotificationListenerService() {
 
@@ -51,14 +52,11 @@ class WhatsAppCallListenerService : NotificationListenerService() {
             isWhatsAppCallActive = true
             handledCallKey = sbn.key
 
-            val intent = Intent(this, WhatsAppCallActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+            LauncherNavigator.launch(this, LauncherNavigator.Screen.WHATSAPP_CALL) {
                 putExtra(WhatsAppCallActivity.EXTRA_CALLER_NAME, callerName ?: "cineva")
                 putExtra(WhatsAppCallActivity.EXTRA_CALLER_TEXT, callerText)
                 putExtra(WhatsAppCallActivity.EXTRA_NOTIFICATION_KEY, sbn.key)
             }
-            startActivity(intent)
         }
     }
 

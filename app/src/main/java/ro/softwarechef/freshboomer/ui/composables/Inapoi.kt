@@ -1,6 +1,5 @@
 package ro.softwarechef.freshboomer.ui.composables
 
-import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -16,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import ro.softwarechef.freshboomer.R
-import ro.softwarechef.freshboomer.MainActivity
+import ro.softwarechef.freshboomer.data.LauncherNavigator
 
 @Composable
 fun Inapoi(modifier: Modifier = Modifier, onClicked: () -> Unit = {}) {
@@ -25,12 +24,7 @@ fun Inapoi(modifier: Modifier = Modifier, onClicked: () -> Unit = {}) {
 
     Button(
         onClick = {
-            val intent = Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP
-            }
-            context.startActivity(intent)
-            activity.finish()
+            LauncherNavigator.go(activity, LauncherNavigator.Screen.HOME)
             onClicked()
         },
         modifier = modifier.padding(top = 8.dp, bottom = 8.dp),

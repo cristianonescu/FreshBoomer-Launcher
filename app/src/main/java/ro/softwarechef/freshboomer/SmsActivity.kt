@@ -31,9 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import ro.softwarechef.freshboomer.models.Contact
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.BroadcastReceiver
@@ -64,7 +68,11 @@ fun requestDefaultSmsRole(context: Context, resultLauncher: ActivityResultLaunch
     }
 }
 
+private const val TAG = "FB/SmsActivity"
+
 class SmsActivity : ImmersiveActivity() {
+    override val backReturnsToHome: Boolean = true
+
     private val conversations = MutableStateFlow<List<Contact>>(emptyList())
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -79,7 +87,8 @@ class SmsActivity : ImmersiveActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 "ro.softwarechef.freshboomer.SMS_RECEIVED" -> {
-                    loadConversations(context!!, conversations)
+                    val ctx = context ?: return
+                    lifecycleScope.launch { loadConversations(ctx, conversations) }
                 }
             }
         }
@@ -106,7 +115,7 @@ class SmsActivity : ImmersiveActivity() {
                 }
             }
         } catch (e: Exception) {
-            Log.e("SmsActivity", "Error in onCreate", e)
+            Log.e(TAG, "Error in onCreate", e)
         }
     }
 
@@ -115,7 +124,7 @@ class SmsActivity : ImmersiveActivity() {
         try {
             unregisterReceiver(smsReceiver)
         } catch (e: Exception) {
-            Log.e("SmsActivity", "Error unregistering receiver", e)
+            Log.e(TAG, "Error unregistering receiver", e)
         }
     }
 
@@ -135,7 +144,7 @@ class SmsActivity : ImmersiveActivity() {
                 requestPermissionLauncher.launch(permissions)
             }
         } catch (e: Exception) {
-            Log.e("SmsActivity", "Error checking permissions", e)
+            Log.e(TAG, "Error checking permissions", e)
         }
     }
 
@@ -147,7 +156,7 @@ class SmsActivity : ImmersiveActivity() {
                 startActivity(intent)
             }
         } catch (e: Exception) {
-            Log.e("SmsActivity", "Error setting default SMS app", e)
+            Log.e(TAG, "Error setting default SMS app", e)
         }
     }
 
@@ -182,7 +191,7 @@ class SmsActivity : ImmersiveActivity() {
             context.sendBroadcast(updateIntent)
 
         } catch (e: Exception) {
-            Log.e("SmsActivity", "Error sending SMS", e)
+            Log.e(TAG, "Error sending SMS", e)
         }
     }
 }
@@ -201,7 +210,7 @@ fun SmsScreen(
         try {
             loadConversations(context, conversations)
         } catch (e: Exception) {
-            Log.e("SmsScreen", "Error loading conversations", e)
+            Log.e(TAG, "Error loading conversations", e)
         }
     }
 
@@ -491,7 +500,7 @@ fun ConversationScreen(
             try {
                 context.unregisterReceiver(receiver)
             } catch (e: Exception) {
-                Log.e("ConversationScreen", "Error unregistering receiver", e)
+                Log.e(TAG, "Error unregistering receiver", e)
             }
         }
     }
@@ -643,7 +652,7 @@ fun MessageItem(message: Message) {
     }
 }
 
-private fun loadConversations(context: android.content.Context, conversations: MutableStateFlow<List<Contact>>) {
+private suspend fun loadConversations(context: android.content.Context, conversations: MutableStateFlow<List<Contact>>) = withContext(Dispatchers.IO) {
     try {
         val cursor = context.contentResolver.query(
             Telephony.Sms.CONTENT_URI,
@@ -684,14 +693,14 @@ private fun loadConversations(context: android.content.Context, conversations: M
                         contact.unreadCount++
                     }
                 } catch (e: Exception) {
-                    Log.e("SmsActivity", "Error processing message", e)
+                    Log.e(TAG, "Error processing message", e)
                 }
             }
         }
 
         conversations.value = contactMap.values.sortedByDescending { it.date }
     } catch (e: Exception) {
-        Log.e("SmsActivity", "Error loading conversations", e)
+        Log.e(TAG, "Error loading conversations", e)
         conversations.value = emptyList()
     }
 }
@@ -752,7 +761,7 @@ private fun getContactName(context: android.content.Context, phoneNumber: String
             } else null
         }
     } catch (e: Exception) {
-        Log.e("SmsActivity", "Error looking up contact name", e)
+        Log.e(TAG, "Error looking up contact name", e)
         null
     }
 }

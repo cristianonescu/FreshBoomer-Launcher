@@ -30,6 +30,8 @@ import ro.softwarechef.freshboomer.ui.composables.Inapoi
 import ro.softwarechef.freshboomer.ui.theme.LauncherTheme
 
 class PhoneActivity : ImmersiveActivity() {
+    override val backReturnsToHome: Boolean = true
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
